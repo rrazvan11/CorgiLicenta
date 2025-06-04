@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title><ui:insert name="titlu">Aplicație ONG Corgi</ui:insert></title>
+    <!-- Asigură-te că această cale este corectă și că fișierul CSS există -->
+    <h:outputStylesheet name="style.css" library="default" />
+    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/favicon.ico"/>
+</h:head>
+
+<h:body>
+    <div id="page-container"> <!-- Un container general -->
+
+        <!-- Bara de Utilizator și Titlu Aplicație -->
+        <div id="top-bar" style="background-color: #007bff; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h:outputText value="Aplicația ONG Corgi" style="font-size: 1.5em; font-weight: bold;"/>
+
+            <h:form id="userStatusForm">
+                <h:panelGroup rendered="#{not empty sessionScope.loggedInUser}">
+                    <h:outputText value="Bun venit, #{sessionScope.loggedInUser.username}!" style="margin-right:15px;"/>
+                    <p:commandButton id="logoutButton"
+                                     action="#{loginBean.doLogout}"
+                                     value="Logout"
+                                     icon="pi pi-sign-out"
+                                     styleClass="ui-button-danger ui-button-sm"
+                                     ajax="false"/>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{empty sessionScope.loggedInUser}">
+                    <p:button outcome="/xhtml/login.xhtml" value="Login" icon="pi pi-sign-in" styleClass="ui-button-raised ui-button-secondary ui-button-sm"/>
+                </h:panelGroup>
+            </h:form>
+        </div>
+
+        <!-- Header specific paginii (dacă pagina definește unul) -->
+        <div id="header">
+            <ui:insert name="header">
+                <!-- Paginile pot insera aici un header specific, dacă doresc -->
+                <!-- Dacă nu, această secțiune poate rămâne goală sau cu un placeholder discret -->
+            </ui:insert>
+        </div>
+
+        <!-- Conținutul principal al paginii -->
+        <div id="content" style="padding: 20px;">
+            <ui:insert name="content">
+                Conținut implicit dacă nu este specificat.
+            </ui:insert>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer" style="margin-top: 20px; border-top: 1px solid #ddd; padding: 15px 0; text-align:center;">
+            <ui:insert name="footer">
+                <h:outputText value="&copy; #{java.time.LocalDate.now().getYear()} Organizația Corgi. Toate drepturile rezervate." style="font-size:0.8em; color: #666;"/>
+            </ui:insert>
+        </div>
+
+    </div> <!-- Sfârșit #page-container -->
+
+    <p:ajaxStatus style="width:32px;height:32px;position:fixed;right:10px;bottom:10px">
+        <f:facet name="start">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: #007bff;"></i>
+        </f:facet>
+        <f:facet name="complete">
+            <h:outputText value="" />
+        </f:facet>
+    </p:ajaxStatus>
+
+</h:body>
+</html>

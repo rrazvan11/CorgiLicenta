@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="jakarta.faces.facelets">
+
+<ui:composition template="/WEB-INF/Templates/layout.xhtml">
+    <ui:define name="titlu">
+        Autentificare - Platforma ONG Corgi
+    </ui:define>
+
+    <ui:define name="content">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-8 ui-lg-6 ui-xl-4" style="margin: 0 auto;">
+                <p:panel header="Autentificare Utilizator" style="margin-top: 20px;">
+                    <h:form id="loginForm">
+                        <p:messages id="messages" globalOnly="false" showDetail="true" closable="true">
+                            <p:autoUpdate/>
+                        </p:messages>
+
+                        <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+
+                            <p:outputLabel for="@next" value="Adresă Email:"/>
+                            <p:inputText id="email"
+                                         value="#{loginBean.email}"
+                                         required="true"
+                                         requiredMessage="Adresa de email este obligatorie."
+                                         validatorMessage="Format email invalid."
+                                         placeholder="exemplu@domeniu.com">
+                                <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+                            </p:inputText>
+                            <p:message for="email"/>
+
+                            <p:outputLabel for="@next" value="Parolă:"/>
+                            <p:password id="parola"
+                                        value="#{loginBean.parola}"
+                                        required="true"
+                                        requiredMessage="Parola este obligatorie."
+                                        feedback="false"
+                                        placeholder="Introduceți parola"/>
+                            <p:message for="parola"/>
+
+                            <p:commandButton id="loginButton"
+                                             value="Autentificare"
+                                             action="#{loginBean.doLogin}"
+                                             update="@form"
+                                             icon="pi pi-sign-in"
+                                             styleClass="ui-button-raised"
+                                             style="margin-top: 10px;"/>
+
+                            <div style="text-align: center; margin-top: 20px;">
+                                <p:link outcome="/xhtml/registerVoluntar.xhtml"
+                                        value="Nu ai cont? Înregistrează-te ca voluntar."/>
+                            </div>
+
+                        </p:panelGrid>
+                    </h:form>
+                </p:panel>
+            </div>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>
