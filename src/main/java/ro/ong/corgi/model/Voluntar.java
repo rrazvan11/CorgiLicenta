@@ -3,6 +3,8 @@ package ro.ong.corgi.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import ro.ong.corgi.model.Enums.AnStudiu;
+import ro.ong.corgi.model.Enums.Facultate;
 import ro.ong.corgi.model.Enums.Status; // Asigură-te că importul este corect
 
 import java.time.LocalDate;
@@ -26,27 +28,17 @@ public class Voluntar {
     @NotBlank(message = "Prenumele este obligatoriu")
     private String prenume;
 
-    // Emailul este preluat din User sau poate fi un email de contact separat?
-    // Momentan, îl las aici, dar poate fi redundant dacă User.email e cel principal.
-    // Dacă User.email e cel principal, acest câmp poate fi eliminat sau redenumit.
-    @Email(message = "Emailul trebuie să fie valid")
-    @NotBlank(message = "Emailul este obligatoriu")
-    private String email; // Acest email s-ar putea să fie redundant dacă User.email e cel folosit pentru login
-
     @Pattern(regexp = "^\\d{10}$", message = "Telefonul trebuie să conțină exact 10 cifre")
     private String telefon;
 
-    private String facultate;
+    @Enumerated(EnumType.STRING)
+    private Facultate facultate;
     private String specializare;
 
-    @Min(value = 1, message = "Anul de studiu trebuie să fie cel puțin 1")
-    @Max(value = 5, message = "Anul de studiu nu poate fi mai mare de 5")
-    private Integer anStudiu;
+    @Enumerated(EnumType.STRING)
+    private AnStudiu anStudiu;
 
     private LocalDate dataInrolare;
-
-    @Min(0)
-    private Integer oreDeVoluntariat;
 
     @Min(0)
     private Integer puncte;
