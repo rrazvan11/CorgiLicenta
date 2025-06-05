@@ -1,4 +1,4 @@
-package ro.ong.corgi.controller;
+package ro.ong.corgi.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

@@ -1,9 +1,11 @@
-package ro.ong.corgi.controller;
+package ro.ong.corgi.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import ro.ong.corgi.model.Enums.Rol;
 import ro.ong.corgi.model.Enums.TaskStatus;
 import ro.ong.corgi.model.Task;
+import ro.ong.corgi.model.User;
 import ro.ong.corgi.model.Voluntar;
 import ro.ong.corgi.model.Proiect;
 import ro.ong.corgi.repository.TaskRepository;
@@ -145,5 +147,42 @@ public class TaskService {
         // Verifică dacă proiectul există
         proiectService.cautaDupaId(proiectId); // Aruncă excepție dacă nu există
         return taskRepository.findByProiectId(proiectId);
+    }
+
+    // În TaskService.java
+    public void completeTask(Long taskId, User loggedInUser) {
+        Task task = cautaDupaId(taskId);
+        Voluntar voluntarAsignat = task.getVoluntar();
+
+        // Verifică dacă utilizatorul logat este cel asignat task-ului
+        // Sau dacă are un rol care îi permite să modifice (de ex. Coordonator al proiectului)
+        // Această verificare de permisiune trebuie rafinată.
+        boolean canComplete = false;
+        if (loggedInUser.getRol() == Rol.VOLUNTAR && voluntarAsignat.getUser().getId().equals(loggedInUser.getId())) {
+            canComplete = true;
+        } else if (loggedInUser.getRol() == Rol.COORDONATOR) {
+            // Aici ar trebui verificat dacă coordonatorul este responsabil pentru proiectul task-ului
+            // Pentru simplitate, momentan permitem oricărui coordonator.
+            // Acest aspect necesită o logică de permisiuni mai detaliată ulterior.
+            canComplete = true;
+        }
+
+        if (!canComplete) {
+            throw new RuntimeException("Nu aveți permisiunea să finalizați acest task.");
+        }
+
+        if (task.getStatus() == TaskStatus.DONE) {
+            throw new RuntimeException("Task-ul este deja finalizat.");
+        }
+
+        task.setStatus(TaskStatus.DONE);
+
+        if (task.getPuncteTask() != null && task.getPuncteTask() > 0) {
+            voluntarAsignat.setPuncte(voluntarAsignat.getPuncte() + task.getPuncteTask());
+            // Presupunem că ai injectat VoluntarRepository sau VoluntarService pentru a salva voluntarul
+            // De exemplu, dacă ai VoluntarService:
+            voluntarService.actualizeazaVoluntar(voluntarAsignat); // Asigură-te că această metodă salvează în DB
+        }
+        taskRepository.update(task); // Salvează task-ul actualizat
     }
 }

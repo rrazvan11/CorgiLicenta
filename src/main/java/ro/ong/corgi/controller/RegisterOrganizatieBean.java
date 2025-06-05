@@ -1,4 +1,4 @@
-package ro.ong.corgi.View; // Sau ro.ong.corgi.view
+package ro.ong.corgi.controller; // Sau ro.ong.corgi.view
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
@@ -10,8 +10,8 @@ import lombok.Setter;
 import ro.ong.corgi.model.Organizatie;
 import ro.ong.corgi.model.User;
 import ro.ong.corgi.model.Enums.Rol;
-import ro.ong.corgi.controller.OrganizatieService;
-import ro.ong.corgi.controller.AuthService;
+import ro.ong.corgi.service.OrganizatieService;
+import ro.ong.corgi.service.AuthService;
 
 import java.io.Serializable;
 

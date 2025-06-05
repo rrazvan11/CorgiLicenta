@@ -1,4 +1,4 @@
-package ro.ong.corgi.View; // Sau ro.ong.corgi.view dacă ai folosit 'v' mic
+package ro.ong.corgi.controller; // Sau ro.ong.corgi.view dacă ai folosit 'v' mic
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
@@ -8,7 +8,7 @@ import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import ro.ong.corgi.model.Voluntar;
-import ro.ong.corgi.controller.VoluntarService;
+import ro.ong.corgi.service.VoluntarService;
 
 import java.io.Serializable;
 

@@ -28,7 +28,8 @@ public class Task {
     @FutureOrPresent(message = "Deadlineul trebuie să fie în viitor sau azi")
     private LocalDate deadline;
 
-    @NotBlank(message = "Statusul este obligatoriu")
+    @Enumerated(EnumType.STRING) // Adaugă această linie dacă TaskStatus este un enum
+    @NotNull(message = "Statusul este obligatoriu") // Am schimbat din @NotBlank în @NotNull pentru Enum
     private TaskStatus status; // exemplu: "IN_PROGRESS", "FINALIZAT", "PENDING"
 
     @ManyToOne
@@ -38,4 +39,8 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "proiect_id")
     private Proiect proiect;
+
+    @Min(value = 0, message = "Punctele pentru task nu pot fi negative")
+    @Column(name = "puncte_task")
+    private Integer puncteTask;
 }

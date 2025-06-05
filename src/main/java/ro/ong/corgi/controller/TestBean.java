@@ -1,4 +1,4 @@
-package ro.ong.corgi.View; // Sau ro.ong.corgi.bean
+package ro.ong.corgi.controller; // Sau ro.ong.corgi.bean
 
 import jakarta.enterprise.context.RequestScoped; // Sau ViewScoped, SessionScoped
 import jakarta.faces.application.FacesMessage;

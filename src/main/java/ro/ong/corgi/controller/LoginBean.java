@@ -1,4 +1,4 @@
-package ro.ong.corgi.View;
+package ro.ong.corgi.controller;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpSession; // Vom avea nevoie pentru logout
 import lombok.Getter;
 import lombok.Setter;
 import ro.ong.corgi.model.User;
-import ro.ong.corgi.controller.AuthService;
+import ro.ong.corgi.service.AuthService;
 
 import java.io.Serializable; // Bună practică pentru beans, mai ales cele cu scope mai lung
 

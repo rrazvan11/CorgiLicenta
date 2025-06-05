@@ -12,6 +12,8 @@ public class ProiectRepository extends AbstractRepository<Proiect, Long> {
         super(Proiect.class);
     }
 
+    // ... alte metode existente ...
+
     public List<Proiect> findByNameAndOrg(String numeProiect, Long organizatieId) {
         if (this.entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat în ProiectRepository");
@@ -26,8 +28,6 @@ public class ProiectRepository extends AbstractRepository<Proiect, Long> {
     }
 
     public Proiect findByNume(String numeProiect) {
-        // Atenție: Această metodă poate returna un proiect arbitrar dacă mai multe organizații au proiecte cu același nume.
-        // Ar fi mai sigur să caute după nume ȘI organizație, sau să returneze o listă.
         if (this.entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat în ProiectRepository");
         }
@@ -46,4 +46,17 @@ public class ProiectRepository extends AbstractRepository<Proiect, Long> {
         query.setParameter("orgId", organizatieId);
         return query.getResultList();
     }
+
+    // --- ACEASTA ESTE METODA NECESARĂ ---
+    public List<Proiect> findByVoluntarId(Long voluntarId) {
+        if (this.entityManager == null) {
+            throw new IllegalStateException("EntityManager nu este injectat în ProiectRepository");
+        }
+        // Interogarea corectă prin entitatea de legătură GrupareVoluntariProiecte
+        TypedQuery<Proiect> query = this.entityManager.createQuery(
+                "SELECT gvp.proiect FROM GrupareVoluntariProiecte gvp WHERE gvp.voluntar.id = :voluntarId", Proiect.class);
+        query.setParameter("voluntarId", voluntarId);
+        return query.getResultList();
+    }
+    // --- SFÂRȘIT METODĂ NOUĂ ---
 }
