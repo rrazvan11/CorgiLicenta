@@ -2,6 +2,7 @@ package ro.ong.corgi.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import ro.ong.corgi.model.Proiect;
 import ro.ong.corgi.model.Organizatie;
 import ro.ong.corgi.repository.ProiectRepository;
@@ -24,7 +25,7 @@ public class ProiectService {
     protected ProiectService(){
         this(null,null);
     }
-
+    @Transactional
     public void adaugaProiect(Proiect p) {
         if (p.getNumeProiect() == null || p.getNumeProiect().isBlank()) {
             throw new RuntimeException("Numele proiectului este obligatoriu.");
@@ -57,7 +58,7 @@ public class ProiectService {
     public List<Proiect> toateProiectele() {
         return proiectRepository.findAll();
     }
-
+    @Transactional
     public void actualizeazaProiect(Proiect p) {
         if (p.getId() == null) {
             throw new RuntimeException("ID-ul proiectului este necesar pentru actualizare.");
@@ -92,7 +93,7 @@ public class ProiectService {
         existent.setNecesarVoluntari(p.getNecesarVoluntari());
         proiectRepository.update(existent);
     }
-
+    @Transactional
     public void stergeProiect(Long id) {
         Proiect p = proiectRepository.findById(id);
         if (p == null) {

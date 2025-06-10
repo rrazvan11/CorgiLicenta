@@ -2,6 +2,7 @@ package ro.ong.corgi.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import ro.ong.corgi.model.Enums.Rol;
 import ro.ong.corgi.model.Enums.TaskStatus;
 import ro.ong.corgi.model.Task;
@@ -37,6 +38,7 @@ public class TaskService {
      * Setează statusul inițial pe WAITING.
      * Deadline-ul trebuie să fie azi sau în viitor.
      */
+    @Transactional
     public void adaugaTask(Task task) {
         if (task.getTitlu() == null || task.getTitlu().isBlank()) {
             throw new RuntimeException("Titlul task-ului este obligatoriu.");
@@ -82,6 +84,7 @@ public class TaskService {
      * Unele câmpuri (ex: proiectul, voluntarul inițial) s-ar putea să nu fie modificabile
      * sau modificarea lor să necesite logica specifică.
      */
+    @Transactional
     public void actualizeazaTask(Task task) {
         if (task.getId() == null) {
             throw new RuntimeException("ID-ul task-ului este necesar pentru actualizare.");
@@ -128,7 +131,7 @@ public class TaskService {
 
         taskRepository.update(existent);
     }
-
+    @Transactional
     public void stergeTask(Long id) {
         Task t = taskRepository.findById(id);
         if (t == null) {
@@ -149,7 +152,7 @@ public class TaskService {
         return taskRepository.findByProiectId(proiectId);
     }
 
-    // În TaskService.java
+    @Transactional
     public void completeTask(Long taskId, User loggedInUser) {
         Task task = cautaDupaId(taskId);
         Voluntar voluntarAsignat = task.getVoluntar();

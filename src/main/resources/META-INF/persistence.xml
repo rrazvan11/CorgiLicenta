@@ -4,7 +4,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
 
-    <persistence-unit name="corgi-persistence-unit" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="corgi-persistence-unit" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <jta-data-source>java:jboss/datasources/CorgiDS</jta-data-source>
@@ -16,9 +16,11 @@
         <class>ro.ong.corgi.model.Departament</class>
         <class>ro.ong.corgi.model.Task</class>
         <class>ro.ong.corgi.model.GrupareVoluntariProiecte</class>
+        <class>ro.ong.corgi.model.Sedinta</class>
+        <class>ro.ong.corgi.model.PrezentaSedinta</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
         </properties>

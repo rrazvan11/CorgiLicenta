@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Certificat de Voluntariat</title>
+    <style>
+        body {
+            font-family: "DejaVu Sans" Arial, sans-serif; /* O fontă simplă și comună */
+            margin: 20px;
+            border: 1px solid #333; /* O bordură subtilă */
+            padding: 25px;
+            width: 170mm; /* Lățime pentru A4, lăsând margini */
+            height: 240mm; /* Înălțime pentru A4, lăsând margini */
+            box-sizing: border-box; /* Include padding și border în dimensiunile totale */
+        }
+        .header {
+            text-align: center; /* Titlul organizației centrat */
+            margin-bottom: 25px;
+        }
+        .org-name {
+            font-size: 20px; /* Mărime font pentru numele organizației */
+            font-weight: bold;
+        }
+        .title {
+            font-size: 24px; /* Mărime font pentru titlul certificatului */
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-decoration: underline;
+            text-align: center;
+        }
+        .issue-date {
+            font-size: 11px; /* Mărime font mai mică pentru data emiterii */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .content {
+            font-size: 13px; /* Mărime font pentru conținutul principal */
+            line-height: 1.7; /* Spațiere mai mare între rânduri pentru lizibilitate */
+            text-align: justify; /* Aliniere stânga-dreapta a textului */
+        }
+        .content p {
+            margin-bottom: 12px; /* Spațiu între paragrafe */
+        }
+        .volunteer-name {
+            font-weight: bold;
+            font-size: 16px; /* Numele voluntarului puțin mai mare */
+        }
+        .footer {
+            margin-top: 50px; /* Spațiu generos înainte de subsol */
+        }
+        /* Folosim un tabel pentru a alinia semnăturile */
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse; /* Elimină spațiile dintre celulele tabelului */
+        }
+        .footer-table td {
+            width: 50%; /* Fiecare coloană ocupă jumătate din lățime */
+            font-size: 11px;
+            text-align: center;
+            vertical-align: top; /* Aliniază conținutul la partea de sus a celulei */
+            padding-top: 8px;
+        }
+        .signature-line {
+            display: inline-block; /* Permite setarea lățimii */
+            width: 140px;
+            border-bottom: 1px dotted #555; /* Linie punctată pentru semnătură */
+            margin-top: 35px; /* Spațiu pentru semnătura propriu-zisă */
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="org-name">${organizatieNume}</div>
+</div>
+
+<div class="title">CERTIFICAT DE VOLUNTARIAT</div>
+<div class="issue-date">Data Emiterii: ${dataEmitereCertificat}</div>
+
+<div class="content">
+    <p>Prin prezentul document se certifică faptul că <span class="volunteer-name">Dl./Dna. ${voluntarNumeComplet}</span>
+        a desfășurat activitatea de voluntariat în cadrul organizației <strong>${organizatieNume}</strong>,
+        în perioada cuprinsă între <strong>${perioadaVoluntariatStart}</strong> și <strong>${perioadaVoluntariatEnd}</strong>.</p>
+    <p>Pe durata activității sale, a participat la ${listaProiecteSauActivitateGenerica}
+        și a acumulat un număr de <strong>${puncteVoluntar} ore</strong>, dând dovadă de implicare, seriozitate și dedicare.</p>
+    <p>Activitatea de voluntariat s-a desfășurat sub îndrumarea coordonatorilor desemnați, iar contribuția sa a fost valoroasă și apreciată de către organizație.</p>
+</div>
+
+<div class="footer">
+    <table class="footer-table">
+        <tr>
+            <td>
+                L.S. <br/>
+            </td>
+            <td>
+                Reprezentant Organizație,<br/>
+                <div class="signature-line"></div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

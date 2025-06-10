@@ -1,130 +1,90 @@
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="jakarta.faces.facelets"> <!-- ASIGURĂ-TE CĂ ACEASTĂ LINIE EXISTĂ ȘI ESTE CORECTĂ -->
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-<!--
-    Acest fișier este: src/main/webapp/xhtml/registerVoluntar.xhtml
--->
 <ui:composition template="/WEB-INF/Templates/layout.xhtml">
-    <!-- Verifică dacă 'Templates' e cu 'T' mare sau 't' mic, conform structurii tale din WAR -->
-
-    <ui:define name="titlu">
-        Înregistrare Voluntar Nou - Platforma ONG Corgi
-    </ui:define>
-
     <ui:define name="content">
-        <div class="form-page-container"> <!-- Container pentru centrare -->
-            <p:panel header="Formular Înregistrare Voluntar" styleClass="form-panel">
+        <div class="form-page-container">
+            <p:panel header="Înregistrare unui nou voluntar" styleClass="form-panel">
                 <h:form id="registerVoluntarForm">
-                    <p:messages id="formMessages" globalOnly="true" showDetail="true" closable="true">
+                    <p:messages id="messagesGlobal" showDetail="true" closable="true">
                         <p:autoUpdate/>
                     </p:messages>
 
-                    <p:fieldset legend="Detalii Cont Utilizator" style="margin-bottom: 20px;">
-                        <div class="form-field">
-                            <p:outputLabel for="username" value="Nume Utilizator (login):*"/>
-                            <p:inputText id="username" value="#{registerVoluntarBean.username}" required="true"
-                                         requiredMessage="Numele de utilizator este obligatoriu."/>
-                            <p:message for="username"/>
-                        </div>
+                    <p:panelGrid columns="2" styleClass="form-input-grid ui-fluid" columnClasses="label-column,input-column">
 
-                        <div class="form-field">
-                            <p:outputLabel for="emailUser" value="Adresă Email (login):*"/>
-                            <p:inputText id="emailUser" value="#{registerVoluntarBean.emailUser}" required="true"
-                                         requiredMessage="Adresa de email este obligatorie."
-                                         validatorMessage="Format email invalid.">
-                                <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"/>
-                            </p:inputText>
-                            <p:message for="emailUser"/>
-                        </div>
+                        <p:outputLabel for="numeVoluntar" value="Nume Voluntar:"/>
+                        <p:inputText id="numeVoluntar" value="#{registerVoluntarBean.voluntar.nume}" required="true"
+                                     requiredMessage="Numele voluntarului este obligatoriu."/>
 
-                        <div class="form-field">
-                            <p:outputLabel for="parola" value="Parolă:*"/>
-                            <p:password id="parola" value="#{registerVoluntarBean.parola}" required="true"
-                                        requiredMessage="Parola este obligatorie." feedback="true"
-                                        promptLabel="Introduceți o parolă" weakLabel="Slabă" goodLabel="Medie" strongLabel="Puternică"
-                                        match="confirmParola"/>
-                            <p:message for="parola"/>
-                        </div>
+                        <p:outputLabel for="prenumeVoluntar" value="Prenume Voluntar:"/>
+                        <p:inputText id="prenumeVoluntar" value="#{registerVoluntarBean.voluntar.prenume}" required="true"
+                                     requiredMessage="Prenumele voluntarului este obligatoriu."/>
 
-                        <div class="form-field">
-                            <p:outputLabel for="confirmParola" value="Confirmă Parola:*"/>
-                            <p:password id="confirmParola" value="#{registerVoluntarBean.confirmParola}" required="true"
-                                        requiredMessage="Confirmarea parolei este obligatorie." feedback="false"/>
-                            <p:message for="confirmParola"/>
-                        </div>
-                    </p:fieldset>
+                        <p:outputLabel for="emailUser" value="Email (pentru cont):"/>
+                        <p:inputText id="emailUser" value="#{registerVoluntarBean.emailUser}" required="true"
+                                     requiredMessage="Adresa de email este obligatorie."
+                                     validatorMessage="Format email invalid. Exemplu: nume@domeniu.com">
+                            <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" />
+                        </p:inputText>
 
-                    <p:fieldset legend="Detalii Personale Voluntar" style="margin-bottom: 20px;">
-                        <div class="form-field">
-                            <p:outputLabel for="numeVoluntar" value="Nume (persoană):*"/>
-                            <p:inputText id="numeVoluntar" value="#{registerVoluntarBean.voluntar.nume}" required="true"
-                                         requiredMessage="Numele este obligatoriu."/>
-                            <p:message for="numeVoluntar"/>
-                        </div>
+                        <p:outputLabel for="username" value="Nume utilizator (login):"/>
+                        <p:inputText id="username" value="#{registerVoluntarBean.username}" required="true"
+                                     requiredMessage="Numele de utilizator este obligatoriu."/>
 
-                        <div class="form-field">
-                            <p:outputLabel for="prenumeVoluntar" value="Prenume (persoană):*"/>
-                            <p:inputText id="prenumeVoluntar" value="#{registerVoluntarBean.voluntar.prenume}" required="true"
-                                         requiredMessage="Prenumele este obligatoriu."/>
-                            <p:message for="prenumeVoluntar"/>
-                        </div>
+                        <p:outputLabel for="parola" value="Parolă:"/>
+                        <p:password id="parola" value="#{registerVoluntarBean.parola}" required="true" feedback="true"
+                                    requiredMessage="Parola este obligatorie."  goodLabel="Acceptabilă" strongLabel="Puternică">
+                        <f:validateLength minimum="12"/>
+                        <f:validateRegex pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}$"
+                                         validatorMessage="Parola trebuie să conțină minim 12 caractere, din care un caracter special, o cifră și o majusculă." />
+                        </p:password>
 
-                        <div class="form-field">
-                            <p:outputLabel for="telefon" value="Telefon:"/>
-                            <p:inputText id="telefon" value="#{registerVoluntarBean.voluntar.telefon}"
-                                         placeholder="07xxxxxxxx (10 cifre)">
-                                <p:keyFilter mask="num"/>
-                            </p:inputText>
-                            <p:message for="telefon"/>
-                        </div>
 
-                        <div class="form-field">
-                            <p:outputLabel for="cifOrganizatie" value="CIF Organizație Participantă:*"/>
-                            <p:inputText id="cifOrganizatie" value="#{registerVoluntarBean.cifOrganizatie}" required="true"
-                                         requiredMessage="CIF-ul organizației este obligatoriu."
-                                         placeholder="Doar cifre">
-                                <p:keyFilter mask="num"/>
-                            </p:inputText>
-                            <p:message for="cifOrganizatie"/>
-                        </div>
+                        <p:outputLabel for="confirmParola" value="Confirmă Parola:"/>
+                        <p:password id="confirmParola" value="#{registerVoluntarBean.confirmParola}" required="true"
+                                    requiredMessage="Confirmarea parolei este obligatorie."/>
 
-                        <div class="form-field">
-                            <p:outputLabel for="facultate" value="Facultate (opțional):"/>
-                            <p:inputText id="facultate" value="#{registerVoluntarBean.voluntar.facultate}"/>
-                            <p:message for="facultate"/>
-                        </div>
 
-                        <div class="form-field">
-                            <p:outputLabel for="specializare" value="Specializare (opțional):"/>
-                            <p:inputText id="specializare" value="#{registerVoluntarBean.voluntar.specializare}"/>
-                            <p:message for="specializare"/>
-                        </div>
+                        <p:outputLabel for="telefon" value="Telefon:"/>
+                        <p:inputText id="telefon" value="#{registerVoluntarBean.voluntar.telefon}"
+                                     validatorMessage="Numărul de telefon trebuie să conțină exact 10 cifre.">
+                            <f:validateLength minimum="10" maximum="10" />
+                            <f:validateRegex pattern="^\d{10}$" />
+                        </p:inputText>
 
-                        <div class="form-field">
-                            <p:outputLabel for="anStudiu" value="An Studiu (opțional, 1-5):"/>
-                            <p:inputNumber id="anStudiu" value="#{registerVoluntarBean.voluntar.anStudiu}"
-                                           minValue="1" maxValue="5" decimalPlaces="0"/>
-                            <p:message for="anStudiu"/>
-                        </div>
-                    </p:fieldset>
+                        <p:outputLabel for="facultate" value="Facultate:"/>
+                        <p:selectOneMenu id="facultate" value="#{registerVoluntarBean.voluntar.facultate}">
+                            <f:selectItem itemLabel="Selectează facultatea..." itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{registerVoluntarBean.facultateValues}" var="fac"
+                                           itemLabel="#{fac.name()}" itemValue="#{fac}"/>
+                        </p:selectOneMenu>
 
-                    <div class="form-buttons">
-                        <p:commandButton value="Înregistrează-mă"
-                                         action="#{registerVoluntarBean.doRegister}"
-                                         update="@form :growlMessages"
-                                         icon="pi pi-user-plus"
-                                         styleClass="ui-button-raised ui-button-success"/>
-                        <p:link outcome="/xhtml/login.xhtml" value="Ai deja cont? Autentifică-te."
-                                styleClass="ui-button ui-button-text ui-button-secondary" style="margin-left:10px;"/>
+                        <p:outputLabel for="anStudiu" value="An de studiu:"/>
+                        <p:selectOneMenu id="anStudiu" value="#{registerVoluntarBean.voluntar.anStudiu}">
+                            <f:selectItem itemLabel="Selectează anul de studiu..." itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{registerVoluntarBean.anStudiuValues}" var="an"
+                                           itemLabel="#{an.numeSpecializare}" itemValue="#{an}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="specializare" value="Specializare:"/>
+                        <p:inputText id="specializare" value="#{registerVoluntarBean.voluntar.specializare}"/>
+
+                        <p:outputLabel for="cifOrganizatie" value="CIF Organizație afiliere:"/>
+                        <p:inputText id="cifOrganizatie" value="#{registerVoluntarBean.cifOrganizatie}" required="true"
+                                     requiredMessage="CIF-ul organizației de afiliere este obligatoriu."/>
+
+                    </p:panelGrid>
+
+                    <div class="form-buttons" style="margin-top: 20px; text-align: right;">
+                        <p:commandButton value="Înregistrează-mă" action="#{registerVoluntarBean.doRegister}" update="@form :messagesGlobal"/>
+                        <p:button outcome="/xhtml/login" value="Anulează și mergi la Login" style="margin-left:10px;"/>
                     </div>
                 </h:form>
             </p:panel>
         </div>
-        <p:growl id="growlMessages" showDetail="true" life="6000" for="@none"/>
     </ui:define>
 </ui:composition>
 </html>

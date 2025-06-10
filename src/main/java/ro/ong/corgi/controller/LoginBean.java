@@ -6,103 +6,97 @@ import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.servlet.http.HttpSession; // Vom avea nevoie pentru logout
+import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.Setter;
 import ro.ong.corgi.model.User;
+import ro.ong.corgi.model.Enums.Rol; // Asigură-te că ai importat Rol
 import ro.ong.corgi.service.AuthService;
 
-import java.io.Serializable; // Bună practică pentru beans, mai ales cele cu scope mai lung
+import java.io.Serializable;
 
-@Named // Face bean-ul accesibil în paginile JSF ca "#{loginBean}"
-@RequestScoped // Ciclul de viață al bean-ului: o nouă instanță pentru fiecare request HTTP
-@Getter // Lombok pentru a genera automat getteri
-@Setter // Lombok pentru a genera automat setteri
+@Named
+@RequestScoped
+@Getter
+@Setter
 public class LoginBean implements Serializable {
 
-    private static final long serialVersionUID = 1L; // Bună practică pentru Serializable
+    private static final long serialVersionUID = 1L;
 
     private String email;
     private String parola;
 
     @Inject
-    private AuthService authService; // Injectăm serviciul de autentificare
+    private AuthService authService;
 
     public LoginBean() {
-        // Constructorul implicit este suficient, CDI se ocupă de instanțiere
         System.out.println("LoginBean a fost creat (RequestScoped)");
     }
 
     public String doLogin() {
         try {
-            System.out.println("Încercare login pentru email: " + email); // Log pentru debug
+            System.out.println("Încercare login pentru email: " + email);
             User userAutentificat = authService.login(email, parola);
 
             if (userAutentificat != null) {
-                // Login reușit!
                 FacesContext facesContext = FacesContext.getCurrentInstance();
                 ExternalContext externalContext = facesContext.getExternalContext();
-                externalContext.getSessionMap().put("loggedInUser", userAutentificat); // Stocăm user-ul în sesiune
+                externalContext.getSessionMap().put("loggedInUser", userAutentificat);
 
                 System.out.println("Utilizator autentificat: " + userAutentificat.getUsername() + ", Rol: " + userAutentificat.getRol());
-
-                // Adaugă un mesaj de succes global (opțional)
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Autentificare reușită!", "Bun venit, " + userAutentificat.getUsername() + "!"));
 
-
-                // TODO: Navigare către pagina corespunzătoare rolului sau un dashboard general
-                // Pentru moment, vom naviga către pagina de index pentru a testa.
-                // Asigură-te că paginile țintă există în folderul /xhtml/
-                // Vom crea aceste pagini de dashboard mai târziu.
-
-                // Exemplu de navigație bazată pe rol (de completat ulterior)
+                // Navigare bazată pe rol
                 switch (userAutentificat.getRol()) {
                     case VOLUNTAR:
-                        // return "/xhtml/voluntar/dashboardVoluntar.xhtml?faces-redirect=true";
                         System.out.println("Navigare către dashboard voluntar...");
-                        return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
+                        return "/xhtml/dashboardVoluntar.xhtml?faces-redirect=true"; // <-- MODIFICARE PRINCIPALĂ
                     case COORDONATOR:
-                        // return "/xhtml/coordonator/dashboardCoordonator.xhtml?faces-redirect=true";
                         System.out.println("Navigare către dashboard coordonator...");
+                        // TODO: Actualizează cu calea corectă când dashboard-ul coordonatorului e gata
                         return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
                     case SECRETAR:
-                        // return "/xhtml/secretar/dashboardSecretar.xhtml?faces-redirect=true";
                         System.out.println("Navigare către dashboard secretar...");
+                        // TODO: Actualizează cu calea corectă când dashboard-ul secretarului e gata
                         return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
                     default:
-                        System.out.println("Rol necunoscut, navigare către index...");
-                        return "/xhtml/index.xhtml?faces-redirect=true"; // Pagina default după login
+                        System.out.println("Rol necunoscut (" + userAutentificat.getRol() + "), navigare către index...");
+                        return "/xhtml/index.xhtml?faces-redirect=true";
                 }
 
             } else {
-                // Teoretic, authService.login aruncă excepție la eșec, deci acest `else` nu ar trebui atins.
-                FacesContext.getCurrentInstance().addMessage(null, // Mesaj global
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare Autentificare", "Credențiale invalide."));
-                System.out.println("Login eșuat (caz neașteptat, user null fără excepție).");
-                return null; // Rămâne pe pagina de login
+                // Acest bloc nu ar trebui, teoretic, să fie atins dacă authService.login aruncă excepție la eșec.
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare Autentificare", "Credențiale invalide (user null)."));
+                System.out.println("Login eșuat (caz neașteptat, user null returnat fără excepție de AuthService).");
+                return null;
             }
         } catch (RuntimeException e) {
-            // AuthService.login aruncă RuntimeException pentru credențiale greșite sau alte probleme
-            FacesContext.getCurrentInstance().addMessage(null, // Mesaj global
+            FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare Autentificare", e.getMessage()));
-            System.err.println("Eroare la login: " + e.getMessage());
-            return null; // Rămâne pe pagina de login pentru a afișa eroarea
+            System.err.println("Eroare la login pentru email '" + email + "': " + e.getMessage());
+            // e.printStackTrace(); // Util pentru debug în consola serverului, dacă e nevoie
+            return null;
         }
     }
 
-    // Metodă pentru logout (o vom lega la un buton/link mai târziu)
     public String doLogout() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext externalContext = facesContext.getExternalContext();
-        HttpSession session = (HttpSession) externalContext.getSession(false); // Ia sesiunea existentă, nu crea una noua
+        HttpSession session = (HttpSession) externalContext.getSession(false);
 
-        System.out.println("Se încearcă delogarea...");
+        User loggedInUser = (User) externalContext.getSessionMap().get("loggedInUser");
+        String usernamePentruLog = (loggedInUser != null) ? loggedInUser.getUsername() : "necunoscut";
+
+        System.out.println("Se încearcă delogarea pentru utilizatorul: " + usernamePentruLog);
         if (session != null) {
-            externalContext.getSessionMap().remove("loggedInUser"); // Elimină user-ul din sesiune
-            session.invalidate(); // Invalidează sesiunea HTTP
-            System.out.println("Sesiune invalidată.");
+            externalContext.getSessionMap().remove("loggedInUser");
+            session.invalidate();
+            System.out.println("Sesiune invalidată pentru: " + usernamePentruLog);
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Delogare reușită", "Ai fost delogat cu succes."));
+        } else {
+            System.out.println("Nu a fost găsită o sesiune activă pentru invalidare.");
         }
-        // Redirecționează către pagina de login
         return "/xhtml/login.xhtml?faces-redirect=true";
     }
 }

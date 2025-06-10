@@ -1,4 +1,4 @@
-package ro.ong.corgi.controller; // Sau ro.ong.corgi.view dacă ai folosit 'v' mic
+package ro.ong.corgi.controller;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
@@ -8,6 +8,8 @@ import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
 import ro.ong.corgi.model.Voluntar;
+import ro.ong.corgi.model.Enums.AnStudiu;
+import ro.ong.corgi.model.Enums.Facultate;
 import ro.ong.corgi.service.VoluntarService;
 
 import java.io.Serializable;
@@ -21,27 +23,33 @@ public class RegisterVoluntarBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String username;
-    private String emailUser;
+    private String emailUser; // Acesta va fi emailul pentru entitatea User
     private String parola;
     private String confirmParola;
     private Voluntar voluntar = new Voluntar();
 
-    // MODIFICARE: cifOrganizatie este acum String
     private String cifOrganizatie;
 
     @Inject
     private VoluntarService voluntarService;
 
-    // Constructor protected fără argumente pentru proxy-urile CDI
-    protected RegisterVoluntarBean() {
+    public RegisterVoluntarBean() {
         System.out.println("RegisterVoluntarBean a fost creat (RequestScoped).");
+    }
+
+    public AnStudiu[] getAnStudiuValues() {
+        return AnStudiu.values();
+    }
+
+    public Facultate[] getFacultateValues() {
+        return Facultate.values();
     }
 
     public String doRegister() {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean valid = true;
 
-        // 1. Verificări pentru câmpuri obligatorii și potrivirea parolelor
+        // Verificări (am scos validarea pentru voluntar.email, deoarece nu mai există)
         if (username == null || username.trim().isEmpty()) {
             context.addMessage("registerVoluntarForm:username", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Numele de utilizator este obligatoriu."));
             valid = false;
@@ -49,11 +57,12 @@ public class RegisterVoluntarBean implements Serializable {
         if (emailUser == null || emailUser.trim().isEmpty()) {
             context.addMessage("registerVoluntarForm:emailUser", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Adresa de email este obligatorie."));
             valid = false;
-        } else if (!emailUser.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) { // Validare format email
+        } else if (!emailUser.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             context.addMessage("registerVoluntarForm:emailUser", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Format email invalid."));
             valid = false;
         }
 
+        // ... restul verificărilor pentru parolă, nume, prenume, CIF, telefon rămân la fel ...
         if (parola == null || parola.trim().isEmpty()) {
             context.addMessage("registerVoluntarForm:parola",
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Parola este obligatorie."));
@@ -65,7 +74,6 @@ public class RegisterVoluntarBean implements Serializable {
             valid = false;
         }
 
-        // Verifică potrivirea parolelor doar dacă ambele sunt completate
         if (parola != null && !parola.trim().isEmpty() && confirmParola != null && !confirmParola.trim().isEmpty()) {
             if (!parola.equals(confirmParola)) {
                 context.addMessage("registerVoluntarForm:confirmParola",
@@ -83,7 +91,6 @@ public class RegisterVoluntarBean implements Serializable {
             valid = false;
         }
 
-        // 2. Conversie și validare CIF manual
         Long cifNumeric = null;
         if (cifOrganizatie == null || cifOrganizatie.trim().isEmpty()) {
             context.addMessage("registerVoluntarForm:cifOrganizatie",
@@ -99,7 +106,6 @@ public class RegisterVoluntarBean implements Serializable {
             }
         }
 
-        // Validare număr de telefon (dacă e introdus, trebuie să aibă 10 cifre)
         if (voluntar.getTelefon() != null && !voluntar.getTelefon().trim().isEmpty()) {
             if (!voluntar.getTelefon().trim().matches("^\\d{10}$")) {
                 context.addMessage("registerVoluntarForm:telefon",
@@ -108,16 +114,16 @@ public class RegisterVoluntarBean implements Serializable {
             }
         }
 
+
         if (!valid) {
-            return null; // Rămâne pe aceeași pagină dacă sunt erori de validare
+            return null;
         }
 
-        // 3. Setăm email-ul în obiectul voluntar
-        voluntar.setEmail(this.emailUser);
+        // NU mai setăm voluntar.setEmail() aici
 
         try {
-            // 4. Apelăm serviciul
-            voluntarService.adaugaVoluntar(voluntar, username, parola, cifNumeric);
+            // Pasăm this.emailUser ca parametru separat către serviciu
+            voluntarService.adaugaVoluntar(voluntar, username, this.emailUser, parola, cifNumeric);
 
             FacesMessage successMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Înregistrare Reușită!",
                     "Contul tău a fost creat. Te poți autentifica acum.");

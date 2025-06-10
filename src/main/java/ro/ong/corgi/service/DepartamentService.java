@@ -2,6 +2,7 @@ package ro.ong.corgi.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import ro.ong.corgi.model.Departament;
 import ro.ong.corgi.model.Enums.Rol;
 import ro.ong.corgi.model.User; // User este un parametru, nu o dependență injectată a serviciului
@@ -23,7 +24,7 @@ public class DepartamentService {
     protected DepartamentService(){
         this(null);
     }
-
+    @Transactional
     public void creeazaDepartament(Departament d, User actor) {
         if (actor.getRol() != Rol.SECRETAR) { // Sau un rol de admin organizație
             throw new RuntimeException("Nu ai permisiunea de a crea departamente");
@@ -37,7 +38,7 @@ public class DepartamentService {
         }
         departamentRepository.save(d);
     }
-
+    @Transactional
     public void actualizeazaDepartament(Departament d, User actor) {
         if (actor.getRol() != Rol.SECRETAR) {
             throw new RuntimeException("Nu ai permisiunea de a modifica departamente");
@@ -58,7 +59,7 @@ public class DepartamentService {
         // existent.setOrganizatie(d.getOrganizatie()); // De obicei organizația unui departament nu se schimbă
         departamentRepository.update(existent);
     }
-
+    @Transactional
     public void stergeDepartament(Long id, User actor) {
         if (actor.getRol() != Rol.SECRETAR) {
             throw new RuntimeException("Nu ai permisiunea de a șterge departamente");
@@ -80,7 +81,6 @@ public class DepartamentService {
         }
         return d;
     }
-
     public List<Departament> toateDepartamentele() {
         return departamentRepository.findAll();
     }

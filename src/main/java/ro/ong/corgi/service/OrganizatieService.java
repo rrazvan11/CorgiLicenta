@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ro.ong.corgi.model.Organizatie;
 import ro.ong.corgi.repository.OrganizatieRepository;
-// Nu mai avem nevoie de AuthService sau User/Rol aici dacă User-ul e deja setat pe obiectul Organizatie
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -28,6 +28,7 @@ public class OrganizatieService {
      * User-ul asociat trebuie să fie deja setat pe obiectul Organizatie primit.
      * CIF-ul și Numele trebuie să fie unice.
      */
+    @Transactional
     public void adaugaOrganizatie(Organizatie o) { // <-- SEMNĂTURA CORECTATĂ: primește doar Organizatie
         if (o == null) {
             throw new IllegalArgumentException("Obiectul organizație nu poate fi null.");
@@ -56,7 +57,6 @@ public class OrganizatieService {
         System.out.println("OrganizatieService: Organizația '" + o.getNume() + "' a fost salvată.");
     }
 
-    // ... restul metodelor tale din OrganizatieService (cautaDupaId, toateOrganizatiile etc.) rămân neschimbate ...
     public Organizatie cautaDupaId(Long id) {
         Organizatie o = organizatieRepository.findById(id);
         if (o == null) {
@@ -76,7 +76,7 @@ public class OrganizatieService {
     public List<Organizatie> toateOrganizatiile() {
         return organizatieRepository.findAll();
     }
-
+    @Transactional
     public void actualizeazaOrganizatie(Organizatie o) {
         if (o == null || o.getId() == null) {
             throw new IllegalArgumentException("Organizația sau ID-ul ei nu pot fi null pentru actualizare.");
@@ -110,7 +110,7 @@ public class OrganizatieService {
 
         organizatieRepository.update(existent);
     }
-
+    @Transactional
     public void stergeOrganizatie(Long id) {
         Organizatie o = organizatieRepository.findById(id);
         if (o == null) {

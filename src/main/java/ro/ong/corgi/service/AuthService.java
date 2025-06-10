@@ -2,6 +2,7 @@ package ro.ong.corgi.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import ro.ong.corgi.model.User;
 import ro.ong.corgi.model.Enums.Rol;
 import ro.ong.corgi.repository.UserRepository;
@@ -17,15 +18,14 @@ public class AuthService {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
     }
-    protected AuthService(){
+
+    protected AuthService(){ // Constructor pentru proxy-uri CDI, dacă este necesar
         this(null,null);
     }
 
-
-
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
+        User user = userRepository.findByEmail(email); // Presupune că findByEmail verifică și dacă user.isActiv()
+        if (user == null) { // Sau if (user == null || !user.isActiv())
             throw new RuntimeException("Email sau parolă greșite (utilizator negasit sau inactiv)");
         }
         if (!passwordService.verifyPassword(password, user.getParola())) {
@@ -33,17 +33,13 @@ public class AuthService {
         }
         return user;
     }
-
+    @Transactional
     public User register(String username, String email, String password, Rol rol) {
-        // Aici ar trebui adăugată și logica pentru "codAsociatie" dacă înregistrarea
-        // unui VOLUNTAR se face direct prin acest serviciu general de "register".
-        // Sau, metoda register specifică pentru voluntari va fi în VoluntarService.
-
         if (userRepository.findByEmail(email) != null) {
-            throw new RuntimeException("Există deja un utilizator cu acest email");
+            throw new RuntimeException("Există deja un utilizator cu acest email: " + email);
         }
         if (userRepository.findByUsername(username) != null) {
-            throw new RuntimeException("Există deja un utilizator cu acest username");
+            throw new RuntimeException("Există deja un utilizator cu acest username: " + username);
         }
 
         User newUser = User.builder()
@@ -51,16 +47,28 @@ public class AuthService {
                 .email(email)
                 .parola(passwordService.hashPassword(password))
                 .rol(rol)
-                .activ(true)
+                .activ(true) // Utilizatorii noi sunt activi by default
                 .build();
 
         userRepository.save(newUser);
-        // TODO: Dacă rolul este VOLUNTAR, ar trebui creată și entitatea Voluntar
-        // și legată de acest User. Similar pentru ORGANIZATIE.
-        // Acest lucru ar trebui probabil gestionat într-un serviciu mai specific
-        // sau printr-un flux post-înregistrare.
         return newUser;
     }
+
+    /**
+     * Caută un utilizator pe baza adresei de email.
+     * @param email Adresa de email a utilizatorului căutat.
+     * @return Obiectul User dacă este găsit, altfel null.
+     */
+    public User cautaDupaEmail(String email) {
+        if (email == null || email.isBlank()) {
+            // O bună practică este să loghezi astfel de cazuri sau să gestionezi intrarea invalidă.
+            // System.err.println("AuthService: Încercare de a căuta user cu email null sau gol.");
+            return null;
+        }
+        // Metoda findByEmail din UserRepository ar trebui să returneze null dacă nu găsește userul.
+        return userRepository.findByEmail(email);
+    }
+
 
     public boolean hasRole(User user, Rol rol) {
         return user != null && user.getRol() == rol;
@@ -70,10 +78,12 @@ public class AuthService {
         if (user == null || !user.isActiv()) {
             return false;
         }
+        // Logica de acces poate deveni mai complexă
         return switch (user.getRol()) {
-            case SECRETAR -> true;
-            case COORDONATOR -> resource.startsWith("proiecte") || resource.startsWith("voluntari_departament");
+            case SECRETAR -> true; // Secretarul are acces la tot (simplificare)
+            case COORDONATOR -> resource.startsWith("proiecte") || resource.startsWith("voluntari_departament") || resource.startsWith("taskuri");
             case VOLUNTAR -> resource.startsWith("profil") || resource.startsWith("taskuri_personale");
+            // default -> false; // Pentru orice alte roluri sau dacă nu se potrivește niciun caz
         };
     }
 }

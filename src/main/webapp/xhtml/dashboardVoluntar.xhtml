@@ -23,85 +23,94 @@
                 <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group"
                              columnClasses="ui-grid-col-3, ui-grid-col-9">
                     <h:outputText value="Nume Complet:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.nume} #{dashboardVoluntarBean.currentVoluntar.prenume}" />
+                    <h:outputText
+                            value="#{dashboardVoluntarBean.currentVoluntar.nume} #{dashboardVoluntarBean.currentVoluntar.prenume}"/>
 
                     <h:outputText value="Email:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.user.email}" />
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.user.email}"/>
 
                     <h:outputText value="Telefon:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.telefon}" />
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.telefon}"/>
 
                     <h:outputText value="Facultate:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.facultate}" />
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.facultate}"/>
 
                     <h:outputText value="Specializare:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.specializare}" />
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.specializare}"/>
 
                     <h:outputText value="An Studiu:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.anStudiu}" />
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.anStudiu.numeSpecializare}"/>
 
                     <h:outputText value="Puncte Acumulate:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.puncte}" id="puncteVoluntar"/>
 
-                    <h:outputText value="Ore Voluntariat:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.oreDeVoluntariat}" id="oreVoluntar"/>
-
                     <h:outputText value="Status Membru:" styleClass="font-weight-bold"/>
-                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.status}" />
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.status}"/>
                 </p:panelGrid>
-                <p:commandButton value="Modifică Date Contact" icon="pi pi-user-edit"
-                                 action="#{dashboardVoluntarBean.goToModificaProfil()}"
-                                 styleClass="ui-button-info mt-2"/>
+                <p:button value="Modifică Date Contact"
+                          icon="pi pi-user-edit"
+                          outcome="/xhtml/modificaProfilVoluntar.xhtml"
+                          styleClass="ui-button-info mt-2"/>
             </p:card>
 
             <p:tabView style="margin-bottom: 2em;">
                 <p:tab title="Proiectele Mele">
-                    <p:dataTable id="proiecteTable" var="proiect" value="#{dashboardVoluntarBean.proiecteleVoluntarului}"
+                    <p:dataTable id="proiecteTable" var="proiect"
+                                 value="#{dashboardVoluntarBean.proiecteleVoluntarului}"
                                  rows="5" paginator="true" paginatorPosition="bottom"
                                  emptyMessage="Nu ești înscris în niciun proiect momentan.">
                         <p:column headerText="Nume Proiect">
-                            <h:outputText value="#{proiect.numeProiect}" />
+                            <h:outputText value="#{proiect.numeProiect}"/>
                         </p:column>
                         <p:column headerText="Descriere">
-                            <h:outputText value="#{proiect.descriere}" />
+                            <h:outputText value="#{proiect.descriere}"/>
                         </p:column>
                         <p:column headerText="Organizație">
-                            <h:outputText value="#{proiect.organizatie.nume}" />
+                            <h:outputText value="#{proiect.organizatie.nume}"/>
                         </p:column>
                     </p:dataTable>
                 </p:tab>
+                <!-- Înlocuiește complet conținutul <p:tab title="Task-urile Mele"> cu acesta -->
 
                 <p:tab title="Task-urile Mele">
                     <p:dataTable id="taskuriTable" var="task" value="#{dashboardVoluntarBean.taskurileVoluntarului}"
                                  rows="10" paginator="true" paginatorPosition="bottom"
                                  emptyMessage="Nu ai task-uri asignate momentan.">
+
                         <p:column headerText="Titlu Task" sortBy="#{task.titlu}">
-                            <h:outputText value="#{task.titlu}" />
+                            <h:outputText value="#{task.titlu}"/>
                         </p:column>
+
                         <p:column headerText="Descriere">
-                            <h:outputText value="#{task.descriere}" />
+                            <h:outputText value="#{task.descriere}"/>
                         </p:column>
+
                         <p:column headerText="Proiect" sortBy="#{task.proiect.numeProiect}">
-                            <h:outputText value="#{task.proiect.numeProiect}" />
+                            <h:outputText value="#{task.proiect.numeProiect}"/>
                         </p:column>
+
                         <p:column headerText="Deadline" sortBy="#{task.deadline}">
                             <h:outputText value="#{task.deadline}">
-                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
                             </h:outputText>
                         </p:column>
+
                         <p:column headerText="Puncte Task" sortBy="#{task.puncteTask}" style="text-align:center;">
-                            <h:outputText value="#{task.puncteTask}" />
+                            <h:outputText value="#{task.puncteTask}"/>
                         </p:column>
-                        <p:column headerText="Status" sortBy="#{task.status}" style="text-align:center;">
-                            <p:tag severity="#{task.status eq 'DONE' ? 'success' : (task.status eq 'PENDING' ? 'warning' : (task.status eq 'STARTED' ? 'info' : 'primary'))}"
-                                   value="#{task.status}" />
-                        </p:column>
-                        <p:column headerText="Acțiuni" style="text-align:center;">
-                            <p:commandButton value="Finalizează" icon="pi pi-check"
-                                             action="#{dashboardVoluntarBean.completeazaTask(task)}"
-                                             rendered="#{task.status ne 'DONE'}"
-                                             update="dashboardVoluntarForm:messages taskuriTable dashboardVoluntarForm:puncteVoluntar dashboardVoluntarForm:oreVoluntar"
-                                             styleClass="ui-button-success ui-button-sm rounded-button"/>
+
+                        <!-- NOUA COLOANĂ PENTRU STATUS INTERACTIV -->
+                        <p:column headerText="Status" style="width: 15rem;">
+                            <!-- Dropdown-ul este legat la statusul task-ului curent -->
+                            <p:selectOneMenu value="#{task.status}" disabled="#{task.status eq 'DONE'}">
+                                <!-- Populează opțiunile din enum-ul TaskStatus -->
+                                <f:selectItems value="#{dashboardVoluntarBean.taskStatusValues}" var="status"
+                                               itemLabel="#{status.name()}" itemValue="#{status}"/>
+
+                                <!-- Când se schimbă valoarea, se apelează metoda din bean prin AJAX -->
+                                <p:ajax listener="#{dashboardVoluntarBean.onTaskStatusChange(task)}"
+                                        update="dashboardVoluntarForm:messages dashboardVoluntarForm:taskuriTable dashboardVoluntarForm:puncteVoluntar"/>
+                            </p:selectOneMenu>
                         </p:column>
                     </p:dataTable>
                 </p:tab>
@@ -116,16 +125,6 @@
                     <h:panelGroup layout="block" styleClass="ui-g-12 ui-md-4" style="padding: .5em;">
                         <p:commandButton value="Generează Certificat" icon="pi pi-file-pdf"
                                          action="#{dashboardVoluntarBean.genereazaCertificat}" ajax="false"
-                                         styleClass="ui-button-raised ui-button-info" style="width:100%"/>
-                    </h:panelGroup>
-                    <h:panelGroup layout="block" styleClass="ui-g-12 ui-md-4" style="padding: .5em;">
-                        <p:commandButton value="Generează Adeverință" icon="pi pi-file-word"
-                                         action="#{dashboardVoluntarBean.genereazaAdeverinta}" ajax="false"
-                                         styleClass="ui-button-raised ui-button-info" style="width:100%"/>
-                    </h:panelGroup>
-                    <h:panelGroup layout="block" styleClass="ui-g-12 ui-md-4" style="padding: .5em;">
-                        <p:commandButton value="Vezi Contract Voluntariat" icon="pi pi-eye"
-                                         action="#{dashboardVoluntarBean.veziContract}" ajax="false"
                                          styleClass="ui-button-raised ui-button-info" style="width:100%"/>
                     </h:panelGroup>
                 </h:panelGroup>

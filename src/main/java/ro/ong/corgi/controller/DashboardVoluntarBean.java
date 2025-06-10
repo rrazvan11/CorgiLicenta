@@ -8,16 +8,17 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
+import ro.ong.corgi.model.*;
+import ro.ong.corgi.model.Enums.Rol;
+import ro.ong.corgi.model.Enums.TaskStatus;
+import ro.ong.corgi.service.DocumentGenerationService;
+import ro.ong.corgi.service.EmailService;
 import ro.ong.corgi.service.ProiectService;
 import ro.ong.corgi.service.TaskService;
 import ro.ong.corgi.service.VoluntarService;
-import ro.ong.corgi.model.Proiect;
-import ro.ong.corgi.model.Task;
-import ro.ong.corgi.model.User;
-import ro.ong.corgi.model.Voluntar;
-import ro.ong.corgi.model.Enums.Rol; //
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.List;
 @Setter
 public class DashboardVoluntarBean implements Serializable {
 
+    @Serial // Adnotare mai modernă pentru serialVersionUID
     private static final long serialVersionUID = 1L;
 
     @Inject
@@ -38,7 +40,10 @@ public class DashboardVoluntarBean implements Serializable {
     private TaskService taskService;
     @Inject
     private FacesContext facesContext;
-
+    @Inject
+    private DocumentGenerationService documentGenerationService;
+    @Inject
+    private EmailService emailService;
     private Voluntar currentVoluntar;
     private List<Proiect> proiecteleVoluntarului = new ArrayList<>();
     private List<Task> taskurileVoluntarului = new ArrayList<>();
@@ -49,8 +54,8 @@ public class DashboardVoluntarBean implements Serializable {
     @PostConstruct
     public void init() {
         User loggedInUser = (User) facesContext.getExternalContext().getSessionMap().get("loggedInUser");
-        if (loggedInUser != null && loggedInUser.getRol() == Rol.VOLUNTAR) { //
-            this.currentVoluntar = voluntarService.cautaDupaUser(loggedInUser); //
+        if (loggedInUser != null && loggedInUser.getRol() == Rol.VOLUNTAR) {
+            this.currentVoluntar = voluntarService.cautaDupaUser(loggedInUser);
             if (this.currentVoluntar != null) {
                 loadDashboardData();
             } else {
@@ -71,10 +76,9 @@ public class DashboardVoluntarBean implements Serializable {
 
     private void loadDashboardData() {
         if (this.currentVoluntar != null && this.currentVoluntar.getId() != null) {
-            this.proiecteleVoluntarului = proiectService.gasesteProiecteDupaVoluntarId(this.currentVoluntar.getId()); //
-            this.taskurileVoluntarului = taskService.findByVoluntar(this.currentVoluntar.getId()); //
-            // Reîncarcă voluntarul pentru a avea cele mai recente date (puncte, ore)
-            this.currentVoluntar = voluntarService.cautaDupaId(this.currentVoluntar.getId()); //
+            this.proiecteleVoluntarului = proiectService.gasesteProiecteDupaVoluntarId(this.currentVoluntar.getId());
+            this.taskurileVoluntarului = taskService.findByVoluntar(this.currentVoluntar.getId());
+            this.currentVoluntar = voluntarService.cautaDupaId(this.currentVoluntar.getId());
         }
     }
 
@@ -87,44 +91,68 @@ public class DashboardVoluntarBean implements Serializable {
             User loggedInUser = (User) facesContext.getExternalContext().getSessionMap().get("loggedInUser");
             if (loggedInUser == null) {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare Sesiune", "Sesiunea a expirat. Vă rugăm să vă autentificați din nou."));
-                // Poți adăuga și un redirect către pagina de login aici, dacă dorești
                 return;
             }
-
-            // Asigură-te că metoda completeTask din TaskService este implementată corect
-            // și gestionează actualizarea punctelor voluntarului și a statusului task-ului.
-            taskService.completeTask(taskDeFinalizat.getId(), loggedInUser); //
-
-            loadDashboardData(); // Reîncarcă toate datele pentru a reflecta schimbările
-
+            taskService.completeTask(taskDeFinalizat.getId(), loggedInUser);
+            loadDashboardData(); // Reîncarcă datele
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Task-ul '" + taskDeFinalizat.getTitlu() + "' a fost marcat ca finalizat!"));
-
         } catch (RuntimeException e) {
             System.err.println("Eroare la finalizarea task-ului '" + taskDeFinalizat.getTitlu() + "': " + e.getMessage());
-            e.printStackTrace(); // Util pentru debugging în consolă server
+            e.printStackTrace();
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la Finalizare Task", e.getMessage()));
         }
     }
+    public TaskStatus[] getTaskStatusValues() {
+        return TaskStatus.values();
+    }
+
+    /**
+     * Metodă apelată prin AJAX când voluntarul schimbă statusul unui task din dropdown.
+     * @param task Obiectul Task de pe rândul respectiv, cu noul status deja setat de JSF.
+     */
+    public void onTaskStatusChange(Task task) {
+        if (task == null) {
+            return;
+        }
+        if (task.getStatus() == TaskStatus.DONE) {
+            // Dacă da, apelăm logica specială care acordă și puncte
+            User loggedInUser = (User) facesContext.getExternalContext().getSessionMap().get("loggedInUser");
+            taskService.completeTask(task.getId(), loggedInUser);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Felicitări!", "Task-ul '" + task.getTitlu() + "' a fost finalizat și punctele au fost adăugate."));
+        } else {
+            // Dacă statusul este altul (STARTED, PENDING etc.), doar actualizăm task-ul
+            taskService.actualizeazaTask(task);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Statusul pentru task-ul '" + task.getTitlu() + "' a fost actualizat."));
+        }
+
+        loadDashboardData();
+    }
 
     public String genereazaCertificat() {
-        facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Funcționalitate 'Generează Certificat' în curs de dezvoltare."));
-        return null; // Rămâne pe aceeași pagină
-    }
+        if (currentVoluntar == null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Datele voluntarului nu sunt disponibile."));
+            return null;
+        }
+        try {
+            // Pentru test, pasăm null pentru organizație; serviciul va folosi datele default.
+            Organizatie orgEmitenta = (currentVoluntar.getDepartament() != null) ? currentVoluntar.getDepartament().getOrganizatie() : null;
 
-    public String genereazaAdeverinta() {
-        facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Funcționalitate 'Generează Adeverință' în curs de dezvoltare."));
+            byte[] pdfData = documentGenerationService.genereazaCertificatPdf(currentVoluntar, orgEmitenta);
+            String emailDestinatar = currentVoluntar.getUser().getEmail();
+            String subiect = "Certificatul tău de Voluntariat - Asociația Corgi";
+            String numeFisier = "Certificat_Voluntariat_" + currentVoluntar.getNume() + "_" + currentVoluntar.getPrenume() + ".pdf";
+
+            emailService.sendEmailWithAttachment(emailDestinatar, subiect, pdfData, numeFisier);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Certificatul a fost generat și trimis pe email."));
+
+        } catch (Exception e) {
+            System.err.println("A apărut o eroare în fluxul de generare/trimitere certificat: " + e.getMessage());
+            e.printStackTrace();
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Eroare la generare/trimitere", "A apărut o eroare neașteptată."));
+        }
         return null;
     }
-
-    public String veziContract() {
-        // Aici ar trebui să preiei informații despre contract din DocumentMongoService
-        // și să oferi un link de descărcare sau afișare.
-        facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Funcționalitate 'Vezi Contract' în curs de dezvoltare."));
-        return null;
-    }
-
     public String goToModificaProfil() {
-        // Asigură-te că pagina /xhtml/voluntar/modificaProfilVoluntar.xhtml există
-        return "/xhtml/voluntar/modificaProfilVoluntar.xhtml?faces-redirect=true";
+        return "/xhtml/modificaProfilVoluntar.xhtml?faces-redirect=true";
     }
 }

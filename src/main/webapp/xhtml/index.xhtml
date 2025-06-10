@@ -5,19 +5,19 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="jakarta.faces.facelets">
 
-<!-- Acest fișier este: src/main/webapp/xhtml/index.xhtml -->
 <ui:composition template="/WEB-INF/Templates/layout.xhtml">
-    <!-- Asigură-te că 'Templates' e cu 'T' mare sau 't' mic, conform structurii tale din WAR -->
 
     <ui:define name="titlu">
-        Bun Venit - Platforma ONG Corgi
+        Bun Venit!
     </ui:define>
 
     <ui:define name="header">
         <div style="text-align: center; padding: 40px 20px; background-color: #007bff; color:white; border-bottom: 5px solid #0056b3; margin-bottom: 30px;">
-            <h1 style="margin-top: 0; margin-bottom:15px; font-size: 2.8em; font-weight: 300;">Platforma ONG Corgi</h1>
-            <p:outputLabel value="Soluția completă pentru managementul voluntarilor, proiectelor și organizațiilor non-guvernamentale."
-                           style="font-size:1.4em; opacity: 0.9; display:block; max-width: 700px; margin: 0 auto;"/>
+            <h1 style="margin-top: 0; margin-bottom:15px; font-size: 2.8em; font-weight: 300;">Platforma Corgi vă stă la
+                dispoziție</h1>
+            <p:outputLabel
+                    value="Soluția completă pentru managementul organizațiilor non-guvernamentale în doar câțiva pași."
+                    style="font-size:1.4em; opacity: 0.9; display:block; max-width: 700px; margin: 0 auto;"/>
         </div>
     </ui:define>
 
@@ -30,25 +30,35 @@
 
             <div class="ui-g-12 ui-md-4">
                 <p:panel header="Autentificare" styleClass="text-center card-panel-landing">
-                    <i class="pi pi-sign-in" style="font-size: 3.5em; color: #007bff; margin-bottom: 20px; display: block;"></i>
-                    <p style="min-height: 60px; color: #6c757d;">Aveți deja un cont? Accesați platforma pentru a vă continua activitatea.</p>
-                    <p:button outcome="/xhtml/login.xhtml" value="Mergi la Login" icon="pi pi-arrow-right" styleClass="ui-button-info ui-button-raised" style="margin-top:15px;"/>
+                    <i class="pi pi-sign-in"
+                       style="font-size: 3.5em; color: #007bff; margin-bottom: 20px; display: block;"></i>
+                    <p style="min-height: 60px; color: #6c757d;">Aveți deja un cont? Accesați platforma pentru a vă
+                        continua activitatea.</p>
+                    <p:button outcome="/xhtml/login.xhtml" value="Mergi la Login" icon="pi pi-arrow-right"
+                              styleClass="ui-button-info ui-button-raised" style="margin-top:15px;"/>
                 </p:panel>
             </div>
 
             <div class="ui-g-12 ui-md-4">
                 <p:panel header="Înregistrare Voluntar" styleClass="text-center card-panel-landing">
-                    <i class="pi pi-users" style="font-size: 3.5em; color: #28a745; margin-bottom: 20px; display: block;"></i>
-                    <p style="min-height: 60px; color: #6c757d;">Doriți să vă implicați și să contribuiți ca voluntar la proiecte importante?</p>
-                    <p:button outcome="/xhtml/registerVoluntar.xhtml" value="Devino Voluntar" icon="pi pi-user-plus" styleClass="ui-button-success ui-button-raised" style="margin-top:15px;"/>
+                    <i class="pi pi-users"
+                       style="font-size: 3.5em; color: #28a745; margin-bottom: 20px; display: block;"></i>
+                    <p style="min-height: 60px; color: #6c757d;">Doriți să vă implicați și să contribuiți ca voluntar la
+                        proiecte importante?</p>
+                    <p:button outcome="/xhtml/registerVoluntar.xhtml" value="Devino Voluntar" icon="pi pi-user-plus"
+                              styleClass="ui-button-success ui-button-raised" style="margin-top:15px;"/>
                 </p:panel>
             </div>
 
             <div class="ui-g-12 ui-md-4">
                 <p:panel header="Înregistrare Organizație" styleClass="text-center card-panel-landing">
-                    <i class="pi pi-sitemap" style="font-size: 3.5em; color: #ffc107; margin-bottom: 20px; display: block;"></i>
-                    <p style="min-height: 60px; color: #6c757d;">Reprezentați un ONG și doriți să vă gestionați proiectele și voluntarii eficient?</p>
-                    <p:button outcome="/xhtml/registerOrganizatie.xhtml" value="Înscrie Organizația" icon="pi pi-building" styleClass="ui-button-warning ui-button-raised" style="margin-top:15px;"/>
+                    <i class="pi pi-sitemap"
+                       style="font-size: 3.5em; color: #ffc107; margin-bottom: 20px; display: block;"></i>
+                    <p style="min-height: 60px; color: #6c757d;">Reprezentați un ONG și doriți să vă gestionați
+                        proiectele și voluntarii eficient?</p>
+                    <p:button outcome="/xhtml/registerOrganizatie.xhtml" value="Înscrie Organizația"
+                              icon="pi pi-building" styleClass="ui-button-warning ui-button-raised"
+                              style="margin-top:15px;"/>
                 </p:panel>
             </div>
         </div>

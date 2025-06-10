@@ -27,7 +27,7 @@ public class User {
     private String username;
 
     @NotBlank(message = "Parola este obligatorie")
-    @Size(min = 6, message = "Parola trebuie să aibă minim 6 caractere")
+    @Size(min = 12, message = "Parola trebuie să aibă minim 10 caractere")
     private String parola; // Parola rămâne aici
 
     @Enumerated(EnumType.STRING)

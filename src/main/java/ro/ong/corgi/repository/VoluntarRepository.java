@@ -12,12 +12,6 @@ public class VoluntarRepository extends AbstractRepository<Voluntar, Long> {
         super(Voluntar.class);
     }
 
-    public Voluntar findFirstByEmail(String email) {
-        List<Voluntar> rezultate = super.findByField("email", email);
-        return rezultate.isEmpty() ? null : rezultate.get(0);
-    }
-
-    // --- METODĂ NOUĂ ADĂUGATĂ ---
     public List<Voluntar> findByOrganizatieId(Long organizatieId) {
         if (this.entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat în VoluntarRepository");
@@ -27,5 +21,4 @@ public class VoluntarRepository extends AbstractRepository<Voluntar, Long> {
         query.setParameter("organizatieId", organizatieId);
         return query.getResultList();
     }
-    // --- SFÂRȘIT METODĂ NOUĂ ---
 }
