@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Raport de Activitate</title>
+    <style>
+        body {
+            font-family: "DejaVu Sans", Arial, sans-serif;
+            margin: 30px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .info-block {
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .info-block p {
+            margin: 5px 0;
+        }
+        .intro-text {
+            margin-top: 25px;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+        ul {
+            list-style-type: ' - ';
+            padding-left: 25px;
+            margin-top: 5px;
+        }
+        li {
+            margin-bottom: 6px;
+            padding-left: 10px;
+        }
+        strong {
+            color: #34495e;
+        }
+    </style>
+</head>
+<body>
+<h1>Raport de Activitate Voluntar</h1>
+
+<div class="info-block">
+    <p><strong>Nume Voluntar:</strong> ${voluntarNumeComplet}</p>
+    <p><strong>Email:</strong> ${voluntarEmail}</p>
+    <p><strong>Asociație:</strong> ${numeOrganizatie}</p>
+    <p><strong>Departament:</strong> ${departamentNume}</p>
+    <p><strong>Data Emiterii:</strong> ${dataEmitere}</p>
+</div>
+
+<hr/>
+
+<p class="intro-text">
+    Din data <strong>${dataInrolare}</strong> până la data  <strong>${dataEmitere}</strong>, voluntarul a participat în următoarele proiecte:
+</p>
+
+${listaActivitati}
+
+</body>
+</html>

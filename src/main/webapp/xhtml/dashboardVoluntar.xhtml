@@ -41,6 +41,9 @@
                     <h:outputText value="An Studiu:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.anStudiu.numeSpecializare}"/>
 
+                    <h:outputText value="Departament:" styleClass="font-weight-bold"/>
+                    <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.departament != null ? dashboardVoluntarBean.currentVoluntar.departament.nume : 'departament nedesmnat'}"/>
+
                     <h:outputText value="Puncte Acumulate:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.puncte}" id="puncteVoluntar"/>
 
@@ -126,6 +129,13 @@
                         <p:commandButton value="Generează Certificat" icon="pi pi-file-pdf"
                                          action="#{dashboardVoluntarBean.genereazaCertificat}" ajax="false"
                                          styleClass="ui-button-raised ui-button-info" style="width:100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" styleClass="ui-g-12 ui-md-4" style="padding: .5em;">
+                        <p:commandButton value="Trimite Raport de Activitate"
+                                         actionListener="#{dashboardVoluntarBean.genereazaSiTrimiteRaport}"
+                                         update="@form"
+                                         icon="pi pi-file-pdf"
+                                         styleClass="ui-button-success"/>
                     </h:panelGroup>
                 </h:panelGroup>
             </p:card>

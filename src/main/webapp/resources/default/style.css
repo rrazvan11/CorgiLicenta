@@ -1,173 +1,112 @@
 /* Stiluri generale */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #eef2f5; /* Un gri și mai deschis */
+    background-color: #f4f6f9;
     color: #495057;
     line-height: 1.6;
     margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+}
+
+#page-container {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
 }
 
-#page-container { /* Containerul din layout.xhtml */
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-/* Bara de sus (top-bar) din layout.xhtml */
 #top-bar {
-    background: linear-gradient(to right, #007bff, #0056b3); /* Gradient albastru */
+    background: linear-gradient(to right, #007bff, #0056b3);
     color: white;
     padding: 12px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #004085;
+    border-radius: 8px 8px 0 0;
 }
 
 #top-bar .app-title {
     font-size: 1.7em;
-    font-weight: 600; /* Puțin mai bold */
+    font-weight: 600;
     letter-spacing: -0.5px;
 }
 
-#top-bar .user-status .ui-outputlabel,
-#top-bar .user-status .ui-button .ui-button-text,
-#top-bar .user-status .ui-link {
-    color: #e0e0e0 !important; /* Culoare mai deschisă pentru textul user */
-    font-weight: 500;
-}
-#top-bar .user-status .ui-button-danger .ui-button-text {
-    color: white !important; /* Asigură că textul butonului de logout e alb */
-}
 #top-bar .user-status .ui-button {
     margin-left: 12px;
 }
 
-
-/* Header specific paginii (dacă este definit) */
-#header {
-    padding: 20px 25px;
-    background-color: #f8f9fa; /* Gri foarte deschis */
-    border-bottom: 1px solid #dee2e6;
-    margin-bottom: 25px;
-}
-#header h1, #header h2 { /* Stil pentru titlurile din header-ul paginii */
-    margin: 0;
-    color: #343a40;
-    font-weight: 600;
-}
-
 #content {
-    padding: 0 25px 25px 25px;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
-/* Containerul specific pentru formulare */
-.form-page-container {
-    display: flex;
-    justify-content: center;
-    padding-top: 10px; /* Redus puțin spațiul de sus */
+.ui-datatable .ui-paginator {
+    background-color: #f8f9fa;
 }
 
-.form-panel {
-    width: 100%;
-    max-width: 700px;
-    border: 1px solid #ddd !important; /* Adăugăm o bordură subtilă */
-}
 
-.form-panel .ui-panel-titlebar {
-    background-color: #f8f9fa; /* Header panel mai deschis */
-    color: #343a40; /* Text mai închis */
-    font-weight: 600;
-    border-bottom: 1px solid #dee2e6;
-    padding: 0.8rem 1.25rem;
-}
+/* ############################################ */
+/* ### STILURI RESPONSIVE PENTRU ADAPTARE ### */
+/* ############################################ */
 
-.ui-fieldset {
-    border: 1px solid #e0e0e0 !important;
-    margin-bottom: 20px !important;
-    padding: 20px !important;
-}
-
-.ui-fieldset .ui-fieldset-legend {
-    font-size: 1.15em;
-    font-weight: 600;
-    color: #007bff;
-    padding: 0.25em 0.75em !important;
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-}
-
-/* Grid pentru etichete și inputuri */
-.form-input-grid .ui-panelgrid-cell {
-    padding: 0.5rem 0.25rem; /* Ajustează padding-ul celulelor */
-    border: none;
-}
-
-.form-input-grid .label-column {
-    text-align: right;
-    padding-right: 15px; /* Spațiu între etichetă și input */
-    font-weight: 500;
-    color: #495057;
-}
-
-.form-input-grid .input-column {
-    /* Inputurile sunt deja 100% width prin ui-fluid */
-}
-
-/* Etichetele */
-.ui-outputlabel-rfi { /* Steluța pentru obligatoriu */
-    color: #d9534f; /* Roșu */
-    margin-left: 3px;
-}
-
-/* Câmpurile de input */
-.ui-inputfield, .ui-password, .ui-inputtextarea, .ui-inputnumber .ui-inputtext {
-    padding: .5rem .75rem;
-    font-size: 1rem;
-    border-radius: .3rem; /* Colțuri puțin mai rotunjite */
-}
-
-/* Butoane */
-.form-buttons {
-    text-align: right; /* Aliniază butoanele la dreapta */
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-.form-buttons .ui-button {
-    margin-left: 8px;
-}
-
-/* Responsivitate pentru formulare */
+/* Regulile se aplică pentru ecrane cu lățime maximă de 767px (telefoane) */
 @media (max-width: 767px) {
-    .form-input-grid .ui-grid-col-3,
-    .form-input-grid .ui-grid-col-4,
-    .form-input-grid .ui-grid-col-8,
-    .form-input-grid .ui-grid-col-9 {
-        width: 100% !important;
-        padding-left: 0;
-        padding-right: 0;
+    body {
+        padding: 0;
     }
-    .form-input-grid .label-column {
-        text-align: left;
-        padding-top: 0;
-        margin-bottom: .25rem; /* Spațiu între etichetă și inputul de sub ea */
+    #page-container {
+        padding: 0;
     }
-    .form-buttons {
+    #top-bar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 15px;
         text-align: center;
+        border-radius: 0;
     }
-    .form-buttons .ui-button {
+    #top-bar .user-status {
         width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #content {
+        padding: 15px;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* MODIFICARE CHEIE: Forțăm panelGrid să se comporte ca un layout pe verticală */
+    .ui-panelgrid.ui-grid {
+        display: block !important; /* Anulăm layout-ul de grid */
+    }
+    .ui-panelgrid-row {
+        display: flex !important;
+        flex-direction: column !important; /* Stivuim celulele pe verticală */
+        margin-bottom: 1rem !important; /* Spațiu între fiecare pereche "etichetă-valoare" */
+        border: none !important;
+    }
+    .ui-panelgrid .ui-grid-col-3, .ui-panelgrid .ui-grid-col-9 {
+        width: 100% !important; /* Forțăm fiecare celulă să ocupe toată lățimea */
+        padding: 0 !important;
+    }
+
+    /* Adaptăm și butoanele din interiorul p:card */
+    .ui-card .ui-g-12.ui-md-4 {
+        padding: 0 !important;
         margin-bottom: 10px;
     }
-    .form-buttons .ui-link {
-        display: block;
-        margin-top: 10px;
+    .ui-card .ui-g-12.ui-md-4 .ui-button {
+        width: 100%;
+    }
+
+    /* Ascunde anumite coloane din tabele pe ecrane mici */
+    .ui-datatable th.responsive-prio-1, .ui-datatable td.responsive-prio-1,
+    .ui-datatable th.responsive-prio-2, .ui-datatable td.responsive-prio-2 {
+        display: none !important;
     }
 }
 

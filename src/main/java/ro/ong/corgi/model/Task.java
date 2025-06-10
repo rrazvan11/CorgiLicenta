@@ -43,4 +43,8 @@ public class Task {
     @Min(value = 0, message = "Punctele pentru task nu pot fi negative")
     @Column(name = "puncte_task")
     private Integer puncteTask;
+
+    @ManyToOne
+    @JoinColumn(name = "skill_id")
+    private Skill skillDobandit;
 }

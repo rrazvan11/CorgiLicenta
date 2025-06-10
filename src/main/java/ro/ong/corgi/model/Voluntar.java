@@ -5,18 +5,24 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import ro.ong.corgi.model.Enums.AnStudiu;
 import ro.ong.corgi.model.Enums.Facultate;
-import ro.ong.corgi.model.Enums.Status; // Asigură-te că importul este corect
+import ro.ong.corgi.model.Enums.Status;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "voluntari")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Voluntar {
+@ToString(exclude = {"user", "departament", "taskuri", "participari"})
+@EqualsAndHashCode(of = "id")
+public class Voluntar implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,23 +49,20 @@ public class Voluntar {
     @Min(0)
     private Integer puncte;
 
-    @Enumerated(EnumType.STRING) // E o practică bună să specifici STRING pentru enum
+    @Enumerated(EnumType.STRING)
     private Status status;
-
 
     @ManyToOne
     @JoinColumn(name = "departament_id")
     private Departament departament;
 
-    // 🔹 Taskuri atribuite (nu se șterg dacă se șterge voluntarul)
     @OneToMany(mappedBy = "voluntar")
     private List<Task> taskuri;
 
-    // 🔹 Participările la proiecte (se șterg cu voluntarul)
     @OneToMany(mappedBy = "voluntar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrupareVoluntariProiecte> participari;
 
-    @OneToOne(optional = false) // Un voluntar TREBUIE să aibă un cont de utilizator
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 }

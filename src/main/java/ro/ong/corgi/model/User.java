@@ -3,15 +3,22 @@ package ro.ong.corgi.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import ro.ong.corgi.model.Enums.Rol; // Asigură-te că importul este corect
+import ro.ong.corgi.model.Enums.Rol;
+
+import java.io.Serializable;
 
 @Entity
-@Table(name = "utilizatori") // Am redenumit tabela la "utilizatori" (plural), cum e și în persistence.xml
-@Data
+@Table(name = "utilizatori")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+@ToString(exclude = {"voluntar", "organizatie"}) // Excludem relațiile din toString
+@EqualsAndHashCode(of = "id") // Folosim doar ID-ul pentru egalitate și hash
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +35,7 @@ public class User {
 
     @NotBlank(message = "Parola este obligatorie")
     @Size(min = 12, message = "Parola trebuie să aibă minim 10 caractere")
-    private String parola; // Parola rămâne aici
+    private String parola;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -37,13 +44,9 @@ public class User {
     @Builder.Default
     private boolean activ = true;
 
-    // Relație opțională: userul POATE fi legat de un voluntar
-    // Dacă un User ESTE un Voluntar, atunci `optional = false` ar fi pe partea Voluntarului
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Voluntar voluntar;
 
-    // Relație opțională: userul POATE fi legat de o organizație (contul principal al organizației)
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Organizatie organizatie;
-
 }

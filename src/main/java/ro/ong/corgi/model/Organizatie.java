@@ -4,15 +4,21 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "organizatii")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Organizatie {
+@ToString(exclude = {"user", "proiecte"})
+@EqualsAndHashCode(of = "id")
+public class Organizatie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,15 +35,13 @@ public class Organizatie {
     @Column(unique = true)
     private Long cif;
 
-    // Parola a fost eliminată
-
     @Email(message = "Emailul trebuie să fie valid")
-    private String mail; // Acesta poate fi emailul public de contact al organizației
+    private String mail;
 
     @OneToMany(mappedBy = "organizatie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Proiect> proiecte;
 
-    @OneToOne(optional = false) // O organizație TREBUIE să aibă un cont de utilizator principal
+    @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 }
