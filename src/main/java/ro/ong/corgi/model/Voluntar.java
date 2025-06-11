@@ -47,7 +47,8 @@ public class Voluntar implements Serializable {
     private LocalDate dataInrolare;
 
     @Min(0)
-    private Integer puncte;
+    @Builder.Default
+    private Double puncte = 0.0; // MODIFICAT: din Integer în Double și adăugat default
 
     @Enumerated(EnumType.STRING)
     private Status status;

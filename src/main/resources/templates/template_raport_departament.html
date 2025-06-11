@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Raport Voluntari Departament</title>
+    <style>
+        body {
+            font-family: "DejaVu Sans", Arial, sans-serif;
+            margin: 30px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+        h2 {
+            font-size: 16px;
+            font-style: italic;
+            color: #2980b9;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .info-block {
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .info-block p {
+            margin: 4px 0;
+        }
+        .volunteer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .volunteer-table th, .volunteer-table td {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            text-align: left;
+        }
+        .volunteer-table th {
+            background-color: #ecf0f1;
+            color: #34495e;
+            font-weight: bold;
+        }
+        .volunteer-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<h1>Raport de Voluntari</h1>
+<h2>Departamentul: ${numeDepartament}</h2>
+
+<div class="info-block">
+    <p><strong>Asociație:</strong> ${numeOrganizatie}</p>
+    <p><strong>Data Emiterii Raportului:</strong> ${dataEmitere}</p>
+    <p><strong>Număr Total Voluntari în Departament:</strong> ${totalVoluntari}</p>
+</div>
+
+<table class="volunteer-table">
+    <thead>
+    <tr>
+        <th>Nume</th>
+        <th>Prenume</th>
+        <th>Email</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    ${tabelVoluntari}
+    </tbody>
+</table>
+
+</body>
+</html>

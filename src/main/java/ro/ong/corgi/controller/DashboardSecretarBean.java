@@ -15,11 +15,10 @@ import ro.ong.corgi.service.*;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Named
@@ -30,36 +29,43 @@ public class DashboardSecretarBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // --- Servicii Injectate ---
     @Inject private VoluntarService voluntarService;
     @Inject private OrganizatieService organizatieService;
     @Inject private UserService userService;
     @Inject private DepartamentService departamentService;
     @Inject private DocumentGenerationService documentGenerationService;
     @Inject private EmailService emailService;
+    @Inject private SedintaService sedintaService;
     @Inject private FacesContext facesContext;
-    @Inject private ProiectService proiectService;
-    @Inject private TaskService taskService;
 
+    // --- Date Generale ---
     private User loggedInUser;
     private Organizatie currentOrganizatie;
     private List<Departament> departmentList;
     private String searchKeyword;
+    private boolean editModeOrganizatie = false;
 
+    // --- Liste Voluntari ---
     private List<Voluntar> voluntariActivi;
     private List<Voluntar> voluntariColaboratori;
     private List<Voluntar> coordonatori;
     private List<Voluntar> voluntariInactivi;
     private List<Voluntar> allVolunteersInOrg;
-
-    // MODIFICAT: Redenumit din 'voluntariNeasignati' în 'voluntariNerepartizati'
     private List<Voluntar> voluntariNerepartizati;
-
     private List<Voluntar> voluntariCoordonatori;
-    private Voluntar selectedVolunteerForReports;
+
+    // --- Management Departamente ---
     private Departament selectedDepartament;
     private List<Voluntar> membriDepartamentCurent;
     private List<Voluntar> voluntariDeAdaugat;
-    private boolean editModeOrganizatie = false;
+
+    // --- NOU: Secțiune Prezențe ---
+    private Sedinta sedintaCurenta;
+    private List<PrezentaWrapper> listaPrezente;
+    private List<Sedinta> istoricSedinte;
+    private boolean attendanceMode = false;
+
 
     @PostConstruct
     public void init() {
@@ -80,20 +86,24 @@ public class DashboardSecretarBean implements Serializable {
         if (currentOrganizatie != null) {
             allVolunteersInOrg = voluntarService.gasesteVoluntariDinOrganizatie(currentOrganizatie.getId());
             departmentList = departamentService.gasesteDepartamentePeOrganizatie(currentOrganizatie.getId());
+            istoricSedinte = sedintaService.getSedinteByOrganizatie(currentOrganizatie.getId());
             categorizeazaVoluntarii();
         } else {
+            // MODIFICAT: Am separat asignările pentru a evita erorile de tip.
             allVolunteersInOrg = Collections.emptyList();
             departmentList = Collections.emptyList();
+            istoricSedinte = Collections.emptyList();
             categorizeazaVoluntarii();
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Contul nu este asociat unei organizații."));
         }
         searchKeyword = null;
         editModeOrganizatie = false;
+        attendanceMode = false;
     }
 
     private void categorizeazaVoluntarii() {
         if (allVolunteersInOrg == null || allVolunteersInOrg.isEmpty()) {
-            voluntariActivi = voluntariColaboratori = coordonatori = voluntariInactivi = voluntariNerepartizati = new ArrayList<>();
+            voluntariActivi = voluntariColaboratori = coordonatori = voluntariInactivi = voluntariNerepartizati = voluntariCoordonatori = new ArrayList<>();
             return;
         }
 
@@ -113,10 +123,7 @@ public class DashboardSecretarBean implements Serializable {
         coordonatori = toCategorize.stream().filter(v -> v.getUser().getRol() == Rol.COORDONATOR).collect(Collectors.toList());
         voluntariActivi = toCategorize.stream().filter(v -> v.getStatus() == Status.ACTIV && v.getUser().getRol() != Rol.COORDONATOR && v.getDepartament() != null).collect(Collectors.toList());
         voluntariColaboratori = toCategorize.stream().filter(v -> v.getStatus() == Status.COLABORATOR && v.getUser().getRol() != Rol.COORDONATOR && v.getDepartament() != null).collect(Collectors.toList());
-
-        // MODIFICAT: Folosește noua denumire a listei
         voluntariNerepartizati = toCategorize.stream().filter(v -> v.getDepartament() == null && v.getUser().getRol() != Rol.COORDONATOR).collect(Collectors.toList());
-
         voluntariCoordonatori = allVolunteersInOrg.stream()
                 .filter(v -> v.getUser().getRol() == Rol.COORDONATOR && v.getUser().isActiv())
                 .collect(Collectors.toList());
@@ -126,6 +133,7 @@ public class DashboardSecretarBean implements Serializable {
         categorizeazaVoluntarii();
     }
 
+    //<editor-fold desc="Metode Management Organizatie & Departamente (existente)">
     public void activeazaModEditareOrganizatie() {
         this.editModeOrganizatie = true;
     }
@@ -154,18 +162,16 @@ public class DashboardSecretarBean implements Serializable {
         try {
             if (selectedDepartament.getId() == null) {
                 Departament savedDept = departamentService.creeazaDepartament(selectedDepartament, loggedInUser);
-                this.departmentList.add(savedDept); // Actualizare "chirurgicală"
+                this.departmentList.add(savedDept);
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul '" + savedDept.getNume() + "' a fost adăugat."));
             } else {
                 Departament updatedDept = departamentService.actualizeazaDepartament(selectedDepartament, loggedInUser);
                 this.departmentList.removeIf(d -> d.getId().equals(updatedDept.getId()));
-                this.departmentList.add(updatedDept); // Actualizare "chirurgicală"
+                this.departmentList.add(updatedDept);
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul '" + updatedDept.getNume() + "' a fost actualizat."));
             }
-
             this.selectedDepartament = new Departament();
             PrimeFaces.current().executeScript("PF('manageDepartmentDialog').hide()");
-
         } catch (Exception e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la salvare", e.getMessage()));
         }
@@ -181,6 +187,49 @@ public class DashboardSecretarBean implements Serializable {
         }
     }
 
+    public void vizualizeazaMembriDepartament(Departament dept) {
+        this.selectedDepartament = dept;
+        if (dept != null && dept.getId() != null) {
+            this.membriDepartamentCurent = voluntarService.gasesteVoluntariDinDepartament(dept.getId());
+        } else {
+            this.membriDepartamentCurent = new ArrayList<>();
+        }
+        this.voluntariDeAdaugat = new ArrayList<>();
+    }
+
+    public void adaugaMembriSelectatiLaDepartament() {
+        if (voluntariDeAdaugat == null || voluntariDeAdaugat.isEmpty()) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Niciun voluntar nu a fost selectat."));
+            return;
+        }
+        try {
+            for (Voluntar vol : voluntariDeAdaugat) {
+                vol.setDepartament(selectedDepartament);
+                voluntarService.actualizeazaVoluntar(vol);
+            }
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", voluntariDeAdaugat.size() + " membri au fost adăugați."));
+            vizualizeazaMembriDepartament(this.selectedDepartament);
+            incarcaDateleInitiale();
+            PrimeFaces.current().executeScript("PF('addMemberDialog').hide()");
+        } catch (Exception e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Membrii nu au putut fi adăugați."));
+        }
+    }
+
+    public void scoateVoluntarDinDepartament(Voluntar voluntar) {
+        try {
+            voluntar.setDepartament(null);
+            voluntarService.actualizeazaVoluntar(voluntar);
+            vizualizeazaMembriDepartament(this.selectedDepartament);
+            incarcaDateleInitiale();
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", voluntar.getNumeComplet() + " a fost scos din departament."));
+        } catch (Exception e) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut scoate voluntarul din departament."));
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Metode Management Status & Roluri Voluntari (existente)">
     public void laSchimbareaDepartamentului(Voluntar voluntar) {
         try {
             voluntarService.actualizeazaVoluntar(voluntar);
@@ -230,98 +279,91 @@ public class DashboardSecretarBean implements Serializable {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut modifica starea contului."));
         }
     }
+    //</editor-fold>
 
-    public void trimiteCertificatPeEmail() {
-        if (selectedVolunteerForReports == null) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Te rugăm să selectezi un voluntar."));
+    // --- NOU: Funcționalități Rapoarte ---
+    public void genereazaSiTrimiteRaportDepartament(Departament departament) {
+        if (departament == null) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Trebuie să selectați un departament."));
             return;
         }
         try {
-            byte[] pdfData = documentGenerationService.genereazaCertificatPdf(selectedVolunteerForReports, currentOrganizatie);
-            String fileName = "Certificat_" + selectedVolunteerForReports.getNume() + "_" + selectedVolunteerForReports.getPrenume() + ".pdf";
-            emailService.sendEmailWithAttachment(selectedVolunteerForReports.getUser().getEmail(), "Certificat de Voluntariat", pdfData, fileName);
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Certificatul a fost trimis."));
-        } catch (Exception e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut trimite certificatul: " + e.getMessage()));
-            e.printStackTrace();
-        }
-    }
-
-    public void trimiteRaportActivitatePeEmail() {
-        if (selectedVolunteerForReports == null) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Te rugăm să selectezi un voluntar."));
-            return;
-        }
-        try {
-            List<Proiect> proiectele = proiectService.gasesteProiecteDupaVoluntarId(selectedVolunteerForReports.getId());
-            Map<Proiect, List<Task>> activitatiGrupate = new LinkedHashMap<>();
-            for (Proiect p : proiectele) {
-                List<Task> taskuriFinalizate = taskService.findByProiect(p.getId())
-                        .stream()
-                        .filter(t -> t.getVoluntar().getId().equals(selectedVolunteerForReports.getId()) && t.getStatus() == TaskStatus.DONE)
-                        .collect(Collectors.toList());
-                if (!taskuriFinalizate.isEmpty()) {
-                    activitatiGrupate.put(p, taskuriFinalizate);
-                }
-            }
-            if (activitatiGrupate.isEmpty()) {
-                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Nu există activități finalizate pentru raport."));
+            List<Voluntar> voluntariDinDepartament = voluntarService.gasesteVoluntariDinDepartament(departament.getId());
+            if (voluntariDinDepartament.isEmpty()) {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Departamentul selectat nu are membri."));
                 return;
             }
-            byte[] pdfData = documentGenerationService.genereazaRaportActivitatePdf(selectedVolunteerForReports, activitatiGrupate);
-            String fileName = "Raport_Activitate_" + selectedVolunteerForReports.getNume() + "_" + selectedVolunteerForReports.getPrenume() + ".pdf";
-            emailService.sendEmailWithAttachment(selectedVolunteerForReports.getUser().getEmail(), "Raport de Activitate", pdfData, fileName);
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Raportul de activitate a fost trimis."));
+            byte[] pdfData = documentGenerationService.genereazaRaportDepartamentPdf(departament, voluntariDinDepartament, currentOrganizatie);
+            String fileName = "Raport_Departament_" + departament.getNume().replaceAll("\\s+", "_") + ".pdf";
+
+            emailService.sendEmailWithAttachment(loggedInUser.getEmail(), "Raport Voluntari Departament: " + departament.getNume(), pdfData, fileName);
+
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Raportul pentru departamentul '" + departament.getNume() + "' a fost trimis pe emailul dvs."));
         } catch (Exception e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut trimite raportul: " + e.getMessage()));
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut genera sau trimite raportul: " + e.getMessage()));
             e.printStackTrace();
         }
     }
-    public void adaugaMembriSelectatiLaDepartament() {
-        if (voluntariDeAdaugat == null || voluntariDeAdaugat.isEmpty()) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Niciun voluntar nu a fost selectat."));
+
+    // --- NOU: Funcționalități Prezențe ---
+    public void initiazaFoaiePrezenta() {
+        this.sedintaCurenta = new Sedinta();
+        this.sedintaCurenta.setDataSedinta(LocalDateTime.now());
+        this.sedintaCurenta.setOrganizatie(this.currentOrganizatie);
+        this.sedintaCurenta.setDescriere("Ședință Generală");
+
+        this.listaPrezente = allVolunteersInOrg.stream()
+                .filter(v -> v.getUser().isActiv()) // Doar voluntarii activi
+                .map(v -> new PrezentaWrapper(v, StatusPrezenta.ABSENT)) // Default to ABSENT
+                .collect(Collectors.toList());
+
+        this.attendanceMode = true;
+    }
+
+    public void anuleazaFoaiePrezenta() {
+        this.attendanceMode = false;
+        this.listaPrezente = null;
+        this.sedintaCurenta = null;
+    }
+
+    public void salveazaFoaiePrezenta() {
+        if (sedintaCurenta == null || listaPrezente == null || listaPrezente.isEmpty()) {
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu există date de prezență pentru a fi salvate."));
             return;
         }
 
         try {
-            for (Voluntar vol : voluntariDeAdaugat) {
-                vol.setDepartament(selectedDepartament);
-                voluntarService.actualizeazaVoluntar(vol);
+            List<PrezentaSedinta> entitatiPrezenta = new ArrayList<>();
+            for (PrezentaWrapper wrapper : listaPrezente) {
+                entitatiPrezenta.add(PrezentaSedinta.builder()
+                        .voluntar(wrapper.getVoluntar())
+                        .statusPrezenta(wrapper.getStatus())
+                        .dataInregistrare(LocalDateTime.now())
+                        .build());
             }
 
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes",
-                    voluntariDeAdaugat.size() + " membri au fost adăugați."));
+            sedintaService.creeazaSedintaCuPrezente(sedintaCurenta, entitatiPrezenta);
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Prezența a fost înregistrată și punctele au fost acordate."));
 
-            vizualizeazaMembriDepartament(this.selectedDepartament);
-            incarcaDateleInitiale();
-            PrimeFaces.current().executeScript("PF('addMemberDialog').hide()");
-
+            incarcaDateleInitiale(); // Reîncarcă tot, inclusiv istoricul ședințelor și punctajele voluntarilor
         } catch (Exception e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Membrii nu au putut fi adăugați."));
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la Salvare", "Nu s-a putut salva prezența: " + e.getMessage()));
+            e.printStackTrace();
         }
     }
-    public void scoateVoluntarDinDepartament(Voluntar voluntar) {
-        try {
-            voluntar.setDepartament(null);
-            voluntarService.actualizeazaVoluntar(voluntar);
 
-            vizualizeazaMembriDepartament(this.selectedDepartament);
-            incarcaDateleInitiale();
-
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes",
-                    voluntar.getNumeComplet() + " a fost scos din departament."));
-        } catch (Exception e) {
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare",
-                    "Nu s-a putut scoate voluntarul din departament."));
-        }
+    public StatusPrezenta[] getStatusPrezentaValues() {
+        return StatusPrezenta.values();
     }
-    public void vizualizeazaMembriDepartament(Departament dept) {
-        this.selectedDepartament = dept;
-        if (dept != null && dept.getId() != null) {
-            this.membriDepartamentCurent = voluntarService.gasesteVoluntariDinDepartament(dept.getId());
-        } else {
-            this.membriDepartamentCurent = new ArrayList<>();
+
+    @Getter @Setter
+    public static class PrezentaWrapper implements Serializable {
+        private Voluntar voluntar;
+        private StatusPrezenta status;
+
+        public PrezentaWrapper(Voluntar voluntar, StatusPrezenta status) {
+            this.voluntar = voluntar;
+            this.status = status;
         }
-        this.voluntariDeAdaugat = new ArrayList<>();
     }
 }

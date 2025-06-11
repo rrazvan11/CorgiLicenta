@@ -54,9 +54,9 @@ public class VoluntarService {
         User userPentruVoluntar = authService.register(username, emailUser, parolaUser, Rol.VOLUNTAR);
 
         voluntar.setUser(userPentruVoluntar);
-        voluntar.setOrganizatie(organizatieAfiliere); // <-- Setează organizația aici
+        voluntar.setOrganizatie(organizatieAfiliere);
         voluntar.setDataInrolare(LocalDate.now());
-        voluntar.setPuncte(0);
+        voluntar.setPuncte(0.0); // MODIFICAT: S-a schimbat 0 în 0.0 pentru a se potrivi cu tipul Double.
         voluntar.setStatus(Status.COLABORATOR);
         voluntar.setDepartament(null);
 
@@ -109,7 +109,6 @@ public class VoluntarService {
         existent.setAnStudiu(voluntar.getAnStudiu());
         existent.setPuncte(voluntar.getPuncte());
         existent.setStatus(voluntar.getStatus());
-        // Nu modificăm organizația aici, se presupune că un voluntar nu își schimbă organizația.
 
         if (voluntar.getDepartament() != null && voluntar.getDepartament().getId() != null) {
             if (existent.getDepartament() == null || !existent.getDepartament().getId().equals(voluntar.getDepartament().getId())) {
