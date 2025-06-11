@@ -18,6 +18,7 @@
         <class>ro.ong.corgi.model.GrupareVoluntariProiecte</class>
         <class>ro.ong.corgi.model.Sedinta</class>
         <class>ro.ong.corgi.model.PrezentaSedinta</class>
+        <class>ro.ong.corgi.model.Skill</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="jakarta.persistence.schema-generation.database.action" value="update"/>

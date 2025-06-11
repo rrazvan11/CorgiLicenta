@@ -50,15 +50,14 @@ public class LoginBean implements Serializable {
                 switch (userAutentificat.getRol()) {
                     case VOLUNTAR:
                         System.out.println("Navigare către dashboard voluntar...");
-                        return "/xhtml/dashboardVoluntar.xhtml?faces-redirect=true"; // <-- MODIFICARE PRINCIPALĂ
+                        return "/xhtml/dashboardVoluntar.xhtml?faces-redirect=true";
                     case COORDONATOR:
                         System.out.println("Navigare către dashboard coordonator...");
                         // TODO: Actualizează cu calea corectă când dashboard-ul coordonatorului e gata
                         return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
                     case SECRETAR:
                         System.out.println("Navigare către dashboard secretar...");
-                        // TODO: Actualizează cu calea corectă când dashboard-ul secretarului e gata
-                        return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
+                        return "/xhtml/dashboardSecretar.xhtml?faces-redirect=true";
                     default:
                         System.out.println("Rol necunoscut (" + userAutentificat.getRol() + "), navigare către index...");
                         return "/xhtml/index.xhtml?faces-redirect=true";

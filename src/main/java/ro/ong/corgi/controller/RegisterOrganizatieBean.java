@@ -28,7 +28,7 @@ public class RegisterOrganizatieBean implements Serializable {
     private String emailAdmin;
     private String parolaAdmin;
     private String confirmParolaAdmin;
-    private String cifOrganizatie; // Primit ca String din formular
+    private String cifOrganizatie;
 
     @Inject
     private OrganizatieService organizatieService;
@@ -72,7 +72,7 @@ public class RegisterOrganizatieBean implements Serializable {
         }
 
         try {
-            User adminUser = authService.register(usernameAdmin, emailAdmin, parolaAdmin, Rol.COORDONATOR);
+            User adminUser = authService.register(usernameAdmin, emailAdmin, parolaAdmin, Rol.SECRETAR);
             organizatie.setUser(adminUser);
             organizatieService.adaugaOrganizatie(organizatie);
 

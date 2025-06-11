@@ -56,9 +56,6 @@ public class VoluntarService {
             throw new RuntimeException("Numele și prenumele voluntarului sunt obligatorii.");
         }
 
-        // Validarea pentru emailUser se face în RegisterVoluntarBean și/sau în AuthService.register
-        // Nu mai validăm voluntar.getEmail() aici
-
         Organizatie organizatieAfiliere = organizatieRepository.findByCif(cifOrganizatie);
         if (organizatieAfiliere == null) {
             throw new RuntimeException("Organizație cu CIF-ul " + cifOrganizatie + " nu a fost găsită.");
@@ -66,30 +63,35 @@ public class VoluntarService {
 
         User userPentruVoluntar;
         try {
-            // Creăm contul de utilizator folosind emailUser primit ca parametru
             userPentruVoluntar = authService.register(username, emailUser, parolaUser, Rol.VOLUNTAR);
         } catch (RuntimeException e) {
-            // Specificăm mai clar sursa erorii
-            throw new RuntimeException("Nu s-a putut crea contul de utilizator pentru voluntar (username: " + username + ", email: " + emailUser + "): " + e.getMessage(), e);
+            throw new RuntimeException("Nu s-a putut crea contul de utilizator pentru voluntar: " + e.getMessage(), e);
         }
+
+        // --- CORECȚIE APLICATĂ AICI ---
+        // Logica pentru a găsi sau crea departamentul "Nedesmnat"
+        final String defaultDeptName = "Nedesmnat";
+        Departament departamentDefault = departamentRepository.findByNumeAndOrganizatieId(defaultDeptName, organizatieAfiliere.getId());
+
+        if (departamentDefault == null) {
+            // Dacă nu există, îl creăm
+            departamentDefault = Departament.builder()
+                    .nume(defaultDeptName)
+                    .descriere("Departament general pentru voluntarii noi.")
+                    .organizatie(organizatieAfiliere)
+                    .build();
+            departamentRepository.save(departamentDefault);
+        }
+        // --- SFÂRȘIT CORECȚIE ---
 
         voluntar.setUser(userPentruVoluntar);
         voluntar.setDataInrolare(LocalDate.now());
         voluntar.setStatus(Status.ACTIV);
-        voluntar.setPuncte(0); // Acest câmp există în Voluntar.java
-        voluntar.setDepartament(null); // Inițial, voluntarul nu este asignat unui departament
+        voluntar.setPuncte(0);
+        voluntar.setDepartament(departamentDefault); // Asignăm noului voluntar departamentul default
 
-        // Verificarea unicității emailului este acum responsabilitatea AuthService.register.
-        // Verificarea 'existentCuAcelEmail' bazată pe voluntar.getEmail() a fost eliminată.
-
-        // Această verificare este pentru a preveni asignarea unui User ID la mai mulți Voluntari.
-        // Având în vedere că userPentruVoluntar este nou creat și unic (garantat de authService.register),
-        // această verificare ar trebui să fie mereu falsă în acest flux specific.
-        // Este mai relevantă dacă ai un flux unde un User *existent* poate fi legat de un *nou* profil Voluntar.
         if (voluntarRepository.findSingleByField("user.id", userPentruVoluntar.getId()) != null){
-            // Dacă se ajunge aici, înseamnă că authService.register nu a garantat unicitatea userului
-            // sau există o problemă de logică/concurență.
-            throw new RuntimeException("Eroare internă critică: ID-ul de utilizator nou creat (" + userPentruVoluntar.getId() + ") este deja asociat unui alt voluntar.");
+            throw new RuntimeException("Eroare internă critică: ID-ul de utilizator nou creat este deja asociat unui alt voluntar.");
         }
 
         voluntarRepository.save(voluntar);
@@ -171,24 +173,9 @@ public class VoluntarService {
             throw new RuntimeException("Voluntarul (ID: " + id + ") are task-uri asignate și nu poate fi șters. Reasignați task-urile mai întâi.");
         }
 
-        // Relația @OneToMany cu GrupareVoluntariProiecte din Voluntar.java are cascade = CascadeType.ALL și orphanRemoval = true,
-        // deci acele înregistrări se vor șterge automat.
-
-        // User-ul asociat: entitatea User are @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-        // pentru câmpul 'voluntar'.
-        // Asta înseamnă că dacă ștergi User-ul, se șterge și Voluntarul.
-        // Invers, dacă ștergi Voluntarul, User-ul NU este șters automat prin această configurație.
-        // Va trebui să gestionezi manual User-ul.
         User userAsociat = voluntar.getUser();
 
         voluntarRepository.delete(voluntar); // Șterge voluntarul
-
-        // Ce facem cu User-ul? Opțiuni:
-        // 1. Ștergere: userRepository.delete(userAsociat); (ATENȚIE: Poate e folosit și altundeva? De ex. Organizatie)
-        // 2. Dezactivare: authService.dezactiveazaCont(userAsociat.getId());
-        // 3. Lăsat așa: Va rămâne un User fără profil de voluntar.
-        // Momentan, nu facem nimic explicit cu User-ul, ceea ce înseamnă că va rămâne în sistem.
-        // Aceasta este o decizie de business. Pentru o curățare completă, ar trebui șters sau dezactivat.
         System.out.println("Voluntarul cu ID " + id + " a fost șters. User-ul asociat (ID: " + (userAsociat != null ? userAsociat.getId() : "null") + ") nu a fost modificat automat.");
 
     }

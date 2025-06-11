@@ -24,8 +24,8 @@ public class AuthService {
     }
 
     public User login(String email, String password) {
-        User user = userRepository.findByEmail(email); // Presupune că findByEmail verifică și dacă user.isActiv()
-        if (user == null) { // Sau if (user == null || !user.isActiv())
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
             throw new RuntimeException("Email sau parolă greșite (utilizator negasit sau inactiv)");
         }
         if (!passwordService.verifyPassword(password, user.getParola())) {
@@ -78,12 +78,10 @@ public class AuthService {
         if (user == null || !user.isActiv()) {
             return false;
         }
-        // Logica de acces poate deveni mai complexă
         return switch (user.getRol()) {
             case SECRETAR -> true; // Secretarul are acces la tot (simplificare)
             case COORDONATOR -> resource.startsWith("proiecte") || resource.startsWith("voluntari_departament") || resource.startsWith("taskuri");
             case VOLUNTAR -> resource.startsWith("profil") || resource.startsWith("taskuri_personale");
-            // default -> false; // Pentru orice alte roluri sau dacă nu se potrivește niciun caz
         };
     }
 }

@@ -1,3 +1,19 @@
+/* Stiluri pentru tabelul de administrare voluntari */
+.admin-volunteer-table {
+    table-layout: fixed;
+    width: 100%;
+}
+.admin-volunteer-table .ui-column-title {
+    padding: .75rem !important;
+    font-weight: 600;
+}
+.admin-volunteer-table .col-name { width: 22%; }
+.admin-volunteer-table .col-email { width: 28%; }
+.admin-volunteer-table .col-phone { width: 13%; }
+.admin-volunteer-table .col-status { width: 13%; }
+.admin-volunteer-table .col-role { width: 13%; }
+.admin-volunteer-table .col-actions { width: 11%; text-align: center; }
+
 /* Stiluri generale */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -8,13 +24,11 @@ body {
     padding: 0;
     -webkit-text-size-adjust: 100%;
 }
-
 #page-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
-
 #top-bar {
     background: linear-gradient(to right, #007bff, #0056b3);
     color: white;
@@ -25,41 +39,60 @@ body {
     border-bottom: 1px solid #004085;
     border-radius: 8px 8px 0 0;
 }
-
 #top-bar .app-title {
     font-size: 1.7em;
     font-weight: 600;
     letter-spacing: -0.5px;
 }
-
 #top-bar .user-status .ui-button {
     margin-left: 12px;
 }
-
 #content {
     background-color: #ffffff;
     padding: 25px;
     border-radius: 0 0 8px 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
-
 .ui-datatable .ui-paginator {
     background-color: #f8f9fa;
 }
 
+/* =================================================== */
+/* === Stiluri suplimentare pentru tabele responsive === */
+/* =================================================== */
 
-/* ############################################ */
-/* ### STILURI RESPONSIVE PENTRU ADAPTARE ### */
-/* ############################################ */
+.table-responsive-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
 
-/* Regulile se aplică pentru ecrane cu lățime maximă de 767px (telefoane) */
+/* Repară textul spart în celule */
+.ui-datatable td,
+.ui-datatable th {
+    white-space: normal !important;
+    word-break: break-word;
+    vertical-align: top;
+}
+
+/* Asigură scroll orizontal pentru tabele scrollable */
+.ui-datatable-scrollable-body {
+    overflow-x: auto !important;
+    display: block !important;
+}
+
+/* ============================= */
+/* === Stiluri Responsive === */
+/* ============================= */
+
 @media (max-width: 767px) {
     body {
         padding: 0;
     }
+
     #page-container {
         padding: 0;
     }
+
     #top-bar {
         flex-direction: column;
         gap: 12px;
@@ -67,43 +100,59 @@ body {
         text-align: center;
         border-radius: 0;
     }
+
     #top-bar .user-status {
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
     }
+
     #content {
         padding: 15px;
         border-radius: 0;
         box-shadow: none;
     }
 
-    /* MODIFICARE CHEIE: Forțăm panelGrid să se comporte ca un layout pe verticală */
+    /* PanelGrid devine layout vertical */
     .ui-panelgrid.ui-grid {
-        display: block !important; /* Anulăm layout-ul de grid */
+        display: block !important;
     }
+
     .ui-panelgrid-row {
         display: flex !important;
-        flex-direction: column !important; /* Stivuim celulele pe verticală */
-        margin-bottom: 1rem !important; /* Spațiu între fiecare pereche "etichetă-valoare" */
+        flex-direction: column !important;
+        margin-bottom: 1rem !important;
         border: none !important;
     }
-    .ui-panelgrid .ui-grid-col-3, .ui-panelgrid .ui-grid-col-9 {
-        width: 100% !important; /* Forțăm fiecare celulă să ocupe toată lățimea */
+
+    .ui-panelgrid .ui-grid-col-3,
+    .ui-panelgrid .ui-grid-col-9 {
+        width: 100% !important;
         padding: 0 !important;
     }
 
-    /* Adaptăm și butoanele din interiorul p:card */
+    /* Butoane full-width în card */
     .ui-card .ui-g-12.ui-md-4 {
         padding: 0 !important;
         margin-bottom: 10px;
     }
+
     .ui-card .ui-g-12.ui-md-4 .ui-button {
         width: 100%;
     }
 
-    /* Ascunde anumite coloane din tabele pe ecrane mici */
+    /* Tabelele au scroll orizontal + ascundere coloane opționale */
+    .ui-datatable {
+        display: block;
+        width: 100% !important;
+    }
+
+    .ui-datatable table {
+        table-layout: auto !important;
+        width: 100% !important;
+    }
+
     .ui-datatable th.responsive-prio-1, .ui-datatable td.responsive-prio-1,
     .ui-datatable th.responsive-prio-2, .ui-datatable td.responsive-prio-2 {
         display: none !important;

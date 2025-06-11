@@ -3,6 +3,7 @@ package ro.ong.corgi.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import ro.ong.corgi.model.Organizatie;
+import ro.ong.corgi.model.User;
 import ro.ong.corgi.repository.OrganizatieRepository;
 import jakarta.transaction.Transactional;
 
@@ -12,8 +13,6 @@ import java.util.List;
 public class OrganizatieService {
 
     private final OrganizatieRepository organizatieRepository;
-    // Am eliminat AuthService din constructor, deoarece User-ul este creat și setat
-    // în RegisterOrganizatieBean înainte de a apela această metodă.
 
     @Inject
     public OrganizatieService(OrganizatieRepository organizatieRepository) {
@@ -23,11 +22,6 @@ public class OrganizatieService {
         this(null);
     }
 
-    /**
-     * Adaugă o organizație nouă.
-     * User-ul asociat trebuie să fie deja setat pe obiectul Organizatie primit.
-     * CIF-ul și Numele trebuie să fie unice.
-     */
     @Transactional
     public void adaugaOrganizatie(Organizatie o) { // <-- SEMNĂTURA CORECTATĂ: primește doar Organizatie
         if (o == null) {
@@ -76,7 +70,7 @@ public class OrganizatieService {
     public List<Organizatie> toateOrganizatiile() {
         return organizatieRepository.findAll();
     }
-    @Transactional
+
     public void actualizeazaOrganizatie(Organizatie o) {
         if (o == null || o.getId() == null) {
             throw new IllegalArgumentException("Organizația sau ID-ul ei nu pot fi null pentru actualizare.");
@@ -105,12 +99,10 @@ public class OrganizatieService {
         existent.setAdresa(o.getAdresa());
         existent.setCif(o.getCif());
         existent.setMail(o.getMail());
-        // User-ul asociat de obicei nu se schimbă prin acest flux.
-        // Dacă trebuie schimbat, ar fi o operațiune separată.
 
         organizatieRepository.update(existent);
     }
-    @Transactional
+
     public void stergeOrganizatie(Long id) {
         Organizatie o = organizatieRepository.findById(id);
         if (o == null) {
@@ -119,12 +111,18 @@ public class OrganizatieService {
         if (o.getProiecte() != null && !o.getProiecte().isEmpty()){
             throw new RuntimeException("Organizația are proiecte asociate și nu poate fi ștearsă.");
         }
-        // TODO: Adaugă verificare pentru departamente asociate înainte de ștergere
 
         // Consideră ce faci cu User-ul asociat (dezactivare/ștergere)
         // if (o.getUser() != null && authService != null) { // Ai nevoie de authService injectat dacă vrei să faci asta
         // authService.dezactiveazaCont(o.getUser().getId());
         // }
         organizatieRepository.delete(o);
+    }
+    public Organizatie cautaDupaUser(User user) {
+        if (user == null) {
+            return null;
+        }
+        // Folosim metoda findSingleByField moștenită din AbstractRepository
+        return organizatieRepository.findSingleByField("user.id", user.getId());
     }
 }
