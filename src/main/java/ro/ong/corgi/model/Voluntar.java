@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user", "departament", "taskuri", "participari", "organizatie"}) // Adaugat organizatie
+@ToString(exclude = {"user", "departament", "taskuri", "participari", "organizatie"})
 @EqualsAndHashCode(of = "id")
 public class Voluntar implements Serializable {
 
@@ -52,7 +52,7 @@ public class Voluntar implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY) // MODIFICAT
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departament_id")
     private Departament departament;
 
@@ -62,16 +62,19 @@ public class Voluntar implements Serializable {
     @OneToMany(mappedBy = "voluntar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrupareVoluntariProiecte> participari;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false) // MODIFICAT
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false) // MODIFICAT
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizatie_id", nullable = false)
     private Organizatie organizatie;
 
     @Transient
     public String getNumeComplet() {
+        if (nume == null || prenume == null) {
+            return "";
+        }
         return nume + " " + prenume;
     }
 }

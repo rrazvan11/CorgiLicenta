@@ -25,20 +25,20 @@ public class Departament {
 
     @NotBlank(message = "Numele departamentului este obligatoriu")
     @Size(max = 100, message = "Numele departamentului nu poate avea mai mult de 100 de caractere")
-    @Column(nullable = false) // Am eliminat unique = true de aici
+    @Column(nullable = false)
     private String nume;
 
     @Size(max = 255, message = "Descrierea nu poate depăși 255 de caractere")
     private String descriere;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coordonator_id")
     private Voluntar coordonator;
 
     @OneToMany(mappedBy = "departament")
     private List<Voluntar> voluntari;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizatie_id", nullable = false)
     private Organizatie organizatie;
 }

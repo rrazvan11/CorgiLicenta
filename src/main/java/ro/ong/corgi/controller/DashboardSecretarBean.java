@@ -153,14 +153,19 @@ public class DashboardSecretarBean implements Serializable {
     public void salveazaDepartament() {
         try {
             if (selectedDepartament.getId() == null) {
-                departamentService.creeazaDepartament(selectedDepartament, loggedInUser);
-                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul a fost adăugat."));
+                Departament savedDept = departamentService.creeazaDepartament(selectedDepartament, loggedInUser);
+                this.departmentList.add(savedDept); // Actualizare "chirurgicală"
+                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul '" + savedDept.getNume() + "' a fost adăugat."));
             } else {
-                departamentService.actualizeazaDepartament(selectedDepartament, loggedInUser);
-                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul a fost actualizat."));
+                Departament updatedDept = departamentService.actualizeazaDepartament(selectedDepartament, loggedInUser);
+                this.departmentList.removeIf(d -> d.getId().equals(updatedDept.getId()));
+                this.departmentList.add(updatedDept); // Actualizare "chirurgicală"
+                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul '" + updatedDept.getNume() + "' a fost actualizat."));
             }
-            incarcaDateleInitiale();
+
+            this.selectedDepartament = new Departament();
             PrimeFaces.current().executeScript("PF('manageDepartmentDialog').hide()");
+
         } catch (Exception e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la salvare", e.getMessage()));
         }

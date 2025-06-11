@@ -6,7 +6,9 @@ import jakarta.transaction.Transactional;
 import ro.ong.corgi.model.Departament;
 import ro.ong.corgi.model.Enums.Rol;
 import ro.ong.corgi.model.User; // User este un parametru, nu o dependență injectată a serviciului
+import ro.ong.corgi.model.Voluntar;
 import ro.ong.corgi.repository.DepartamentRepository;
+import ro.ong.corgi.repository.VoluntarRepository;
 // import ro.ong.corgi.repository.OrganizatieRepository; // Dacă ai nevoie de el
 
 import java.util.List;
@@ -15,31 +17,33 @@ import java.util.List;
 public class DepartamentService {
 
     private final DepartamentRepository departamentRepository;
-    // private final OrganizatieRepository organizatieRepository; // Exemplu, dacă ai nevoie
+    private final VoluntarRepository voluntarRepository;
 
     @Inject
-    public DepartamentService(DepartamentRepository departamentRepository) {
+    public DepartamentService(DepartamentRepository departamentRepository, VoluntarRepository voluntarRepository) {
         this.departamentRepository = departamentRepository;
+        this.voluntarRepository = voluntarRepository;
     }
-    protected DepartamentService(){
-        this(null);
-    }
+
+    protected DepartamentService() { this(null, null); }
+
     @Transactional
-    public void creeazaDepartament(Departament d, User actor) {
-        if (actor.getRol() != Rol.SECRETAR) { // Sau un rol de admin organizație
+    public Departament creeazaDepartament(Departament d, User actor) {
+        if (actor.getRol() != Rol.SECRETAR) {
             throw new RuntimeException("Nu ai permisiunea de a crea departamente");
         }
         if (d.getOrganizatie() == null || d.getOrganizatie().getId() == null) {
             throw new RuntimeException("Departamentul trebuie asociat unei organizații valide.");
         }
-        // Verifică unicitatea numelui în cadrul organizației
         if (departamentRepository.findByNumeAndOrganizatieId(d.getNume(), d.getOrganizatie().getId()) != null) {
             throw new RuntimeException("Un departament cu numele „" + d.getNume() + "” există deja în această organizație.");
         }
         departamentRepository.save(d);
+        return d;
     }
+
     @Transactional
-    public void actualizeazaDepartament(Departament d, User actor) {
+    public Departament actualizeazaDepartament(Departament d, User actor) {
         if (actor.getRol() != Rol.SECRETAR) {
             throw new RuntimeException("Nu ai permisiunea de a modifica departamente");
         }
@@ -47,7 +51,6 @@ public class DepartamentService {
         if (existent == null) {
             throw new RuntimeException("Departament inexistent: " + d.getId());
         }
-        // Verifică dacă numele nou nu intră în conflict cu alt departament din aceeași organizație
         if (!existent.getNume().equals(d.getNume()) &&
                 departamentRepository.findByNumeAndOrganizatieId(d.getNume(), existent.getOrganizatie().getId()) != null) {
             throw new RuntimeException("Un alt departament cu numele „" + d.getNume() + "” există deja în această organizație.");
@@ -55,9 +58,16 @@ public class DepartamentService {
 
         existent.setNume(d.getNume());
         existent.setDescriere(d.getDescriere());
-        existent.setCoordonator(d.getCoordonator());
-        // existent.setOrganizatie(d.getOrganizatie()); // De obicei organizația unui departament nu se schimbă
+
+        if (d.getCoordonator() != null && d.getCoordonator().getId() != null) {
+            Voluntar coordonatorManaged = voluntarRepository.findById(d.getCoordonator().getId());
+            existent.setCoordonator(coordonatorManaged);
+        } else {
+            existent.setCoordonator(null);
+        }
+
         departamentRepository.update(existent);
+        return existent;
     }
     @Transactional
     public void stergeDepartament(Long id, User actor) {
