@@ -24,17 +24,17 @@ public class PrezentaSedinta implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Voluntarul pentru care se înregistrează prezența.
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "voluntar_id", nullable = false)
     private Voluntar voluntar;
 
-    // Ședința la care se referă prezența.
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "sedinta_id", nullable = false)
     private Sedinta sedinta;
 
-    // Statusul prezenței (PREZENT, ABSENT, etc.)
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusPrezenta statusPrezenta;

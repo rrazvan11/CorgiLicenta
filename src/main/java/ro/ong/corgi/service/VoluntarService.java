@@ -56,8 +56,11 @@ public class VoluntarService {
         voluntar.setUser(userPentruVoluntar);
         voluntar.setDataInrolare(LocalDate.now());
         voluntar.setPuncte(0);
-        voluntar.setStatus(Status.COLABORATOR); // SETAT IMPLICIT CA COLABORATOR
-        voluntar.setDepartament(null); // SETAT IMPLICIT FĂRĂ DEPARTAMENT
+        voluntar.setStatus(Status.COLABORATOR);
+        voluntar.setDepartament(null);
+
+        // MODIFICARE CHEIE: Se setează legătura directă cu organizația
+        voluntar.setOrganizatie(organizatieAfiliere);
 
         if (voluntarRepository.findSingleByField("user.id", userPentruVoluntar.getId()) != null){
             throw new RuntimeException("Eroare internă critică: ID-ul de utilizator nou creat este deja asociat unui alt voluntar.");
@@ -107,6 +110,7 @@ public class VoluntarService {
         existent.setAnStudiu(voluntar.getAnStudiu());
         existent.setPuncte(voluntar.getPuncte());
         existent.setStatus(voluntar.getStatus());
+        // Nu modificăm organizația aici, se presupune că un voluntar nu își schimbă organizația.
 
         if (voluntar.getDepartament() != null && voluntar.getDepartament().getId() != null) {
             if (existent.getDepartament() == null || !existent.getDepartament().getId().equals(voluntar.getDepartament().getId())) {

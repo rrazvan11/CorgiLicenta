@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user", "departament", "taskuri", "participari"})
+@ToString(exclude = {"user", "departament", "taskuri", "participari", "organizatie"}) // Adaugat organizatie
 @EqualsAndHashCode(of = "id")
 public class Voluntar implements Serializable {
 
@@ -52,7 +52,7 @@ public class Voluntar implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // MODIFICAT
     @JoinColumn(name = "departament_id")
     private Departament departament;
 
@@ -62,15 +62,14 @@ public class Voluntar implements Serializable {
     @OneToMany(mappedBy = "voluntar", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrupareVoluntariProiecte> participari;
 
-    @OneToOne(optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false) // MODIFICAT
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 
-    /**
-     * Metodă ajutătoare (nu este coloană în baza de date) care returnează numele complet.
-     * Adnotarea @Transient îi spune lui JPA/Hibernate să ignore această metodă.
-     * @return Numele și prenumele concatenate.
-     */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) // MODIFICAT
+    @JoinColumn(name = "organizatie_id", nullable = false)
+    private Organizatie organizatie;
+
     @Transient
     public String getNumeComplet() {
         return nume + " " + prenume;

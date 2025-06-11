@@ -48,16 +48,17 @@ public class DashboardSecretarBean implements Serializable {
     private List<Voluntar> voluntariActivi;
     private List<Voluntar> voluntariColaboratori;
     private List<Voluntar> coordonatori;
-    private List<Voluntar> voluntariNeasignati;
     private List<Voluntar> voluntariInactivi;
     private List<Voluntar> allVolunteersInOrg;
 
+    // MODIFICAT: Redenumit din 'voluntariNeasignati' în 'voluntariNerepartizati'
+    private List<Voluntar> voluntariNerepartizati;
+
+    private List<Voluntar> voluntariCoordonatori;
     private Voluntar selectedVolunteerForReports;
     private Departament selectedDepartament;
-    private List<User> potentialCoordinators;
     private List<Voluntar> membriDepartamentCurent;
     private List<Voluntar> voluntariDeAdaugat;
-
     private boolean editModeOrganizatie = false;
 
     @PostConstruct
@@ -92,7 +93,7 @@ public class DashboardSecretarBean implements Serializable {
 
     private void categorizeazaVoluntarii() {
         if (allVolunteersInOrg == null || allVolunteersInOrg.isEmpty()) {
-            voluntariActivi = voluntariColaboratori = coordonatori = voluntariNeasignati = voluntariInactivi = new ArrayList<>();
+            voluntariActivi = voluntariColaboratori = coordonatori = voluntariInactivi = voluntariNerepartizati = new ArrayList<>();
             return;
         }
 
@@ -110,10 +111,15 @@ public class DashboardSecretarBean implements Serializable {
         }
 
         coordonatori = toCategorize.stream().filter(v -> v.getUser().getRol() == Rol.COORDONATOR).collect(Collectors.toList());
-        potentialCoordinators = coordonatori.stream().map(Voluntar::getUser).collect(Collectors.toList());
         voluntariActivi = toCategorize.stream().filter(v -> v.getStatus() == Status.ACTIV && v.getUser().getRol() != Rol.COORDONATOR && v.getDepartament() != null).collect(Collectors.toList());
         voluntariColaboratori = toCategorize.stream().filter(v -> v.getStatus() == Status.COLABORATOR && v.getUser().getRol() != Rol.COORDONATOR && v.getDepartament() != null).collect(Collectors.toList());
-        voluntariNeasignati = toCategorize.stream().filter(v -> v.getDepartament() == null && v.getUser().getRol() != Rol.COORDONATOR).collect(Collectors.toList());
+
+        // MODIFICAT: Folosește noua denumire a listei
+        voluntariNerepartizati = toCategorize.stream().filter(v -> v.getDepartament() == null && v.getUser().getRol() != Rol.COORDONATOR).collect(Collectors.toList());
+
+        voluntariCoordonatori = allVolunteersInOrg.stream()
+                .filter(v -> v.getUser().getRol() == Rol.COORDONATOR && v.getUser().isActiv())
+                .collect(Collectors.toList());
     }
 
     public void cautaVoluntari() {
@@ -281,7 +287,6 @@ public class DashboardSecretarBean implements Serializable {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes",
                     voluntariDeAdaugat.size() + " membri au fost adăugați."));
 
-            // Reîmprospătare date
             vizualizeazaMembriDepartament(this.selectedDepartament);
             incarcaDateleInitiale();
             PrimeFaces.current().executeScript("PF('addMemberDialog').hide()");
@@ -312,7 +317,6 @@ public class DashboardSecretarBean implements Serializable {
         } else {
             this.membriDepartamentCurent = new ArrayList<>();
         }
-        this.voluntariDeAdaugat = new ArrayList<>(); // Resetează selecția la fiecare deschidere
+        this.voluntariDeAdaugat = new ArrayList<>();
     }
-
 }

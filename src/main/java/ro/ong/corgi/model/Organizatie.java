@@ -44,4 +44,7 @@ public class Organizatie implements Serializable {
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
+
+    @OneToMany(mappedBy = "organizatie")
+    private List<Voluntar> voluntari;
 }

@@ -30,13 +30,11 @@ public class Sedinta implements Serializable {
     @Lob // Pentru texte mai lungi, cum ar fi o descriere detaliată sau o minută
     private String descriere;
 
-    // O ședință aparține unui singur departament.
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "departament_id", nullable = false)
     private Departament departament;
 
-    // O ședință poate avea mai multe înregistrări de prezență.
-    // Dacă ștergem o ședință, se șterg și prezențele asociate.
     @OneToMany(mappedBy = "sedinta", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PrezentaSedinta> prezente;
 }

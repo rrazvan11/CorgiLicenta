@@ -32,11 +32,11 @@ public class Task {
     @NotNull(message = "Statusul este obligatoriu") // Am schimbat din @NotBlank în @NotNull pentru Enum
     private TaskStatus status; // exemplu: "IN_PROGRESS", "FINALIZAT", "PENDING"
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voluntar_id")
     private Voluntar voluntar;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proiect_id")
     private Proiect proiect;
 
@@ -44,7 +44,7 @@ public class Task {
     @Column(name = "puncte_task")
     private Integer puncteTask;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "skill_id")
     private Skill skillDobandit;
 }

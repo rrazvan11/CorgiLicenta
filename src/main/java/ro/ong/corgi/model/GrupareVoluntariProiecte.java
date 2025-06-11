@@ -15,11 +15,11 @@ public class GrupareVoluntariProiecte {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voluntar_id")
     private Voluntar voluntar;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proiect_id")
     private Proiect proiect;
 }

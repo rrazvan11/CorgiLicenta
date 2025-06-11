@@ -27,15 +27,15 @@ public class Proiect {
     @Min(value = 1, message = "Trebuie să existe cel puțin un voluntar necesar")
     private Integer necesarVoluntari;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organizatie_id")
     private Organizatie organizatie;
 
-    // 🔁 Relație inversă cu Task (nu se cascadează la ștergere)
+
     @OneToMany(mappedBy = "proiect")
     private List<Task> taskuri;
 
-    // 🔁 Relație inversă cu Participări (se șterg odată cu proiectul)
+
     @OneToMany(mappedBy = "proiect", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GrupareVoluntariProiecte> participari;
 }
