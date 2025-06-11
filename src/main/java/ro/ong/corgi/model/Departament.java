@@ -33,7 +33,7 @@ public class Departament {
 
     @OneToOne
     @JoinColumn(name = "coordonator_id")
-    private Voluntar coordonator; // Voluntarul coordonator
+    private Voluntar coordonator;
 
     @OneToMany(mappedBy = "departament")
     private List<Voluntar> voluntari;

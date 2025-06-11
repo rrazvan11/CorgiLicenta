@@ -65,4 +65,14 @@ public class Voluntar implements Serializable {
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
+
+    /**
+     * Metodă ajutătoare (nu este coloană în baza de date) care returnează numele complet.
+     * Adnotarea @Transient îi spune lui JPA/Hibernate să ignore această metodă.
+     * @return Numele și prenumele concatenate.
+     */
+    @Transient
+    public String getNumeComplet() {
+        return nume + " " + prenume;
+    }
 }
