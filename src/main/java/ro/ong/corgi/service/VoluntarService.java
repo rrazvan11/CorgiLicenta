@@ -54,11 +54,13 @@ public class VoluntarService {
         User userPentruVoluntar = authService.register(username, emailUser, parolaUser, Rol.VOLUNTAR);
 
         voluntar.setUser(userPentruVoluntar);
-        voluntar.setOrganizatie(organizatieAfiliere); // <-- Setează organizația aici
         voluntar.setDataInrolare(LocalDate.now());
         voluntar.setPuncte(0);
         voluntar.setStatus(Status.COLABORATOR);
         voluntar.setDepartament(null);
+
+        // MODIFICARE CHEIE: Se setează legătura directă cu organizația
+        voluntar.setOrganizatie(organizatieAfiliere);
 
         if (voluntarRepository.findSingleByField("user.id", userPentruVoluntar.getId()) != null){
             throw new RuntimeException("Eroare internă critică: ID-ul de utilizator nou creat este deja asociat unui alt voluntar.");
@@ -66,7 +68,6 @@ public class VoluntarService {
 
         voluntarRepository.save(voluntar);
     }
-
 
     public Voluntar cautaDupaId(Long id) {
         Voluntar v = voluntarRepository.findById(id);

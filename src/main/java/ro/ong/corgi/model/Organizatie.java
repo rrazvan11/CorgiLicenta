@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user", "proiecte", "voluntari", "departamente"})
+@ToString(exclude = {"user", "proiecte"})
 @EqualsAndHashCode(of = "id")
 public class Organizatie implements Serializable {
 
@@ -41,13 +41,10 @@ public class Organizatie implements Serializable {
     @OneToMany(mappedBy = "organizatie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Proiect> proiecte;
 
-    @OneToMany(mappedBy = "organizatie", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Departament> departamente;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
+    private User user;
 
     @OneToMany(mappedBy = "organizatie")
     private List<Voluntar> voluntari;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
-    private User user;
 }

@@ -11,7 +11,6 @@ public class VoluntarRepository extends AbstractRepository<Voluntar, Long> {
     public VoluntarRepository() {
         super(Voluntar.class);
     }
-
     public List<Voluntar> findByOrganizatieId(Long organizatieId) {
         if (this.entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat în VoluntarRepository");
