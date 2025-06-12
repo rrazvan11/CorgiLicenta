@@ -55,7 +55,7 @@ public class VoluntarService {
 
         voluntar.setUser(userPentruVoluntar);
         voluntar.setDataInrolare(LocalDate.now());
-        voluntar.setPuncte(0);
+        voluntar.setPuncte(0.0);
         voluntar.setStatus(Status.COLABORATOR);
         voluntar.setDepartament(null);
 

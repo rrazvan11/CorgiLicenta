@@ -50,7 +50,6 @@ public class DocumentGenerationService {
         data.put("departamentNume", departamentNume);
         data.put("voluntarNumeComplet", voluntar.getNume() + " " + voluntar.getPrenume());
         data.put("voluntarEmail", voluntar.getUser().getEmail());
-        // *** MODIFICARE: Am redenumit cheia pentru consistență. ***
         data.put("dataEmitere", LocalDate.now().format(formatter));
         data.put("dataInrolare", voluntar.getDataInrolare().format(formatter));
 
@@ -77,6 +76,44 @@ public class DocumentGenerationService {
         String htmlContent = loadAndPopulateTemplate("template_RaportProiecteVoluntar.html", data);
 
         return genereazaPdfDinHtml(htmlContent);
+    }
+
+    /**
+     * Metoda nouă pentru a genera un raport PDF cu membrii unui departament.
+     * Construiește un HTML dinamic, fără a folosi un template extern.
+     *
+     * @param departament Departamentul pentru care se generează raportul.
+     * @param voluntari Lista de voluntari din departament.
+     * @return un array de bytes ce reprezintă fișierul PDF.
+     */
+    public byte[] genereazaRaportDepartamentPdf(Departament departament, List<Voluntar> voluntari) {
+        StringBuilder htmlBuilder = new StringBuilder();
+
+        // Antetul HTML și stilurile
+        htmlBuilder.append("<!DOCTYPE html><html lang='ro'><head><meta charset='UTF-8'/><title>Raport Departament</title>");
+        htmlBuilder.append("<style>body{font-family: 'DejaVu Sans', Arial, sans-serif; margin: 30px; font-size: 10pt;} h1, h2 {color: #2c3e50;} table{width: 100%; border-collapse: collapse; margin-top: 20px;} th, td{border: 1px solid #ddd; padding: 8px; text-align: left;} th{background-color: #f2f2f2;}</style>");
+        htmlBuilder.append("</head><body>");
+
+        // Titlul și informațiile raportului
+        htmlBuilder.append("<h1>Raport de Membri</h1>");
+        htmlBuilder.append("<h2>Departament: ").append(escapeHtml(departament.getNume())).append("</h2>");
+        htmlBuilder.append("<p>Data generării: ").append(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))).append("</p>");
+
+        // Tabelul cu voluntari
+        htmlBuilder.append("<table><thead><tr><th>Nume Complet</th><th>Email</th><th>Status</th><th>Puncte</th></tr></thead><tbody>");
+        for (Voluntar v : voluntari) {
+            htmlBuilder.append("<tr>");
+            htmlBuilder.append("<td>").append(escapeHtml(v.getNumeComplet())).append("</td>");
+            htmlBuilder.append("<td>").append(escapeHtml(v.getUser().getEmail())).append("</td>");
+            htmlBuilder.append("<td>").append(escapeHtml(v.getStatus().toString())).append("</td>");
+            // Folosim String.format pentru a afișa punctele cu două zecimale
+            htmlBuilder.append("<td>").append(String.format("%.2f", v.getPuncte() != null ? v.getPuncte() : 0.0)).append("</td>");
+            htmlBuilder.append("</tr>");
+        }
+        htmlBuilder.append("</tbody></table>");
+        htmlBuilder.append("</body></html>");
+
+        return genereazaPdfDinHtml(htmlBuilder.toString());
     }
 
 
