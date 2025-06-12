@@ -22,7 +22,7 @@ public class DocumentGenerationService {
     private static final String DEFAULT_REPREZENTANT = "Reprezentant Nespecificat";
     private static final String DEFAULT_FUNCTIE = "Reprezentant";
 
-    // --- METODĂ NOUĂ ---
+    // --- METODĂ ACTUALIZATĂ ---
     public byte[] genereazaRaportDepartamentPdf(Departament departament, List<Voluntar> voluntari, Organizatie organizatie) {
         Map<String, String> data = new HashMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -34,18 +34,28 @@ public class DocumentGenerationService {
 
         StringBuilder tabelVoluntariHtml = new StringBuilder();
         for (Voluntar v : voluntari) {
+            // Obținem rolul și starea contului
+            String rol = v.getUser().getRol().toString();
+            String stareCont = v.getUser().isActiv() ? "Activ" : "Inactiv";
+
             tabelVoluntariHtml.append("<tr>")
                     .append("<td>").append(escapeHtml(v.getNume())).append("</td>")
                     .append("<td>").append(escapeHtml(v.getPrenume())).append("</td>")
                     .append("<td>").append(escapeHtml(v.getUser().getEmail())).append("</td>")
                     .append("<td>").append(escapeHtml(v.getStatus().toString())).append("</td>")
+                    // Adăugăm noile celule
+                    .append("<td>").append(escapeHtml(rol)).append("</td>")
+                    .append("<td>").append(escapeHtml(stareCont)).append("</td>")
                     .append("</tr>");
         }
         data.put("tabelVoluntari", tabelVoluntariHtml.toString());
 
+        // Se folosește template-ul modificat
         String htmlContent = loadAndPopulateTemplate("template_raport_departament.html", data);
         return genereazaPdfDinHtml(htmlContent);
     }
+
+    // ... restul metodelor rămân neschimbate ...
 
     public byte[] genereazaCertificatPdf(Voluntar voluntar, Organizatie organizatieEmitenta) {
         if (voluntar == null) {

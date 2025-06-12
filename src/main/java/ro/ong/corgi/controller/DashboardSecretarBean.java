@@ -46,13 +46,13 @@ public class DashboardSecretarBean implements Serializable {
     private String searchKeyword;
     private boolean editModeOrganizatie = false;
 
-    // --- Liste Voluntari ---
+    // --- Liste Voluntari (folosite de noul TabView) ---
     private List<Voluntar> voluntariActivi;
     private List<Voluntar> voluntariColaboratori;
     private List<Voluntar> coordonatori;
-    private List<Voluntar> voluntariInactivi;
+    private List<Voluntar> voluntariInactivi; // Conturi dezactivate
     private List<Voluntar> allVolunteersInOrg;
-    private List<Voluntar> voluntariNerepartizati;
+    private List<Voluntar> voluntariNerepartizati; // Fără departament
     private List<Voluntar> voluntariCoordonatori;
 
     // --- Management Departamente ---
@@ -60,7 +60,7 @@ public class DashboardSecretarBean implements Serializable {
     private List<Voluntar> membriDepartamentCurent;
     private List<Voluntar> voluntariDeAdaugat;
 
-    // --- NOU: Secțiune Prezențe ---
+    // --- Secțiune Prezențe ---
     private Sedinta sedintaCurenta;
     private List<PrezentaWrapper> listaPrezente;
     private List<Sedinta> istoricSedinte;
@@ -89,7 +89,6 @@ public class DashboardSecretarBean implements Serializable {
             istoricSedinte = sedintaService.getSedinteByOrganizatie(currentOrganizatie.getId());
             categorizeazaVoluntarii();
         } else {
-            // MODIFICAT: Am separat asignările pentru a evita erorile de tip.
             allVolunteersInOrg = Collections.emptyList();
             departmentList = Collections.emptyList();
             istoricSedinte = Collections.emptyList();
@@ -140,6 +139,7 @@ public class DashboardSecretarBean implements Serializable {
 
     public void anuleazaEditareOrganizatie() {
         this.editModeOrganizatie = false;
+        // Reîncarcă datele originale pentru a anula orice modificare ne-salvată
         this.currentOrganizatie = organizatieService.cautaDupaId(this.currentOrganizatie.getId());
     }
 
@@ -166,12 +166,16 @@ public class DashboardSecretarBean implements Serializable {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul '" + savedDept.getNume() + "' a fost adăugat."));
             } else {
                 Departament updatedDept = departamentService.actualizeazaDepartament(selectedDepartament, loggedInUser);
-                this.departmentList.removeIf(d -> d.getId().equals(updatedDept.getId()));
-                this.departmentList.add(updatedDept);
+                // Actualizăm elementul în listă pentru a reflecta modificările
+                int index = this.departmentList.indexOf(updatedDept);
+                if (index != -1) {
+                    this.departmentList.set(index, updatedDept);
+                }
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul '" + updatedDept.getNume() + "' a fost actualizat."));
             }
-            this.selectedDepartament = new Departament();
+            this.selectedDepartament = null; // Resetează formularul
             PrimeFaces.current().executeScript("PF('manageDepartmentDialog').hide()");
+            incarcaDateleInitiale(); // Reîncărcăm totul pentru consistență
         } catch (Exception e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la salvare", e.getMessage()));
         }
@@ -181,7 +185,7 @@ public class DashboardSecretarBean implements Serializable {
         try {
             departamentService.stergeDepartament(departament.getId(), loggedInUser);
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes", "Departamentul a fost șters."));
-            incarcaDateleInitiale();
+            incarcaDateleInitiale(); // Reîmprospătare completă
         } catch (Exception e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la ștergere", e.getMessage()));
         }
@@ -281,7 +285,7 @@ public class DashboardSecretarBean implements Serializable {
     }
     //</editor-fold>
 
-    // --- NOU: Funcționalități Rapoarte ---
+    // --- Funcționalități Rapoarte ---
     public void genereazaSiTrimiteRaportDepartament(Departament departament) {
         if (departament == null) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Trebuie să selectați un departament."));
@@ -293,6 +297,7 @@ public class DashboardSecretarBean implements Serializable {
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "Departamentul selectat nu are membri."));
                 return;
             }
+            // Serviciul de generare va fi modificat pentru a include toate detaliile
             byte[] pdfData = documentGenerationService.genereazaRaportDepartamentPdf(departament, voluntariDinDepartament, currentOrganizatie);
             String fileName = "Raport_Departament_" + departament.getNume().replaceAll("\\s+", "_") + ".pdf";
 
@@ -305,16 +310,17 @@ public class DashboardSecretarBean implements Serializable {
         }
     }
 
-    // --- NOU: Funcționalități Prezențe ---
+    // --- Funcționalități Prezențe ---
     public void initiazaFoaiePrezenta() {
         this.sedintaCurenta = new Sedinta();
         this.sedintaCurenta.setDataSedinta(LocalDateTime.now());
         this.sedintaCurenta.setOrganizatie(this.currentOrganizatie);
         this.sedintaCurenta.setDescriere("Ședință Generală");
 
+        // Folosim allVolunteersInOrg, deoarece include toți voluntarii (activi, colaboratori etc.)
         this.listaPrezente = allVolunteersInOrg.stream()
-                .filter(v -> v.getUser().isActiv()) // Doar voluntarii activi
-                .map(v -> new PrezentaWrapper(v, StatusPrezenta.ABSENT)) // Default to ABSENT
+                .filter(v -> v.getUser().isActiv()) // Doar voluntarii cu cont activ
+                .map(v -> new PrezentaWrapper(v, StatusPrezenta.ABSENT)) // Implicit absenți
                 .collect(Collectors.toList());
 
         this.attendanceMode = true;
@@ -352,10 +358,20 @@ public class DashboardSecretarBean implements Serializable {
         }
     }
 
+    // Metode ajutătoare pentru frontend
     public StatusPrezenta[] getStatusPrezentaValues() {
         return StatusPrezenta.values();
     }
 
+    public Status[] getStatusValues() {
+        return Status.values();
+    }
+
+    public Rol[] getRolValues() {
+        return Rol.values();
+    }
+
+    // Wrapper pentru a gestiona prezența în interfață
     @Getter @Setter
     public static class PrezentaWrapper implements Serializable {
         private Voluntar voluntar;
