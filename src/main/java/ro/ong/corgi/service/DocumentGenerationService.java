@@ -22,31 +22,6 @@ public class DocumentGenerationService {
     private static final String DEFAULT_REPREZENTANT = "Reprezentant Nespecificat";
     private static final String DEFAULT_FUNCTIE = "Reprezentant";
 
-    // --- METODĂ NOUĂ ---
-    public byte[] genereazaRaportDepartamentPdf(Departament departament, List<Voluntar> voluntari, Organizatie organizatie) {
-        Map<String, String> data = new HashMap<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-        data.put("numeOrganizatie", organizatie.getNume() != null ? organizatie.getNume() : DEFAULT_NUME_ORGANIZATIE);
-        data.put("numeDepartament", departament.getNume());
-        data.put("dataEmitere", LocalDate.now().format(formatter));
-        data.put("totalVoluntari", String.valueOf(voluntari.size()));
-
-        StringBuilder tabelVoluntariHtml = new StringBuilder();
-        for (Voluntar v : voluntari) {
-            tabelVoluntariHtml.append("<tr>")
-                    .append("<td>").append(escapeHtml(v.getNume())).append("</td>")
-                    .append("<td>").append(escapeHtml(v.getPrenume())).append("</td>")
-                    .append("<td>").append(escapeHtml(v.getUser().getEmail())).append("</td>")
-                    .append("<td>").append(escapeHtml(v.getStatus().toString())).append("</td>")
-                    .append("</tr>");
-        }
-        data.put("tabelVoluntari", tabelVoluntariHtml.toString());
-
-        String htmlContent = loadAndPopulateTemplate("template_raport_departament.html", data);
-        return genereazaPdfDinHtml(htmlContent);
-    }
-
     public byte[] genereazaCertificatPdf(Voluntar voluntar, Organizatie organizatieEmitenta) {
         if (voluntar == null) {
             throw new IllegalArgumentException("Datele voluntarului sunt necesare pentru a genera certificatul.");
@@ -75,6 +50,7 @@ public class DocumentGenerationService {
         data.put("departamentNume", departamentNume);
         data.put("voluntarNumeComplet", voluntar.getNume() + " " + voluntar.getPrenume());
         data.put("voluntarEmail", voluntar.getUser().getEmail());
+        // *** MODIFICARE: Am redenumit cheia pentru consistență. ***
         data.put("dataEmitere", LocalDate.now().format(formatter));
         data.put("dataInrolare", voluntar.getDataInrolare().format(formatter));
 
