@@ -57,7 +57,7 @@ public class LoginBean implements Serializable {
                         return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
                     case SECRETAR:
                         System.out.println("Navigare către dashboard secretar...");
-                        return "/xhtml/dashboardSecretar.xhtml?faces-redirect=true";
+                        return "/xhtml/index.xhtml?faces-redirect=true";
                     default:
                         System.out.println("Rol necunoscut (" + userAutentificat.getRol() + "), navigare către index...");
                         return "/xhtml/index.xhtml?faces-redirect=true";
