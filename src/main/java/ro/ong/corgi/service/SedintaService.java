@@ -3,6 +3,7 @@ package ro.ong.corgi.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import ro.ong.corgi.dto.SedintaDTO;
 import ro.ong.corgi.model.Enums.StatusPrezenta;
 import ro.ong.corgi.model.PrezentaSedinta;
 import ro.ong.corgi.model.Sedinta;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class SedintaService {
@@ -55,7 +57,7 @@ public class SedintaService {
                 listaPrezente.add(prezenta);
 
                 // Acordăm puncte dacă este prezent
-                if (status == StatusPrezenta.PREZENT) {
+                if (status == StatusPrezenta.PREZENT || status == StatusPrezenta.ONLINE) {
                     double puncteNoi = (voluntar.getPuncte() == null ? 0 : voluntar.getPuncte()) + PUNCTE_PER_PREZENTA;
                     voluntar.setPuncte(puncteNoi);
                     voluntarRepository.update(voluntar);
@@ -68,5 +70,21 @@ public class SedintaService {
 
     public List<Sedinta> getToateSedintele() {
         return sedintaRepository.findAll();
+    }
+
+    public List<Sedinta> gasesteSedintePeOrganizatie(Long organizatieId) {
+        // Apelăm metoda corespunzătoare din SedintaRepository,
+        // pe care am adăugat-o în pasul anterior.
+        return sedintaRepository.findByOrganizatieId(organizatieId);
+    }
+    public List<SedintaDTO> getSedinteInfoPentruOrganizatie(Long organizatieId) {
+        List<Sedinta> sedinte = sedintaRepository.findByOrganizatieId(organizatieId);
+        long totalVoluntari = voluntarRepository.countByOrganizatieId(organizatieId);
+
+        return sedinte.stream().map(sedinta -> {
+            long numarPrezentiSiOnline = prezentaSedintaRepository.adunăPrezentSedințaAndStatusIn(
+                    sedinta.getId(), List.of(StatusPrezenta.PREZENT, StatusPrezenta.ONLINE));
+            return new SedintaDTO(sedinta, numarPrezentiSiOnline, totalVoluntari);
+        }).collect(Collectors.toList());
     }
 }

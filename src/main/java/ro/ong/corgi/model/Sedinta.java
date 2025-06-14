@@ -1,10 +1,9 @@
 package ro.ong.corgi.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import ro.ong.corgi.model.Enums.TipSedinta; // Importăm noul Enum
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,10 +11,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "sedinte")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"departament", "organizatie", "prezente"})
+@EqualsAndHashCode(of = "id")
 public class Sedinta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,12 +29,24 @@ public class Sedinta implements Serializable {
     @Column(nullable = false)
     private LocalDateTime dataSedinta;
 
-    @Lob // Pentru texte mai lungi, cum ar fi o descriere detaliată sau o minută
+    @Lob
     private String descriere;
 
+    // CÂMP NOU: Specifică tipul ședinței
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
+    private TipSedinta tipSedinta;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "departament_id", nullable = false)
+    // O ședință trebuie să aparțină MEREU unei organizații
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "organizatie_id", nullable = false)
+    private Organizatie organizatie;
+
+    // O ședință poate să aparțină unui departament (când e ședință de departament)
+    // sau NU (când e adunare generală). Deci, nullable = true
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "departament_id", nullable = true) // <-- MODIFICARE CHEIE
     private Departament departament;
 
     @OneToMany(mappedBy = "sedinta", cascade = CascadeType.ALL, orphanRemoval = true)

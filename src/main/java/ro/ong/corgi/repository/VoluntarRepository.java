@@ -20,4 +20,10 @@ public class VoluntarRepository extends AbstractRepository<Voluntar, Long> {
         query.setParameter("organizatieId", organizatieId);
         return query.getResultList();
     }
+    public long countByOrganizatieId(Long organizatieId) {
+        TypedQuery<Long> query = this.entityManager.createQuery(
+                "SELECT COUNT(v) FROM Voluntar v WHERE v.organizatie.id = :organizatieId", Long.class);
+        query.setParameter("organizatieId", organizatieId);
+        return query.getSingleResult();
+    }
 }
