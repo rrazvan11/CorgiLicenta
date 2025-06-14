@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user", "proiecte"})
+@ToString(exclude = {"proiecte", "voluntari", "user"})
 @EqualsAndHashCode(of = "id")
 public class Organizatie implements Serializable {
 

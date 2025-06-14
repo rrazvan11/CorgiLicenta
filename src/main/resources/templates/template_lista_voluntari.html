@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8"/>
+    <title>${titluRaport}</title>
+    <style>
+        body { font-family: "DejaVu Sans", Arial, sans-serif; margin: 25px; font-size: 10px; }
+        h1 { text-align: center; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .meta-info { text-align: right; color: #666; font-size: 9px; margin-bottom: 20px; }
+        .styled-table { border-collapse: collapse; width: 100%; font-size: 9px; }
+        .styled-table thead tr { background-color: #007bff; color: #ffffff; text-align: left; }
+        .styled-table th, .styled-table td { padding: 8px 10px; }
+        .styled-table tbody tr { border-bottom: 1px solid #dddddd; }
+        .styled-table tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
+    </style>
+</head>
+<body>
+<h1>${titluRaport}</h1>
+<div class="meta-info">
+    Data emiterii: ${dataEmitere}
+</div>
+
+${continutTabel}
+
+</body>
+</html>

@@ -14,6 +14,8 @@ import java.util.List;
         }
 )
 @Data
+@ToString(exclude = {"voluntari", "coordonator", "organizatie"})
+@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

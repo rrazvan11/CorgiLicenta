@@ -51,7 +51,7 @@ public class Voluntar implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY) // MODIFICAT
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departament_id")
     private Departament departament;
 

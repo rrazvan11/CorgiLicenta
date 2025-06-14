@@ -37,7 +37,12 @@ public class DepartamentRepository extends AbstractRepository<Departament, Long>
             return null;
         }
     }
-
+    // Adaugă această metodă în clasa DepartamentRepository.java
+    public List<Departament> gasesteDepartamenteVoluntari() {
+        TypedQuery<Departament> query = this.entityManager.createQuery(
+                "SELECT DISTINCT d FROM Departament d LEFT JOIN FETCH d.voluntari", Departament.class);
+        return query.getResultList();
+    }
     // Metodă ajustată pentru a căuta după nume și ID organizație
     public Departament findByNumeAndOrganizatieId(String nume, Long organizatieId) {
         if (this.entityManager == null) {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8"/>
+    <title>${titluRaport}</title>
+    <style>
+        body { font-family: "DejaVu Sans", Arial, sans-serif; margin: 25px; font-size: 10px; }
+        h1 { text-align: center; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        h3 { color: #2980b9; border-bottom: 1px solid #eee; padding-bottom: 3px; margin-top: 20px;}
+        hr { border: 0; border-top: 1px solid #f0f0f0; margin: 20px 0; }
+        ul { list-style-type: none; padding-left: 0; } /* Corecție pentru listă */
+        li { padding-left: 1em; text-indent: -1em; margin-bottom: 4px;}
+        li::before {
+            content: '✓ '; /* Bifă adăugată corect */
+            padding-right: 5px;
+        }
+        .styled-table { border-collapse: collapse; width: 100%; font-size: 9px; margin-top: 10px;}
+        .styled-table thead tr { background-color: #007bff; color: #ffffff; text-align: left; }
+        .styled-table th, .styled-table td { padding: 8px 10px; border: 1px solid #ddd; }
+        .styled-table tbody tr:nth-child(even) { background-color: #f3f3f3; } /* nth-child este mai bine suportat */
+    </style>
+</head>
+<body>
+<h1>${titluRaport}</h1>
+
+${continutRaport}
+
+</body>
+</html>

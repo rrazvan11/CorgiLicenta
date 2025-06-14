@@ -7,9 +7,11 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import lombok.Getter;
 import lombok.Setter;
+import ro.ong.corgi.model.Departament;
 import ro.ong.corgi.model.Organizatie;
 import ro.ong.corgi.model.User;
 import ro.ong.corgi.model.Enums.Rol;
+import ro.ong.corgi.service.DepartamentService;
 import ro.ong.corgi.service.OrganizatieService;
 import ro.ong.corgi.service.AuthService;
 
@@ -36,6 +38,9 @@ public class RegisterOrganizatieBean implements Serializable {
     @Inject
     private AuthService authService;
 
+    @Inject
+    private DepartamentService departamentService;
+
     protected RegisterOrganizatieBean() {
         System.out.println("RegisterOrganizatieBean a fost creat.");
     }
@@ -44,6 +49,7 @@ public class RegisterOrganizatieBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         boolean isValid = true;
 
+        // Aici rămân validările tale pentru parolă, CIF etc.
         if (parolaAdmin == null || !parolaAdmin.equals(confirmParolaAdmin)) {
             context.addMessage("registerOrgForm:confirmParolaAdmin",
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Parolele pentru admin nu se potrivesc."));
@@ -61,33 +67,42 @@ public class RegisterOrganizatieBean implements Serializable {
                 isValid = false;
             }
         } else {
-            // required="true" din XHTML ar trebui să prindă asta, dar pentru siguranță
             context.addMessage("registerOrgForm:cifOrganizatie", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "CIF-ul este obligatoriu."));
             isValid = false;
         }
-
 
         if (!isValid) {
             return null;
         }
 
         try {
+            // Pasul 1: Creează User-ul și Organizația (cod pe care îl aveai deja)
             User adminUser = authService.register(usernameAdmin, emailAdmin, parolaAdmin, Rol.SECRETAR);
             organizatie.setUser(adminUser);
             organizatieService.adaugaOrganizatie(organizatie);
 
+            // ==========================================================
+            // === PASUL 2: LOGICA NOUĂ - Crearea departamentului implicit ===
+            // ==========================================================
+            Departament deptImplicit = new Departament();
+            deptImplicit.setNume("Nerepartizat");
+            deptImplicit.setDescriere("Departament implicit pentru voluntarii noi.");
+            deptImplicit.setOrganizatie(organizatie); // Îl legăm de organizația proaspăt creată
+
+            // Folosim serviciul pentru a-l salva în baza de date
+            departamentService.creeazaDepartament(deptImplicit, adminUser);
+            // ==========================================================
+
             FacesMessage successMessage = new FacesMessage(FacesMessage.SEVERITY_INFO, "Înregistrare Reușită!",
-                    "Organizația '" + organizatie.getNume() + "' și contul de admin '" + usernameAdmin + "' au fost create.");
+                    "Organizația '" + organizatie.getNume() + "' și departamentul 'Nerepartizat' au fost create.");
             context.addMessage(null, successMessage);
             context.getExternalContext().getFlash().setKeepMessages(true);
 
-            System.out.println("Organizație înregistrată: " + organizatie.getNume());
             return "/xhtml/login.xhtml?faces-redirect=true";
 
         } catch (RuntimeException e) {
             FacesMessage errorMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la Înregistrare", e.getMessage());
             context.addMessage(null, errorMessage);
-            System.err.println("Eroare la înregistrare organizație: " + e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -88,4 +88,10 @@ public class DepartamentService {
     public List<Departament> gasesteDepartamentePeOrganizatie(Long organizatieId) {
         return departamentRepository.findByField("organizatie.id", organizatieId);
     }
+    // Adaugă această metodă în clasa DepartamentService.java
+
+    public List<Departament> gasesteToateDepartamenteleCuVoluntari() {
+        // Apelăm metoda corespunzătoare din repository
+        return departamentRepository.gasesteDepartamenteVoluntari();
+    }
 }

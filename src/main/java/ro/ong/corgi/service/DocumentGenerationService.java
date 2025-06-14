@@ -50,7 +50,6 @@ public class DocumentGenerationService {
         data.put("departamentNume", departamentNume);
         data.put("voluntarNumeComplet", voluntar.getNume() + " " + voluntar.getPrenume());
         data.put("voluntarEmail", voluntar.getUser().getEmail());
-        // *** MODIFICARE: Am redenumit cheia pentru consistență. ***
         data.put("dataEmitere", LocalDate.now().format(formatter));
         data.put("dataInrolare", voluntar.getDataInrolare().format(formatter));
 
@@ -79,6 +78,42 @@ public class DocumentGenerationService {
         return genereazaPdfDinHtml(htmlContent);
     }
 
+    // =========================================================================
+    // === METODA NOUĂ PENTRU RAPORTUL LISTEI DE VOLUNTARI (ADĂUGATĂ DE MINE) ===
+    // =========================================================================
+    public byte[] genereazaRaportListaVoluntari(String titluRaport, List<Voluntar> voluntari) {
+        // 1. Construim dinamic corpul tabelului HTML
+        StringBuilder tabelHtml = new StringBuilder();
+        tabelHtml.append("<table class='styled-table'><thead><tr>")
+                .append("<th>Nume și Prenume</th>")
+                .append("<th>Email</th>")
+                .append("<th>Telefon</th>")
+                .append("<th>Status</th>")
+                .append("</tr></thead><tbody>");
+
+        for (Voluntar v : voluntari) {
+            tabelHtml.append("<tr>")
+                    .append("<td>").append(escapeHtml(v.getNumeComplet())).append("</td>")
+                    .append("<td>").append(escapeHtml(v.getUser().getEmail())).append("</td>")
+                    .append("<td>").append(escapeHtml(v.getTelefon() != null ? v.getTelefon() : "-")).append("</td>")
+                    .append("<td>").append(escapeHtml(v.getStatus().name())).append("</td>")
+                    .append("</tr>");
+        }
+        tabelHtml.append("</tbody></table>");
+
+        // 2. Pregătim datele pentru template-ul general
+        Map<String, String> data = new HashMap<>();
+        data.put("titluRaport", titluRaport);
+        data.put("dataEmitere", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        data.put("continutTabel", tabelHtml.toString());
+
+        // 3. Încărcăm template-ul și inserăm datele
+        String htmlContent = loadAndPopulateTemplate("template_lista_voluntari.html", data);
+
+        // 4. Generăm PDF-ul
+        return genereazaPdfDinHtml(htmlContent);
+    }
+    // =========================================================================
 
     private String loadAndPopulateTemplate(String numeTemplate, Map<String, String> data) {
         String path = TEMPLATE_FOLDER + numeTemplate;
@@ -151,6 +186,7 @@ public class DocumentGenerationService {
         return data;
     }
 
+    // Aici este singura metodă escapeHtml necesară
     private static String escapeHtml(String text) {
         if (text == null) return "";
         return text.replace("&", "&amp;")
@@ -158,5 +194,36 @@ public class DocumentGenerationService {
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
                 .replace("'", "&#39;");
+    }
+
+    // Adaugă această metodă nouă în DocumentGenerationService.java
+    public byte[] genereazaRaportDepartamente(List<Departament> departamente) {
+        StringBuilder htmlBuilder = new StringBuilder();
+        for (Departament dept : departamente) {
+            // Titlul pentru fiecare secțiune de departament
+            htmlBuilder.append("<h3>Departament: ").append(escapeHtml(dept.getNume())).append("</h3>");
+
+            String coordonator = (dept.getCoordonator() != null) ? dept.getCoordonator().getNumeComplet() : "N/A";
+            htmlBuilder.append("<p><strong>Coordonator:</strong> ").append(escapeHtml(coordonator)).append("</p>");
+
+            if (dept.getVoluntari() == null || dept.getVoluntari().isEmpty()) {
+                htmlBuilder.append("<p><i>Niciun voluntar în acest departament.</i></p>");
+            } else {
+                htmlBuilder.append("<ul>");
+                for (Voluntar v : dept.getVoluntari()) {
+                    htmlBuilder.append("<li>").append(escapeHtml(v.getNumeComplet())).append(" (Status: ").append(v.getStatus()).append(")</li>");
+                }
+                htmlBuilder.append("</ul>");
+            }
+            htmlBuilder.append("<hr/>");
+        }
+
+        Map<String, String> data = new HashMap<>();
+        data.put("titluRaport", "Raport Structură Departamente");
+        data.put("continutRaport", htmlBuilder.toString());
+
+        // Folosim template-ul nou pentru a genera PDF-ul
+        String htmlContent = loadAndPopulateTemplate("template_raport_departamente_list.html", data);
+        return genereazaPdfDinHtml(htmlContent);
     }
 }
