@@ -53,8 +53,7 @@ public class LoginBean implements Serializable {
                         return "/xhtml/dashboardVoluntar.xhtml?faces-redirect=true";
                     case COORDONATOR:
                         System.out.println("Navigare către dashboard coordonator...");
-                        // TODO: Actualizează cu calea corectă când dashboard-ul coordonatorului e gata
-                        return "/xhtml/index.xhtml?faces-redirect=true"; // TEMPORAR
+                        return "/xhtml/dashboardCoordonator.xhtml?faces-redirect=true";
                     case SECRETAR:
                         System.out.println("Navigare către dashboard secretar...");
                         return "/xhtml/dashboardSecretar.xhtml?faces-redirect=true";

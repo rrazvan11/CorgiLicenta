@@ -29,24 +29,19 @@ public class Sedinta implements Serializable {
     @Column(nullable = false)
     private LocalDateTime dataSedinta;
 
-    @Lob
     private String descriere;
 
-    // CÂMP NOU: Specifică tipul ședinței
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull
     private TipSedinta tipSedinta;
 
-    // O ședință trebuie să aparțină MEREU unei organizații
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizatie_id", nullable = false)
     private Organizatie organizatie;
 
-    // O ședință poate să aparțină unui departament (când e ședință de departament)
-    // sau NU (când e adunare generală). Deci, nullable = true
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "departament_id", nullable = true) // <-- MODIFICARE CHEIE
+    @JoinColumn(name = "departament_id", nullable = true)
     private Departament departament;
 
     @OneToMany(mappedBy = "sedinta", cascade = CascadeType.ALL, orphanRemoval = true)

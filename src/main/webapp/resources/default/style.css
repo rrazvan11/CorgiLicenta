@@ -75,7 +75,7 @@ body {
 }
 
 /* Asigură scroll orizontal pentru tabele scrollable */
-.ui-datatable-scrollable-body {
+.table-force-scroll .ui-datatable-scrollable-body {
     overflow-x: auto !important;
     display: block !important;
 }

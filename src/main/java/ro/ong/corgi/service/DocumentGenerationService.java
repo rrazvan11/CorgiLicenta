@@ -226,4 +226,5 @@ public class DocumentGenerationService {
         String htmlContent = loadAndPopulateTemplate("template_raport_departamente_list.html", data);
         return genereazaPdfDinHtml(htmlContent);
     }
+
 }

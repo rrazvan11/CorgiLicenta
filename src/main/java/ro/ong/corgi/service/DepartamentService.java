@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import ro.ong.corgi.model.Departament;
 import ro.ong.corgi.model.Enums.Rol;
 import ro.ong.corgi.model.User; // User este un parametru, nu o dependență injectată a serviciului
+import ro.ong.corgi.model.Voluntar;
 import ro.ong.corgi.repository.DepartamentRepository;
 // import ro.ong.corgi.repository.OrganizatieRepository; // Dacă ai nevoie de el
 
@@ -93,5 +94,13 @@ public class DepartamentService {
     public List<Departament> gasesteToateDepartamenteleCuVoluntari() {
         // Apelăm metoda corespunzătoare din repository
         return departamentRepository.gasesteDepartamenteVoluntari();
+    }
+    public Departament findByCoordonator(Voluntar coordonator) {
+        if (coordonator == null || coordonator.getId() == null) {
+            return null;
+        }
+        // Folosim metoda deja existentă din AbstractRepository pentru a căuta
+        // un departament care are ID-ul coordonatorului egal cu cel al voluntarului dat.
+        return departamentRepository.findSingleByField("coordonator.id", coordonator.getId());
     }
 }

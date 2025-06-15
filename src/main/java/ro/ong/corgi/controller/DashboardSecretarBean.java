@@ -55,6 +55,8 @@ public class DashboardSecretarBean implements Serializable {
     private Sedinta sedintaCurenta;
     private Map<Long, StatusPrezenta> prezenteMap = new HashMap<>();
     private List<SedintaDTO> sedinteDTO;
+    private boolean editModePrezenta = false;
+    private SedintaDTO selectedSedintaDTO;
 
     @PostConstruct
     public void init() {
@@ -203,6 +205,7 @@ public class DashboardSecretarBean implements Serializable {
     }
     // --- Prezențe ---
     public void initPrezentaNoua() {
+        this.editModePrezenta = false;
         sedintaCurenta = new Sedinta();
         sedintaCurenta.setDescriere("Adunare Generală");
         sedintaCurenta.setDataSedinta(LocalDateTime.now());
@@ -213,16 +216,18 @@ public class DashboardSecretarBean implements Serializable {
         if (voluntari != null) voluntari.forEach(v -> prezenteMap.put(v.getId(), StatusPrezenta.ABSENT));
     }
     public void salveazaPrezenta() {
+        // ADAUGĂ ACEASTĂ LINIE PENTRU DEBUG
+        System.out.println("--- DEBUG: Se salvează prezența. Conținutul hărții este: " + prezenteMap);
+
         try {
             sedintaService.creeazaSiInregistreazaPrezenta(sedintaCurenta, prezenteMap);
             addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Prezența a fost salvată.");
             this.voluntari = voluntarService.gasesteVoluntariDinOrganizatie(this.organizatie.getId());
-            // Reîmprospătăm lista de DTO-uri după ce s-a salvat o prezență nouă
             this.sedinteDTO = sedintaService.getSedinteInfoPentruOrganizatie(this.organizatie.getId());
-            // Comandăm update pe formularul de ședințe și pe cel de voluntari (pentru puncte)
-            PrimeFaces.current().ajax().update(":sedinteForm", ":voluntarForm");
+            PrimeFaces.current().ajax().update(":sedinteForm:sedinteTable", ":voluntarForm:voluntariTable", ":messages");
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_FATAL, "Eroare la salvare", "Nu s-a putut salva prezența: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     // Adaugă această metodă în bean
@@ -298,6 +303,68 @@ public class DashboardSecretarBean implements Serializable {
                     FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() + "/xhtml/login.xhtml"
             );
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initEditarePrezenta(SedintaDTO sedintaDTO) {
+        this.editModePrezenta = true;
+        this.sedintaCurenta = sedintaDTO.getSedinta();
+
+        // CORECT: Apelăm metoda din serviciu, care este deja injectat
+        List<PrezentaSedinta> prezenteExistente = sedintaService.getPrezentePentruSedinta(sedintaCurenta.getId());
+
+        prezenteMap.clear();
+        // Populăm mapa cu valorile deja salvate
+        for (PrezentaSedinta p : prezenteExistente) {
+            prezenteMap.put(p.getVoluntar().getId(), p.getStatusPrezenta());
+        }
+
+        // ADAUGĂ ACEASTĂ SECȚIUNE pentru a include și voluntarii noi, care nu au fost la ședință
+        // Este util dacă ai adăugat un voluntar nou după ce s-a ținut ședința
+        if (this.voluntari != null) {
+            for (Voluntar v : this.voluntari) {
+                prezenteMap.putIfAbsent(v.getId(), StatusPrezenta.ABSENT);
+            }
+        }
+    }
+
+    // Adaugă această metodă nouă
+    public void saveOrUpdatePrezenta() {
+        if (this.editModePrezenta) {
+            salveazaModificariPrezenta();
+        } else {
+            salveazaPrezenta();
+        }
+    }
+
+    public void salveazaModificariPrezenta() {
+        try {
+            sedintaService.actualizeazaPrezenta(sedintaCurenta.getId(), prezenteMap);
+            addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Prezența a fost actualizată.");
+            // Reîmprospătăm datele din pagină
+            this.sedinteDTO = sedintaService.getSedinteInfoPentruOrganizatie(this.organizatie.getId());
+            PrimeFaces.current().ajax().update(":sedinteForm:sedinteTable", ":voluntarForm:voluntariTable", ":messages");
+        } catch (Exception e) {
+            addMessage(FacesMessage.SEVERITY_FATAL, "Eroare la actualizare", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void executaStergereSedinta() {
+        if (selectedSedintaDTO == null || selectedSedintaDTO.getSedinta() == null) {
+            addMessage(FacesMessage.SEVERITY_WARN, "Atenție", "Nicio ședință selectată pentru ștergere.");
+            return;
+        }
+        try {
+            sedintaService.stergeSedintaSiPrezentele(selectedSedintaDTO.getSedinta().getId());
+            addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Ședința a fost ștearsă.");
+
+            // Reîmprospătăm toate datele care ar fi putut fi afectate
+            init(); // Cel mai simplu mod de a reîncărca totul corect
+
+        } catch (Exception e) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Eroare la ștergere", e.getMessage());
             e.printStackTrace();
         }
     }

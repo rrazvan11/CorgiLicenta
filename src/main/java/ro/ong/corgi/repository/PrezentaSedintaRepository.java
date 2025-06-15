@@ -20,4 +20,11 @@ public class PrezentaSedintaRepository extends AbstractRepository<PrezentaSedint
         query.setParameter("statuses", statuses);
         return query.getSingleResult();
     }
+
+    public List<PrezentaSedinta> findBySedintaId(Long sedintaId) {
+        TypedQuery<PrezentaSedinta> query = this.entityManager.createQuery(
+                "SELECT p FROM PrezentaSedinta p JOIN FETCH p.voluntar WHERE p.sedinta.id = :sedintaId", PrezentaSedinta.class);
+        query.setParameter("sedintaId", sedintaId);
+        return query.getResultList();
+    }
 }
