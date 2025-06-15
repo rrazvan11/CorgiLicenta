@@ -10,120 +10,105 @@
     <ui:define name="header_title">Dashboard Coordonator</ui:define>
 
     <ui:define name="content">
-        <p:growl id="messages" globalOnly="true" showDetail="true" closable="true"/>
+        <p:growl id="messages" showDetail="true" closable="true" />
 
         <p:panel styleClass="card">
             <h2>
                 <h:outputText value="Dashboard Coordonator" />
-                <h:outputText value=" - #{dashboardCoordonatorBean.departamentCoordonat.nume}"
-                              rendered="#{not empty dashboardCoordonatorBean.departamentCoordonat}" />
+                <h:outputText value=" - #{dashboardCoordonatorBean.departamentCoordonat.nume}" rendered="#{not empty dashboardCoordonatorBean.departamentCoordonat}" />
             </h2>
             <p>
                 Panoul de control pentru gestionarea proiectelor, echipelor și prezenței în departamentul
-                <h:outputText value="#{dashboardCoordonatorBean.departamentCoordonat.nume}"
-                              style="font-weight: bold;"
-                              rendered="#{not empty dashboardCoordonatorBean.departamentCoordonat}" />.
+                <h:outputText value="#{dashboardCoordonatorBean.departamentCoordonat.nume}" style="font-weight: bold;" rendered="#{not empty dashboardCoordonatorBean.departamentCoordonat}" />.
             </p>
         </p:panel>
 
-        <h:form id="mainForm">
-            <p:tabView style="margin-top: 20px;">
-
-                <p:tab title="Management proiecte">
+        <p:tabView style="margin-top: 20px;">
+            <p:tab title="Management proiecte">
+                <h:form>
                     <p:panel header="Gestionarea Proiectelor">
-                        <p>Aici vei putea vizualiza proiectele din departamentul tău, adăuga task-uri și monitoriza progresul.</p>
+                        <p>Funcționalitate viitoare.</p>
                     </p:panel>
-                </p:tab>
+                </h:form>
+            </p:tab>
 
-                <p:tab title="Management echipe">
-                    <p:panel header="Gestionarea Echipelor și Voluntarilor">
-                        <p>Aici vei putea vizualiza lista voluntarilor din departamentul tău și le vei putea aloca în proiecte.</p>
+            <p:tab title="Management echipe">
+                <h:form>
+                    <p:panel header="Gestionarea Echipelor">
+                        <p>Funcționalitate viitoare.</p>
                     </p:panel>
-                </p:tab>
+                </h:form>
+            </p:tab>
 
-                <p:tab title="Prezență departament">
+            <p:tab title="Prezență departament">
+                <h:form id="sedinteDeptForm">
                     <p:panel header="Management Prezență Departament">
-
                         <p:commandButton value="Creează Ședință Nouă" icon="pi pi-plus"
-                                         styleClass="ui-button-success"
                                          actionListener="#{dashboardCoordonatorBean.pregatesteSedintaNoua}"
                                          oncomplete="PF('dialogPrezentaDepartament').show()"
                                          update=":dialogPrezentaDepartamentComponent"
-                                         process="@this"/>
+                                         process="@this"
+                                         styleClass="ui-button-success"/>
 
-                        <p:dataTable id="tabelSedinteDepartament" var="info" value="#{dashboardCoordonatorBean.sedinteDepartament}"
-                                     style="margin-top: 20px;"
-                                     emptyMessage="Nu există ședințe înregistrate pentru acest departament."
-                                     rows="10" paginator="true" paginatorPosition="bottom"
-                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
-
-                            <p:column headerText="Data Ședinței" sortBy="#{info.sedinta.dataSedinta}" style="width: 18%;">
-                                <h:outputText value="#{info.sedinta.dataSedinta}">
-                                    <f:convertDateTime pattern="dd.MM.yyyy 'la' HH:mm" type="localDateTime"/>
-                                </h:outputText>
-                            </p:column>
-
-                            <p:column headerText="Tip Ședință" style="width: 18%;">
-                                <h:outputText value="Ședință de Departament" />
-                            </p:column>
-
-                            <p:column headerText="Descriere" style="width: 24%;">
-                                <h:outputText value="#{info.sedinta.descriere}" />
-                            </p:column>
-
-                            <p:column headerText="Prezenți / Total" style="width: 15%; text-align:center;">
-                                <h:outputText value="#{info.numarPrezentiSiOnline} / #{info.numarTotalVoluntari}" />
-                            </p:column>
-
-                            <p:column headerText="MS (50%+1)" style="width: 15%; text-align:center;">
-                                <h:outputText value="#{info.majoritateSimpla} voturi" rendered="#{info.numarPrezentiSiOnline > 0}"/>
-                                <h:outputText value="N/A" rendered="#{info.numarPrezentiSiOnline == 0}"/>
-                            </p:column>
-
-                            <p:column headerText="Acțiuni" style="width:120px; text-align:center;">
-
-                                <p:commandButton icon="pi pi-pencil" title="Editează Prezența"
-                                                 styleClass="ui-button-warning"
-                                                 actionListener="#{dashboardCoordonatorBean.pregatesteEditarePrezenta}"
-                                                 oncomplete="PF('dialogPrezentaDepartament').show()"
-                                                 update=":dialogPrezentaDepartamentComponent"
-                                                 process="@this">
-                                    <f:setPropertyActionListener value="#{info}" target="#{dashboardCoordonatorBean.sedintaSelectata}"/>
-                                </p:commandButton>
-
-                                <p:commandButton icon="pi pi-trash" title="Șterge Ședința"
-                                                 oncomplete="PF('confirmStergeSedintaDialog').show()"
-                                                 styleClass="ui-button-danger" style="margin-left: 5px;"
-                                                 process="@this" update=":confirmDeleteSedintaForm">
-                                    <f:setPropertyActionListener value="#{info}" target="#{dashboardCoordonatorBean.sedintaSelectata}"/>
-                                </p:commandButton>
-
-                            </p:column>
-
-                        </p:dataTable>
                     </p:panel>
-                </p:tab>
 
-            </p:tabView>
-        </h:form>
+                    <p:dataTable id="tabelSedinteDepartament" var="info" value="#{dashboardCoordonatorBean.sedinteDepartament}"
+                                 style="margin-top: 20px;"
+                                 emptyMessage="Nu există ședințe înregistrate pentru acest departament."
+                                 rows="10" paginator="true" paginatorPosition="bottom">
+
+                        <p:column headerText="Data Ședinței" style="width: 20%;">
+                            <h:outputText value="#{info.sedinta.dataSedinta}">
+                                <f:convertDateTime pattern="dd.MM.yyyy 'la' HH:mm" type="localDateTime"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Descriere">
+                            <h:outputText value="#{info.sedinta.descriere}" />
+                        </p:column>
+
+                        <p:column headerText="Prezenți / Total" style="width: 15%; text-align:center;">
+                            <h:outputText value="#{info.numarPrezentiSiOnline} / #{info.numarTotalVoluntari}" />
+                        </p:column>
+                        <p:column headerText="MS (50%+1)" style="width: 120px; text-align:center;">
+                            <h:outputText value="#{info.majoritateSimpla} vot/uri" rendered="#{info.numarPrezentiSiOnline > 0}"/>
+                            <h:outputText value="N/A" rendered="#{info.numarPrezentiSiOnline == 0}"/>
+                        </p:column>
+                        <p:column headerText="Acțiuni" style="width:120px; text-align:center;">
+                            <p:commandButton icon="pi pi-pencil" title="Editează Prezența"
+                                             actionListener="#{dashboardCoordonatorBean.pregatesteEditarePrezenta}"
+                                             oncomplete="PF('dialogPrezentaDepartament').show()"
+                                             update=":dialogPrezentaDepartamentComponent"
+                                             process="@this">
+                                <f:setPropertyActionListener value="#{info}" target="#{dashboardCoordonatorBean.sedintaSelectata}"/>
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-trash" title="Șterge Ședința"
+                                             oncomplete="PF('confirmStergeSedintaDialog').show()"
+                                             styleClass="ui-button-danger" style="margin-left: 5px;"
+                                             process="@this" update=":confirmDeleteSedintaForm">
+                                <f:setPropertyActionListener value="#{info}" target="#{dashboardCoordonatorBean.sedintaSelectata}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+
+                </h:form>
+            </p:tab>
+        </p:tabView>
 
         <p:dialog id="dialogPrezentaDepartamentComponent"
-                  header="Prezență Ședință Departament"
-                  widgetVar="dialogPrezentaDepartament"
-                  modal="true" width="700" height="500" resizable="false">
+                  header="#{dashboardCoordonatorBean.editModePrezenta ? 'Editare Prezență Ședință' : 'Creare Ședință Nouă'}"
+                  widgetVar="dialogPrezentaDepartament" modal="true" width="700" resizable="false">
             <h:form id="formPrezentaDepartament">
-                <p:outputPanel rendered="#{not empty dashboardCoordonatorBean.sedintaDepartamentNoua}">
+                <p:outputPanel id="continutDialog" rendered="#{not empty dashboardCoordonatorBean.sedintaCurenta}">
                     <div style="margin-bottom: 15px;">
-                        <h:outputText value="Departament: #{dashboardCoordonatorBean.departamentCoordonat.nume}" style="font-weight: bold; font-size: 1.1em;"/>
-                        <br/>
-                        <p:outputLabel for="tipSedinta" value="Descriere ședință:" style="margin-top: 10px; display: block;"/>
-                        <p:inputTextarea id="tipSedinta" value="#{dashboardCoordonatorBean.sedintaDepartamentNoua.descriere}" rows="3" style="width: 98%" required="true" requiredMessage="Descrierea este obligatorie."/>
+                        <p:outputLabel for="descriereSedinta" value="Descriere ședință:" style="font-weight: bold;"/>
+                        <p:inputTextarea id="descriereSedinta" value="#{dashboardCoordonatorBean.sedintaCurenta.descriere}"
+                                         rows="3" style="width: 100%; margin-top:5px;" required="true"
+                                         requiredMessage="Descrierea este obligatorie."
+                                         readonly="#{dashboardCoordonatorBean.editModePrezenta}"/>
                     </div>
-
-                    <p:dataTable var="voluntar" value="#{dashboardCoordonatorBean.voluntariDepartament}" scrollable="true" scrollHeight="250" emptyMessage="Nu există voluntari în acest departament.">
-                        <p:column headerText="Nume Voluntar">
-                            <h:outputText value="#{voluntar.numeComplet}"/>
-                        </p:column>
+                    <p:dataTable var="voluntar" value="#{dashboardCoordonatorBean.voluntariDepartament}" scrollable="true" scrollHeight="280" emptyMessage="Nu există voluntari în acest departament.">
+                        <p:column headerText="Nume Voluntar"> <h:outputText value="#{voluntar.numeComplet}"/> </p:column>
                         <p:column headerText="Status Prezență" style="width: 250px;">
                             <p:selectOneRadio id="statusPrezentaDept" value="#{dashboardCoordonatorBean.prezenteDepartamentMap[voluntar.id]}">
                                 <f:selectItems value="#{dashboardCoordonatorBean.statusPrezentaValues}" var="sp" itemLabel="#{sp}" itemValue="#{sp}"/>
@@ -131,35 +116,29 @@
                             </p:selectOneRadio>
                         </p:column>
                     </p:dataTable>
-
                     <div style="text-align:right; padding-top:10px; border-top: 1px solid #ddd; margin-top:10px;">
-                        <p:commandButton value="Salvează Prezența"
-                                         actionListener="#{dashboardCoordonatorBean.salveazaPrezentaDepartament}"
+                        <p:commandButton value="Salvează"
+                                         action="#{dashboardCoordonatorBean.saveOrUpdatePrezenta}"
                                          process="formPrezentaDepartament"
                                          oncomplete="if(!args.validationFailed) PF('dialogPrezentaDepartament').hide();"
-                                         update=":mainForm:tabelSedinteDepartament :messages"/>
-                        <p:commandButton value="Anulează" type="button" onclick="PF('dialogPrezentaDepartament').hide();"
-                                         styleClass="ui-button-secondary" style="margin-left: 5px;"/>
+                                         update=":sedinteDeptForm:tabelSedinteDepartament :messages"/>
+                        <p:commandButton value="Anulează" type="button" onclick="PF('dialogPrezentaDepartament').hide();" styleClass="ui-button-secondary" style="margin-left: 5px;"/>
                     </div>
                 </p:outputPanel>
             </h:form>
         </p:dialog>
 
-        <p:dialog header="Confirmare Ștergere Ședință" widgetVar="confirmStergeSedintaDialog"
-                  modal="true" resizable="false" width="400">
+        <p:dialog header="Confirmare Ștergere Ședință" widgetVar="confirmStergeSedintaDialog" modal="true" resizable="false" width="400">
             <h:form id="confirmDeleteSedintaForm">
                 <div style="text-align: center; padding: 10px;">
                     <i class="pi pi-exclamation-triangle" style="font-size: 3rem; color: #f9a825; margin-bottom: 10px;"></i>
                     <p>Ești sigur că vrei să ștergi această ședință?</p>
-                    <p style="font-size: 0.9em; color: #6c757d;">
-                        Acțiunea este ireversibilă și va anula punctele acordate.
-                    </p>
                 </div>
                 <div style="text-align: center; margin-top: 20px;">
                     <p:commandButton value="Da, Șterge"
                                      actionListener="#{dashboardCoordonatorBean.executaStergereSedinta}"
                                      oncomplete="PF('confirmStergeSedintaDialog').hide()"
-                                     update=":mainForm:tabelSedinteDepartament :messages"
+                                     update=":sedinteDeptForm:tabelSedinteDepartament :messages"
                                      styleClass="ui-button-danger"/>
                     <p:commandButton value="Anulează" type="button"
                                      onclick="PF('confirmStergeSedintaDialog').hide()"
@@ -167,6 +146,5 @@
                 </div>
             </h:form>
         </p:dialog>
-
     </ui:define>
 </ui:composition>
