@@ -57,6 +57,42 @@
             </p:card>
 
             <p:tabView style="margin-bottom: 2em;">
+                <p:tab title="Oportunități Proiecte">
+                    <p:dataView var="proiect" value="#{dashboardVoluntarBean.proiecteDisponibile}"
+                                rows="6" paginator="true" paginatorPosition="bottom"
+                                layout="grid"
+                                emptyMessage="Momentan nu există proiecte noi cu înscrieri deschise. Revino mai târziu!">
+
+                        <p:dataViewGridItem>
+                            <div class="p-3">
+                                <p:panel header="#{proiect.numeProiect}" style="text-align:center">
+                                    <p><strong>Perioadă:</strong>
+                                        <h:outputText value="#{proiect.dataInceput} - #{proiect.dataSfarsit}">
+                                            <f:convertDateTime type="localDate" pattern="dd.MM.yy"/>
+                                        </h:outputText>
+                                    </p>
+
+                                    <p><p:tag severity="info" value="Status: #{proiect.status.displayValue}" /></p>
+                                    <p>
+                                        <strong>Coordonator:</strong>
+                                        <h:outputText value="#{not empty proiect.coordonatorProiect ? proiect.coordonatorProiect.numeComplet : 'Nespecificat'}" />
+                                    </p>
+
+                                    <p>#{proiect.descriere}</p>
+                                    <hr/>
+                                    <p:commandButton value="Aplică Acum" icon="pi pi-check"
+                                                     actionListener="#{dashboardVoluntarBean.aplicaLaProiect(proiect.id)}"
+                                                     update="dashboardVoluntarForm"
+                                                     disabled="#{dashboardVoluntarBean.aAplicatLaProiect(proiect)}"
+                                                     styleClass="ui-button-success"/>
+                                    <p:tag value="Ai aplicat deja" severity="info" style="margin-left: 10px;"
+                                           rendered="#{dashboardVoluntarBean.aAplicatLaProiect(proiect)}"/>
+                                </p:panel>
+                            </div>
+                        </p:dataViewGridItem>
+
+                    </p:dataView>
+                </p:tab>
                 <p:tab title="Proiectele Mele">
                     <p:dataTable id="proiecteTable" var="proiect"
                                  value="#{dashboardVoluntarBean.proiecteleVoluntarului}"
@@ -73,7 +109,6 @@
                         </p:column>
                     </p:dataTable>
                 </p:tab>
-                <!-- Înlocuiește complet conținutul <p:tab title="Task-urile Mele"> cu acesta -->
 
                 <p:tab title="Task-urile Mele">
                     <p:dataTable id="taskuriTable" var="task" value="#{dashboardVoluntarBean.taskurileVoluntarului}"

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ro.ong.corgi.model.*;
 import ro.ong.corgi.model.Enums.Rol;
+import ro.ong.corgi.model.Enums.StatusProiect;
 import ro.ong.corgi.model.Enums.TaskStatus;
 import ro.ong.corgi.service.DocumentGenerationService;
 import ro.ong.corgi.service.EmailService;
@@ -41,10 +42,12 @@ public class DashboardVoluntarBean implements Serializable {
     @Inject private EmailService emailService;
     @Inject private FacesContext facesContext;
 
-    // Datele pentru pagină
+
     private Voluntar currentVoluntar;
     private List<Proiect> proiecteleVoluntarului = new ArrayList<>();
     private List<Task> taskurileVoluntarului = new ArrayList<>();
+    private List<Proiect> proiecteDisponibile = new ArrayList<>();
+
 
     @PostConstruct
     public void init() {
@@ -74,12 +77,17 @@ public class DashboardVoluntarBean implements Serializable {
         }
     }
 
+    // Înlocuiește metoda existentă cu aceasta
     private void loadDashboardData() {
         if (this.currentVoluntar != null && this.currentVoluntar.getId() != null) {
             // Re-interogăm datele pentru a fi siguri că avem cele mai noi informații
+            this.currentVoluntar = voluntarService.cautaDupaId(this.currentVoluntar.getId());
             this.proiecteleVoluntarului = proiectService.gasesteProiecteDupaVoluntarId(this.currentVoluntar.getId());
             this.taskurileVoluntarului = taskService.findByVoluntar(this.currentVoluntar.getId());
-            this.currentVoluntar = voluntarService.cautaDupaId(this.currentVoluntar.getId());
+
+            // --- LINII NOI ADĂUGATE ---
+            // Încărcăm toate proiectele cu înscrieri deschise
+            this.proiecteDisponibile = proiectService.gasesteProiecteDupaStatus(StatusProiect.INSCRIERI_DESCHISE);
         }
     }
     public void genereazaSiTrimiteRaport() {
@@ -173,5 +181,46 @@ public class DashboardVoluntarBean implements Serializable {
             e.printStackTrace();
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Eroare la generare/trimitere", "A apărut o eroare neașteptată."));
         }
+    }
+    // ==========================================================
+    // === METODE NOI PENTRU APLICARE LA PROIECTE ===
+    // ==========================================================
+
+    /**
+     * Apelează serviciul pentru ca voluntarul curent să aplice la un proiect.
+     * @param proiectId ID-ul proiectului la care se aplică.
+     */
+    public void aplicaLaProiect(Long proiectId) {
+        if (currentVoluntar == null) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Sesiune invalidă. Vă rugăm să vă reautentificați.");
+            return;
+        }
+        try {
+            proiectService.aplicaLaProiect(proiectId, this.currentVoluntar.getId());
+            addMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Ai aplicat la proiect. Coordonatorul va analiza aplicația ta.");
+            // Reîncărcăm datele pentru a actualiza starea butoanelor
+            loadDashboardData();
+        } catch (Exception e) {
+            addMessage(FacesMessage.SEVERITY_WARN, "Atenție", e.getMessage());
+        }
+    }
+
+    /**
+     * Verifică dacă voluntarul curent a aplicat deja la un anumit proiect.
+     * Folosit în .xhtml pentru a dezactiva butonul "Aplică".
+     * @param proiect Proiectul pentru care se face verificarea.
+     * @return true dacă a aplicat deja, false altfel.
+     */
+    public boolean aAplicatLaProiect(Proiect proiect) {
+        if (currentVoluntar == null || proiect.getParticipari() == null) {
+            return false;
+        }
+        return proiect.getParticipari().stream()
+                .anyMatch(gvp -> gvp.getVoluntar().getId().equals(this.currentVoluntar.getId()));
+    }
+
+    // Metodă ajutătoare pentru a afișa mesaje
+    private void addMessage(FacesMessage.Severity severity, String summary, String detail) {
+        facesContext.addMessage(null, new FacesMessage(severity, summary, detail));
     }
 }
