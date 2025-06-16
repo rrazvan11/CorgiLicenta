@@ -26,4 +26,13 @@ public class VoluntarRepository extends AbstractRepository<Voluntar, Long> {
         query.setParameter("organizatieId", organizatieId);
         return query.getSingleResult();
     }
+    public List<Voluntar> findVoluntariAcceptatiInProiect(Long proiectId) {
+        String jpql = "SELECT gvp.voluntar FROM GrupareVoluntariProiecte gvp " +
+                "WHERE gvp.proiect.id = :proiectId " +
+                "AND gvp.statusAplicatie = :status";
+        TypedQuery<Voluntar> query = this.entityManager.createQuery(jpql, Voluntar.class);
+        query.setParameter("proiectId", proiectId);
+        query.setParameter("status", ro.ong.corgi.model.Enums.StatusAplicari.ACCEPTAT);
+        return query.getResultList();
+    }
 }

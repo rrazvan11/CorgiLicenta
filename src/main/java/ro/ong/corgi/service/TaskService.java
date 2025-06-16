@@ -152,6 +152,9 @@ public class TaskService {
         return taskRepository.findByProiectId(proiectId);
     }
 
+    // În fișierul TaskService.java
+    // Înlocuiește metoda existentă cu aceasta:
+
     @Transactional
     public void completeTask(Long taskId, User loggedInUser) {
         Task task = cautaDupaId(taskId);
@@ -159,14 +162,12 @@ public class TaskService {
 
         // Verifică dacă utilizatorul logat este cel asignat task-ului
         // Sau dacă are un rol care îi permite să modifice (de ex. Coordonator al proiectului)
-        // Această verificare de permisiune trebuie rafinată.
         boolean canComplete = false;
         if (loggedInUser.getRol() == Rol.VOLUNTAR && voluntarAsignat.getUser().getId().equals(loggedInUser.getId())) {
             canComplete = true;
         } else if (loggedInUser.getRol() == Rol.COORDONATOR) {
-            // Aici ar trebui verificat dacă coordonatorul este responsabil pentru proiectul task-ului
-            // Pentru simplitate, momentan permitem oricărui coordonator.
-            // Acest aspect necesită o logică de permisiuni mai detaliată ulterior.
+            // Aici ar trebui verificat dacă coordonatorul este responsabil pentru proiectul task-ului.
+            // Momentan permitem oricărui coordonator, dar logica de permisiuni poate fi rafinată.
             canComplete = true;
         }
 
@@ -178,14 +179,19 @@ public class TaskService {
             throw new RuntimeException("Task-ul este deja finalizat.");
         }
 
+        // --- AICI SUNT MODIFICĂRILE ---
+
+        // 1. Modificăm direct obiectele aduse din baza de date
         task.setStatus(TaskStatus.DONE);
 
         if (task.getPuncteTask() != null && task.getPuncteTask() > 0) {
-            voluntarAsignat.setPuncte(voluntarAsignat.getPuncte() + task.getPuncteTask());
-            // Presupunem că ai injectat VoluntarRepository sau VoluntarService pentru a salva voluntarul
-            // De exemplu, dacă ai VoluntarService:
-            voluntarService.actualizeazaVoluntar(voluntarAsignat); // Asigură-te că această metodă salvează în DB
+            // Adăugăm punctele la voluntar
+            double puncteActuale = voluntarAsignat.getPuncte() != null ? voluntarAsignat.getPuncte() : 0.0;
+            voluntarAsignat.setPuncte(puncteActuale + task.getPuncteTask());
         }
-        taskRepository.update(task); // Salvează task-ul actualizat
+
+        // 2. NU mai apelăm explicit .update() sau .actualizeazaVoluntar().
+        // Adnotarea @Transactional de pe metodă se va ocupa de salvarea automată a modificărilor
+        // făcute atât pe 'task', cât și pe 'voluntarAsignat' la finalul execuției.
     }
 }

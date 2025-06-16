@@ -127,6 +127,15 @@
                         <p:column headerText="Echipă">
                             <h:outputText value="#{proiect.participari.stream().filter(p -> p.statusAplicatie.name() == 'ACCEPTAT').count()} membri" />
                         </p:column>
+                        <p:column headerText="Status Proiect" style="width: 180px;">
+                            <p:selectOneMenu value="#{proiect.status}">
+                                <f:selectItems value="#{dashboardCoordonatorBean.proiectStatusValues}" var="s"
+                                               itemLabel="#{s.displayValue}" itemValue="#{s}"/>
+                                <o:genericEnumConverter />
+                                <p:ajax listener="#{dashboardCoordonatorBean.onProjectStatusChange(proiect)}"
+                                        update=":formProiecte:proiecteTable :formProiecteInDerulare :messages" />
+                            </p:selectOneMenu>
+                        </p:column>
                         <p:column headerText="Acțiuni" style="width: 150px; text-align:center;">
                             <p:commandButton value="Gestionează Taskuri" icon="pi pi-pencil"
                                              actionListener="#{dashboardCoordonatorBean.pregatesteEditareProiectSiTaskuri(proiect)}"
@@ -351,18 +360,32 @@
                         <p:column headerText="Asignat lui" field="voluntar.numeComplet"/>
                         <p:column headerText="Deadline" field="deadline"/>
                         <p:column headerText="Puncte" field="puncteTask"/>
-                        <p:column headerText="Acțiuni">
-                            <p:commandButton icon="pi pi-trash" styleClass="ui-button-danger" title="Șterge Task"
+                        <p:column headerText="Acțiuni" style="width: 7rem; text-align:center;">
+                            <p:commandButton icon="pi pi-pencil" title="Editează Task"
+                                             actionListener="#{dashboardCoordonatorBean.pregatesteEditareTask(task)}"
+                                             update=":formEditareTask"
+                                             oncomplete="PF('dlgEditareTask').show()"
+                                             styleClass="ui-button-primary"
+                                             style="margin-right: 5px;"/>
+
+                            <p:commandButton icon="pi pi-trash" title="Șterge Task"
                                              actionListener="#{dashboardCoordonatorBean.stergeTask(task)}"
-                                             update="formManagementTaskuri:taskuriProiectTable"/>
+                                             update="taskuriProiectTable" styleClass="ui-button-danger">
+
+                                <p:confirm header="Confirmare Ștergere"
+                                           message="Ești sigur că vrei să ștergi task-ul '#{task.titlu}'?"
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
                         </p:column>
+
                     </p:dataTable>
                 </p:outputPanel>
             </h:form>
         </p:dialog>
         <p:dialog header="Adaugă / Editează Task" widgetVar="dlgEditareTask" modal="true" width="600" resizable="false">
             <h:form id="formEditareTask">
-                <p:outputPanel rendered="#{not empty dashboardCoordonatorBean.taskNou}">
+                <p:outputPanel id="continutDialogTask" rendered="#{not empty dashboardCoordonatorBean.taskNou}" style="padding-bottom: 1em;">
+
                     <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank">
                         <p:outputLabel for="taskTitlu" value="Titlu:"/>
                         <p:inputText id="taskTitlu" value="#{dashboardCoordonatorBean.taskNou.titlu}" required="true"/>
@@ -371,9 +394,12 @@
                         <p:inputTextarea id="taskDescriere" value="#{dashboardCoordonatorBean.taskNou.descriere}" required="true" rows="4"/>
 
                         <p:outputLabel for="taskDeadline" value="Deadline:"/>
-                        <p:datePicker id="taskDeadline" value="#{dashboardCoordonatorBean.taskNou.deadline}" required="true"/>
+                        <p:datePicker id="taskDeadline" value="#{dashboardCoordonatorBean.taskNou.deadline}" required="true" pattern="dd/MM/yyyy"/>
 
-                        <p:outputLabel for="taskPuncte" value="Puncte:"/>
+                        <p:outputLabel for="taskPuncte" value="Puncte:"
+                                       decimalSeparator=","
+                                       decimalPlaces="2"
+                                       thousandSeparator="."/>
                         <p:inputNumber id="taskPuncte" value="#{dashboardCoordonatorBean.taskNou.puncteTask}"/>
 
                         <p:outputLabel for="taskAsignare" value="Asignează lui:"/>
@@ -384,11 +410,18 @@
                                            itemValue="#{v}" itemLabel="#{v.numeComplet}"/>
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <f:facet name="footer">
-                        <p:commandButton value="Salvează Task" actionListener="#{dashboardCoordonatorBean.salveazaTask}"
+
+                    <div style="text-align: right; margin-top: 20px; border-top: 1px solid #dee2e6; padding-top: 15px;">
+                        <p:commandButton value="Salvează Task"
+                                         actionListener="#{dashboardCoordonatorBean.salveazaTask}"
                                          update=":formManagementTaskuri:taskuriProiectTable :messages"
                                          oncomplete="if(!args.validationFailed) PF('dlgEditareTask').hide()"/>
-                    </f:facet>
+
+                        <p:commandButton value="Anulează" type="button"
+                                         onclick="PF('dlgEditareTask').hide()"
+                                         styleClass="ui-button-secondary" style="margin-left: 5px;"/>
+                    </div>
+
                 </p:outputPanel>
             </h:form>
         </p:dialog>

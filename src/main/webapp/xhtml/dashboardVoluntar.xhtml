@@ -3,7 +3,9 @@
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="jakarta.faces.facelets">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:o="http://omnifaces.org/ui">
+
 
 <ui:composition template="/WEB-INF/Templates/layout.xhtml">
 
@@ -112,43 +114,39 @@
 
                 <p:tab title="Task-urile Mele">
                     <p:dataTable id="taskuriTable" var="task" value="#{dashboardVoluntarBean.taskurileVoluntarului}"
+                                 styleClass="volunteer-tasks-table"  lazy="false"
                                  rows="10" paginator="true" paginatorPosition="bottom"
-                                 emptyMessage="Nu ai task-uri asignate momentan.">
+                                 emptyMessage="Nu ai niciun task momentan.">
 
-                        <p:column headerText="Titlu Task" sortBy="#{task.titlu}">
-                            <h:outputText value="#{task.titlu}"/>
+                        <p:column headerText="Titlu Task" styleClass="col-title" sortBy="#{task.titlu}">
+                            <h:outputText value="#{task.titlu}" />
                         </p:column>
 
-                        <p:column headerText="Descriere">
-                            <h:outputText value="#{task.descriere}"/>
+                        <p:column headerText="Descriere" styleClass="col-desc">
+                            <h:outputText value="#{task.descriere}" />
                         </p:column>
 
-                        <p:column headerText="Proiect" sortBy="#{task.proiect.numeProiect}">
-                            <h:outputText value="#{task.proiect.numeProiect}"/>
+                        <p:column headerText="Proiect" styleClass="col-project" sortBy="#{task.proiect.numeProiect}">
+                            <h:outputText value="#{task.proiect.numeProiect}" />
                         </p:column>
 
-                        <p:column headerText="Deadline" sortBy="#{task.deadline}">
+                        <p:column headerText="Deadline" styleClass="col-deadline" sortBy="#{task.deadline}">
                             <h:outputText value="#{task.deadline}">
-                                <f:convertDateTime pattern="dd/MM/yyyy" type="localDate"/>
+                                <f:convertDateTime type="localDate" pattern="dd.MM.yyyy"/>
                             </h:outputText>
                         </p:column>
 
-                        <p:column headerText="Puncte Task" sortBy="#{task.puncteTask}" style="text-align:center;">
-                            <h:outputText value="#{task.puncteTask}"/>
+                        <p:column headerText="Puncte Task" styleClass="col-points" sortBy="#{task.puncteTask}">
+                            <h:outputText value="#{task.puncteTask}" />
                         </p:column>
 
-                        <!-- NOUA COLOANĂ PENTRU STATUS INTERACTIV -->
-                        <p:column headerText="Status" style="width: 15rem;">
-                            <!-- Dropdown-ul este legat la statusul task-ului curent -->
-                            <p:selectOneMenu value="#{task.status}" disabled="#{task.status eq 'DONE'}">
-                                <!-- Populează opțiunile din enum-ul TaskStatus -->
+                        <p:column headerText="Status" styleClass="col-status">
+                            <p:selectOneMenu value="#{task.status}" disabled="#{task.status.name() == 'DONE'}">
                                 <f:selectItems value="#{dashboardVoluntarBean.taskStatusValues}" var="status"
                                                itemLabel="#{status.name()}" itemValue="#{status}"/>
-
-                                <!-- Când se schimbă valoarea, se apelează metoda din bean prin AJAX -->
+                                <o:genericEnumConverter />
                                 <p:ajax listener="#{dashboardVoluntarBean.onTaskStatusChange(task)}"
-                                        update="dashboardVoluntarForm:messages dashboardVoluntarForm:taskuriTable dashboardVoluntarForm:puncteVoluntar"/>
-                            </p:selectOneMenu>
+                                        update="@form" /> </p:selectOneMenu>
                         </p:column>
                     </p:dataTable>
                 </p:tab>

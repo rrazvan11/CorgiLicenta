@@ -9,16 +9,22 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "taskuri")
-@Data
+// --- START MODIFICĂRI ---
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"voluntar", "proiect", "skillDobandit"})
+@EqualsAndHashCode(of = "id")
 public class Task {
+// --- FINAL MODIFICĂRI (am înlocuit @Data) ---
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ... restul clasei rămâne la fel
     @NotBlank(message = "Titlul taskului este obligatoriu")
     private String titlu;
 
@@ -42,7 +48,7 @@ public class Task {
 
     @Min(value = 0, message = "Punctele pentru task nu pot fi negative")
     @Column(name = "puncte_task")
-    private Integer puncteTask;
+    private Double puncteTask;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "skill_id")

@@ -14,6 +14,25 @@
 .admin-volunteer-table .col-role { width: 13%; }
 .admin-volunteer-table .col-actions { width: 11%; text-align: center; }
 
+/* Adaugă acest bloc la finalul fișierului */
+
+/* Stiluri pentru tabelul de task-uri al voluntarului */
+.volunteer-tasks-table {
+    table-layout: fixed;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.volunteer-tasks-table .ui-column-title {
+    font-weight: 600;
+}
+
+.volunteer-tasks-table .col-title { width: 20%; }
+.volunteer-tasks-table .col-desc { width: 32%; }
+.volunteer-tasks-table .col-project { width: 18%; }
+.volunteer-tasks-table .col-deadline { width: 10%; }
+.volunteer-tasks-table .col-points { width: 8%; text-align: center; }
+.volunteer-tasks-table .col-status { width: 12%; }
 /* Stiluri generale */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -168,3 +187,4 @@ body {
     font-size:0.85em;
     color: #6c757d;
 }
+

@@ -10,16 +10,22 @@ import java.util.List;
 
 @Entity
 @Table(name = "proiecte")
-@Data
+// --- START MODIFICĂRI ---
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"organizatie", "taskuri", "participari", "coordonatorProiect"}) // Excludem relațiile
+@EqualsAndHashCode(of = "id") // Important: egalitatea se bazează doar pe ID
 public class Proiect {
+// --- FINAL MODIFICĂRI (am înlocuit @Data) ---
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ... restul clasei rămâne la fel
     @NotBlank(message = "Numele proiectului este obligatoriu")
     private String numeProiect;
 

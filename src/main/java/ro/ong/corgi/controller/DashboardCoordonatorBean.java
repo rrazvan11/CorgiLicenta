@@ -138,6 +138,23 @@ public class DashboardCoordonatorBean implements Serializable {
             this.voluntariDepartament.forEach(v -> prezenteDepartamentMap.putIfAbsent(v.getId(), StatusPrezenta.ABSENT));
         }
     }
+    // ADAUGĂ ACEASTĂ METODĂ NOUĂ
+    public void onProjectStatusChange(Proiect proiect) {
+        if (proiect == null) {
+            return;
+        }
+        try {
+            proiectService.actualizeazaProiect(proiect);
+            addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Statusul proiectului '" + proiect.getNumeProiect() + "' a fost actualizat.");
+
+            // Reîncărcăm toate datele pentru a muta proiectul între tab-uri dacă e cazul
+            // (ex: din "În Derulare" dispare dacă e pus pe "Finalizat")
+            loadDashboardData();
+        } catch (Exception e) {
+            addMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut actualiza statusul proiectului.");
+            e.printStackTrace();
+        }
+    }
 
     public void saveOrUpdatePrezenta() {
         try {
@@ -287,14 +304,33 @@ public class DashboardCoordonatorBean implements Serializable {
         this.taskNou.setDeadline(LocalDate.now().plusWeeks(1));
     }
 
+// În DashboardCoordonatorBean.java
+
+// ... alte metode ...
+
+    // ADAUGĂ ACEASTĂ METODĂ NOUĂ
+    public void pregatesteEditareTask(Task task) {
+        // Reutilizăm același obiect 'taskNou' pentru dialog.
+        // Îl căutăm din nou în service pentru a lucra cu o entitate "proaspătă".
+        this.taskNou = taskService.cautaDupaId(task.getId());
+    }
+
+    // ÎNLOCUIEȘTE METODA VECHE 'salveazaTask' CU ACEASTA
     public void salveazaTask() {
         try {
-            taskService.adaugaTask(taskNou);
-            addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Task-ul a fost creat și asignat.");
-            // Reîmprospătăm datele
+            // Verificăm dacă task-ul are ID. Dacă NU, este o creare.
+            if (taskNou.getId() == null) {
+                taskService.adaugaTask(taskNou);
+                addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Task-ul a fost creat și asignat.");
+            } else { // Dacă ARE ID, este o actualizare.
+                taskService.actualizeazaTask(taskNou);
+                addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Task-ul a fost actualizat.");
+            }
+            // Reîmprospătăm lista de task-uri din dialogul părinte
             pregatesteEditareProiectSiTaskuri(this.proiectSelectat);
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Nu s-a putut salva task-ul: " + e.getMessage());
+            e.printStackTrace(); // Util pentru debug
         }
     }
 

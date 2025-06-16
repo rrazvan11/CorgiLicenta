@@ -8,17 +8,19 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "grupare_voluntari_proiecte")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"voluntar", "proiect"})
+@EqualsAndHashCode(of = "id")
 public class GrupareVoluntariProiecte {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // AICI ESTE MODIFICAREA CHEIE: FetchType.EAGER
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "voluntar_id")
     private Voluntar voluntar;

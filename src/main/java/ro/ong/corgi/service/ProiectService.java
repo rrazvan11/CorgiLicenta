@@ -115,13 +115,7 @@ public class ProiectService {
     }
 
     public List<Voluntar> getVoluntariAcceptatiInProiect(Long proiectId) {
-        Proiect proiect = proiectRepository.findById(proiectId);
-        if (proiect == null || proiect.getParticipari() == null) return List.of();
-
-        return proiect.getParticipari().stream()
-                .filter(gvp -> gvp.getStatusAplicatie() == StatusAplicari.ACCEPTAT)
-                .map(GrupareVoluntariProiecte::getVoluntar)
-                .collect(Collectors.toList());
+        return voluntarRepository.findVoluntariAcceptatiInProiect(proiectId);
     }
 
     public Proiect cautaDupaId(Long id) {
