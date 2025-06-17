@@ -188,3 +188,14 @@ body {
     color: #6c757d;
 }
 
+/* Stiluri pentru panoul de login */
+.login-panel {
+    width: 450px; /* Poți ajusta această valoare (ex: 500px sau 40%) */
+    margin: 40px auto; /* Centrează panoul pe orizontală și adaugă spațiu sus */
+    padding: 20px;
+}
+
+/* Asigură-te că input-urile ocupă toată lățimea disponibilă */
+.login-panel .ui-fluid .ui-inputfield {
+    width: 100%;
+}

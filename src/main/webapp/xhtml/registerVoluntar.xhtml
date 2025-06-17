@@ -35,8 +35,7 @@
                                      requiredMessage="Numele de utilizator este obligatoriu."/>
 
                         <p:outputLabel for="parola" value="Parolă:"/>
-                        <p:password id="parola" value="#{registerVoluntarBean.parola}" required="true" feedback="true"
-                                    requiredMessage="Parola este obligatorie."  goodLabel="Acceptabilă" strongLabel="Puternică">
+                        <p:password id="parola" value="#{registerVoluntarBean.parola}" required="true">
                         <f:validateLength minimum="12"/>
                         <f:validateRegex pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}$"
                                          validatorMessage="Parola trebuie să conțină minim 12 caractere, din care un caracter special, o cifră și o majusculă." />

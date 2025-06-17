@@ -3,66 +3,104 @@
       xmlns:h="jakarta.faces.html"
       xmlns:f="jakarta.faces.core"
       xmlns:ui="jakarta.faces.facelets"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui">
 
-<ui:composition template="/WEB-INF/Templates/layout.xhtml"> <ui:define name="title">Modifică Profil</ui:define>
-
-    <ui:define name="header">
-        <h1>Modificare Date Profil Voluntar</h1>
-    </ui:define>
+<ui:composition template="/WEB-INF/Templates/layout.xhtml">
+    <ui:define name="title">Modifică Profil</ui:define>
+    <ui:define name="header_title">Modificare Date Profil Voluntar</ui:define>
 
     <ui:define name="content">
         <div class="form-page-container">
             <p:outputPanel rendered="#{not empty modificaProfilVoluntarBean.currentVoluntar}">
                 <h:form id="modificaProfilForm">
                     <p:panel header="Datele Dumneavoastră Personale" styleClass="form-panel">
-                        <p:messages id="messages" globalOnly="false" showDetail="true" closable="true">
+                        <p:messages id="messages" showDetail="true" closable="true">
                             <p:autoUpdate />
                         </p:messages>
 
                         <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-input-grid"
                                      columnClasses="ui-grid-col-3 label-column, ui-grid-col-9 input-column">
 
-                            <p:outputLabel value="Nume Complet:" styleClass="font-weight-bold"/>
-                            <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.nume} #{modificaProfilVoluntarBean.currentVoluntar.prenume}" />
+                            <p:outputLabel value="Nume Complet:" />
+                            <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.numeComplet}" />
 
-                            <p:outputLabel value="Email Cont:" styleClass="font-weight-bold"/>
-                            <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.user.email}" />
+                            <p:outputLabel for="email" value="Email Cont:" />
+                            <h:panelGroup>
+                                <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.user.email}"
+                                              rendered="#{not modificaProfilVoluntarBean.editMode}" />
+                                <p:inputText id="email" value="#{modificaProfilVoluntarBean.currentVoluntar.user.email}"
+                                             rendered="#{modificaProfilVoluntarBean.editMode}"
+                                             required="true" label="Email" style="width: 100%;"/>
+                            </h:panelGroup>
 
                             <p:outputLabel for="telefon" value="Telefon:" />
-                            <p:inputText id="telefon" value="#{modificaProfilVoluntarBean.currentVoluntar.telefon}"
-                                         validatorMessage="Telefonul trebuie să conțină 10 cifre și să înceapă cu 07.">
-                                <f:validateRegex pattern="^07\d{8}$" />
-                            </p:inputText>
+                            <h:panelGroup>
+                                <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.telefon}"
+                                              rendered="#{not modificaProfilVoluntarBean.editMode}" />
+                                <p:inputText id="telefon" value="#{modificaProfilVoluntarBean.currentVoluntar.telefon}"
+                                             rendered="#{modificaProfilVoluntarBean.editMode}"
+                                             validatorMessage="Telefonul trebuie să conțină 10 cifre."
+                                             style="width: 100%;">
+                                    <f:validateRegex pattern="^\d{10}$" />
+                                </p:inputText>
+                            </h:panelGroup>
 
                             <p:outputLabel for="facultate" value="Facultate:" />
-                            <p:selectOneMenu id="facultate" value="#{modificaProfilVoluntarBean.currentVoluntar.facultate}">
-                                <f:selectItem itemLabel="-- Selectează facultatea --" itemValue="#{null}" noSelectionOption="true"/>
-                                <f:selectItems value="#{modificaProfilVoluntarBean.facultati}" var="fac"
-                                               itemLabel="#{fac.name()}" itemValue="#{fac}"/>
-                            </p:selectOneMenu>
+                            <h:panelGroup>
+                                <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.facultate}"
+                                              rendered="#{not modificaProfilVoluntarBean.editMode}" />
+                                <p:selectOneMenu id="facultate" value="#{modificaProfilVoluntarBean.currentVoluntar.facultate}"
+                                                 rendered="#{modificaProfilVoluntarBean.editMode}" style="width: 100%;">
+                                    <f:selectItems value="#{modificaProfilVoluntarBean.facultati}" var="fac"
+                                                   itemLabel="#{fac.name()}" itemValue="#{fac}"/>
+                                    <o:genericEnumConverter />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
 
                             <p:outputLabel for="specializare" value="Specializare:" />
-                            <p:inputText id="specializare" value="#{modificaProfilVoluntarBean.currentVoluntar.specializare}"/>
+                            <h:panelGroup>
+                                <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.specializare}"
+                                              rendered="#{not modificaProfilVoluntarBean.editMode}" />
+                                <p:inputText id="specializare" value="#{modificaProfilVoluntarBean.currentVoluntar.specializare}"
+                                             rendered="#{modificaProfilVoluntarBean.editMode}" style="width: 100%;"/>
+                            </h:panelGroup>
 
                             <p:outputLabel for="anStudiu" value="An Studiu:" />
-                            <p:selectOneMenu id="anStudiu" value="#{modificaProfilVoluntarBean.currentVoluntar.anStudiu}">
-                                <f:selectItem itemLabel="-- Selectează anul de studiu --" itemValue="#{null}" noSelectionOption="true"/>
-                                <f:selectItems value="#{modificaProfilVoluntarBean.aniStudiu}" var="an"
-                                               itemLabel="#{an.numeSpecializare}" itemValue="#{an}"/> </p:selectOneMenu>
-
+                            <h:panelGroup>
+                                <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.anStudiu.numeSpecializare}"
+                                              rendered="#{not modificaProfilVoluntarBean.editMode}" />
+                                <p:selectOneMenu id="anStudiu" value="#{modificaProfilVoluntarBean.currentVoluntar.anStudiu}"
+                                                 rendered="#{modificaProfilVoluntarBean.editMode}" style="width: 100%;">
+                                    <f:selectItems value="#{modificaProfilVoluntarBean.aniStudiu}" var="an"
+                                                   itemLabel="#{an.numeSpecializare}" itemValue="#{an}"/>
+                                    <o:genericEnumConverter />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
                         </p:panelGrid>
 
-                        <div class="form-buttons" style="margin-top: 20px; text-align: center;">
-                            <p:commandButton value="Salvează Modificările"
-                                             action="#{modificaProfilVoluntarBean.salveazaModificari}"
-                                             update="modificaProfilForm"
-                                             icon="pi pi-save"
-                                             styleClass="ui-button-success"/>
+                        <div class="form-buttons" style="margin-top: 20px;">
+                            <p:commandButton value="Modifică Date" icon="pi pi-pencil"
+                                             actionListener="#{modificaProfilVoluntarBean.activeazaEditare}"
+                                             update="@form"
+                                             rendered="#{not modificaProfilVoluntarBean.editMode}" />
+
+                            <h:panelGroup rendered="#{modificaProfilVoluntarBean.editMode}">
+                                <p:commandButton value="Salvează Modificările" icon="pi pi-save"
+                                                 action="#{modificaProfilVoluntarBean.salveazaModificari}"
+                                                 update="@form"
+                                                 styleClass="ui-button-success"/>
+                                <p:commandButton value="Anulează" icon="pi pi-times"
+                                                 actionListener="#{modificaProfilVoluntarBean.anuleazaEditare}"
+                                                 update="@form"
+                                                 process="@this"
+                                                 styleClass="ui-button-secondary" style="margin-left: 5px;"/>
+                            </h:panelGroup>
+
                             <p:button value="Înapoi la Dashboard"
                                       outcome="/xhtml/dashboardVoluntar.xhtml?faces-redirect=true"
                                       icon="pi pi-arrow-left"
-                                      styleClass="ui-button-secondary"
+                                      styleClass="ui-button-outlined"
                                       style="margin-left: 10px;"/>
                         </div>
                     </p:panel>
@@ -74,7 +112,7 @@
                     <p>Nu s-au putut încărca detaliile profilului dumneavoastră. Vă rugăm să încercați să vă
                         <p:link outcome="/xhtml/login.xhtml" value="reautentificați"/> sau contactați administratorul.
                     </p>
-                    <p:messages globalOnly="true" /> </p:panel>
+                </p:panel>
             </p:outputPanel>
         </div>
     </ui:define>

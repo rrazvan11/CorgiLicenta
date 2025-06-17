@@ -25,7 +25,8 @@ import java.io.Serializable;
 public class ModificaProfilVoluntarBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @Getter @Setter
+    private boolean editMode = false;
     @Inject
     private VoluntarService voluntarService; // Serviciul pentru operații legate de voluntar
 
@@ -34,17 +35,23 @@ public class ModificaProfilVoluntarBean implements Serializable {
 
     private Voluntar currentVoluntar; // Obiectul voluntar ale cărui date vor fi modificate
 
+// Înlocuiește metoda existentă din ModificaProfilVoluntarBean.java cu aceasta
+
     @PostConstruct
     public void init() {
         User loggedInUser = (User) facesContext.getExternalContext().getSessionMap().get("loggedInUser");
         if (loggedInUser != null && loggedInUser.getRol() == Rol.VOLUNTAR) {
-            // Preluăm o copie proaspătă a voluntarului din baza de date pentru a lucra cu o entitate gestionată
-            // și pentru a avea cele mai recente date.
-            Voluntar foundVoluntar = voluntarService.cautaDupaUser(loggedInUser); // Metoda cautaDupaUser trebuie să returneze un Voluntar
+            // Preluăm o copie proaspătă a voluntarului din baza de date
+            Voluntar foundVoluntar = voluntarService.cautaDupaUser(loggedInUser);
             if (foundVoluntar != null) {
                 this.currentVoluntar = foundVoluntar;
+
+                // --- LINIA ADĂUGATĂ ---
+                // Setăm modul de editare pe 'true' imediat după încărcarea datelor.
+                this.editMode = true;
+
             } else {
-                // Cazul în care userul este VOLUNTAR dar nu se găsește profilul de voluntar (problemă de integritate a datelor)
+                // Cazul în care userul este VOLUNTAR dar nu se găsește profilul de voluntar
                 handleError("Profilul de voluntar asociat contului dumneavoastră nu a fost găsit.");
             }
         } else {
@@ -57,7 +64,6 @@ public class ModificaProfilVoluntarBean implements Serializable {
                 );
             } catch (IOException e) {
                 System.err.println("Eroare la redirect către login din ModificaProfilVoluntarBean: " + e.getMessage());
-                // Loghează excepția sau afișează un mesaj de eroare mai generic dacă redirectul eșuează
             }
         }
     }
@@ -68,6 +74,14 @@ public class ModificaProfilVoluntarBean implements Serializable {
         // Setăm currentVoluntar la null pentru a preveni afișarea formularului dacă datele nu pot fi încărcate
         this.currentVoluntar = null;
     }
+    // In ModificaProfilVoluntarBean.java
+
+    public void anuleazaEditare() {
+        this.editMode = false;
+        // Aici poți reîncărca datele din DB dacă vrei să anulezi modificările ne-salvate
+        // init();
+    }
+// Adaugă sau înlocuiește metoda existentă cu aceasta în clasa ModificaProfilVoluntarBean.java
 
     public String salveazaModificari() {
         if (currentVoluntar == null) {
@@ -75,22 +89,24 @@ public class ModificaProfilVoluntarBean implements Serializable {
             return null; // Rămâne pe aceeași pagină
         }
         try {
-            // Obiectul this.currentVoluntar a fost actualizat prin binding cu câmpurile din formular
-            voluntarService.actualizeazaVoluntar(this.currentVoluntar); // Metoda actualizeazaVoluntar din VoluntarService salvează modificările
+            // Obiectul this.currentVoluntar conține deja noile date introduse în formular
+            voluntarService.actualizeazaVoluntar(this.currentVoluntar);
+
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Profilul dumneavoastră a fost actualizat."));
 
-            // Opțional: Reîncarcă datele după salvare pentru a fi sigur că afișezi ultima versiune
-            // this.currentVoluntar = voluntarService.cautaDupaId(this.currentVoluntar.getId());
+            // Se dezactivează modul de editare pentru a reveni la afișarea ca text
+            this.editMode = false;
 
-            // Decidem să rămânem pe pagină pentru a vedea mesajul.
-            // Dacă vrei redirect, decomentează linia de mai jos:
-            // return "/xhtml/dashboardVoluntar.xhtml?faces-redirect=true";
+            // Rămânem pe pagină pentru a vedea mesajul de succes.
             return null;
+
         } catch (RuntimeException e) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare la salvare", e.getMessage()));
             System.err.println("Eroare la actualizare profil pentru voluntar ID " + (this.currentVoluntar.getId() != null ? this.currentVoluntar.getId() : "N/A") + ": " + e.getMessage());
             e.printStackTrace(); // Util pentru debugging
-            return null; // Rămâne pe pagină pentru a afișa eroarea
+
+            // Rămânem pe pagină pentru a afișa eroarea
+            return null;
         }
     }
 

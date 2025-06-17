@@ -57,6 +57,7 @@ public class DashboardSecretarBean implements Serializable {
     private List<SedintaDTO> sedinteDTO;
     private boolean editModePrezenta = false;
     private SedintaDTO selectedSedintaDTO;
+    private Status selectedStatusForReport;
 
     @PostConstruct
     public void init() {
@@ -68,7 +69,7 @@ public class DashboardSecretarBean implements Serializable {
                 this.voluntari = voluntarService.gasesteVoluntariDinOrganizatie(this.organizatie.getId());
                 this.departamente = departamentService.gasesteDepartamentePeOrganizatie(this.organizatie.getId());
                 // Apelăm noua metodă care returnează lista de DTO-uri
-                this.sedinteDTO = sedintaService.getSedinteInfoPentruOrganizatie(this.organizatie.getId());
+                this.sedinteDTO = sedintaService.getSedinteAdunareGeneralaPentruOrganizatie(this.organizatie.getId());
             } else {
                 handleError("Nu a fost găsită nicio organizație pentru acest cont de secretar.");
             }
@@ -223,7 +224,7 @@ public class DashboardSecretarBean implements Serializable {
             sedintaService.creeazaSiInregistreazaPrezenta(sedintaCurenta, prezenteMap);
             addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Prezența a fost salvată.");
             this.voluntari = voluntarService.gasesteVoluntariDinOrganizatie(this.organizatie.getId());
-            this.sedinteDTO = sedintaService.getSedinteInfoPentruOrganizatie(this.organizatie.getId());
+            this.sedinteDTO = sedintaService.getSedinteAdunareGeneralaPentruOrganizatie(this.organizatie.getId());
             PrimeFaces.current().ajax().update(":sedinteForm:sedinteTable", ":voluntarForm:voluntariTable", ":messages");
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_FATAL, "Eroare la salvare", "Nu s-a putut salva prezența: " + e.getMessage());
@@ -267,27 +268,31 @@ public class DashboardSecretarBean implements Serializable {
             return null; // Rămânem pe pagină să vedem eroarea
         }
     }
-    // --- Rapoarte ---
-    public StreamedContent genereazaRaportVoluntariActivi() {
-        List<Voluntar> data = voluntari.stream().filter(v -> v.getStatus() == Status.ACTIV).collect(Collectors.toList());
-        byte[] pdfBytes = documentGenerationService.genereazaRaportListaVoluntari("Listă voluntari activi", data);
-        return DefaultStreamedContent.builder().name("Raport_Activi.pdf").contentType("application/pdf").stream(() -> new ByteArrayInputStream(pdfBytes)).build();
-    }
-    public StreamedContent genereazaRaportVoluntariColaboratori() {
-        List<Voluntar> data = voluntari.stream().filter(v -> v.getStatus() == Status.COLABORATOR).collect(Collectors.toList());
-        byte[] pdfBytes = documentGenerationService.genereazaRaportListaVoluntari("Listă voluntari colaboratori", data);
-        return DefaultStreamedContent.builder().name("Raport_Colaboratori.pdf").contentType("application/pdf").stream(() -> new ByteArrayInputStream(pdfBytes)).build();
-    }
+    // În clasa DashboardSecretarBean, adaugă această metodă nouă:
+    public StreamedContent genereazaRaportVoluntari() {
+        String titluRaport;
+        List<Voluntar> data;
 
-    public StreamedContent genereazaRaportVoluntariFull() {
-        List<Voluntar> data = voluntari.stream().collect(Collectors.toList());
-        byte[] pdfBytes = documentGenerationService.genereazaRaportListaVoluntari("Listă voluntari integrală", data);
-        return DefaultStreamedContent.builder().name("Raport_listă_integrală.pdf").contentType("application/pdf").stream(() -> new ByteArrayInputStream(pdfBytes)).build();
-    }
-    public StreamedContent genereazaRaportVoluntariInactivi() {
-        List<Voluntar> data = voluntari.stream().filter(v -> v.getStatus() != Status.ACTIV).collect(Collectors.toList());
-        byte[] pdfBytes = documentGenerationService.genereazaRaportListaVoluntari("Listă voluntari inactivi", data);
-        return DefaultStreamedContent.builder().name("Raport_Inactivi.pdf").contentType("application/pdf").stream(() -> new ByteArrayInputStream(pdfBytes)).build();
+        // Verificăm dacă utilizatorul a selectat un status specific sau opțiunea "Toți"
+        if (selectedStatusForReport == null) {
+            titluRaport = "Listă cu toți voluntarii";
+            data = this.voluntari; // Folosim lista completă, nefiltrată
+        } else {
+            titluRaport = "Listă cu toți voluntarii " + selectedStatusForReport.name().toLowerCase() + "i";
+            // Filtrăm lista de voluntari pe baza statusului selectat
+            data = this.voluntari.stream()
+                    .filter(v -> v.getStatus() == selectedStatusForReport)
+                    .collect(Collectors.toList());
+        }
+
+        // Generăm PDF-ul cu titlul și datele corespunzătoare
+        byte[] pdfBytes = documentGenerationService.genereazaRaportListaVoluntari(titluRaport, data);
+
+        return DefaultStreamedContent.builder()
+                .name("Raport_Voluntari_" + (selectedStatusForReport != null ? selectedStatusForReport.name() : "integral") + ".pdf")
+                .contentType("application/pdf")
+                .stream(() -> new ByteArrayInputStream(pdfBytes))
+                .build();
     }
 
     // --- Utilitare ---
@@ -343,7 +348,7 @@ public class DashboardSecretarBean implements Serializable {
             sedintaService.actualizeazaPrezenta(sedintaCurenta.getId(), prezenteMap);
             addMessage(FacesMessage.SEVERITY_INFO, "Succes", "Prezența a fost actualizată.");
             // Reîmprospătăm datele din pagină
-            this.sedinteDTO = sedintaService.getSedinteInfoPentruOrganizatie(this.organizatie.getId());
+            this.sedinteDTO = sedintaService.getSedinteAdunareGeneralaPentruOrganizatie(this.organizatie.getId());
             PrimeFaces.current().ajax().update(":sedinteForm:sedinteTable", ":voluntarForm:voluntariTable", ":messages");
         } catch (Exception e) {
             addMessage(FacesMessage.SEVERITY_FATAL, "Eroare la actualizare", e.getMessage());

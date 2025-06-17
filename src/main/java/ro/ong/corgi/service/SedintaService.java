@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import ro.ong.corgi.dto.SedintaDTO;
 import ro.ong.corgi.model.Enums.StatusPrezenta;
+import ro.ong.corgi.model.Enums.TipSedinta;
 import ro.ong.corgi.model.PrezentaSedinta;
 import ro.ong.corgi.model.Sedinta;
 import ro.ong.corgi.model.Voluntar;
@@ -75,21 +76,6 @@ public class SedintaService {
         return sedintaRepository.findAll();
     }
 
-    public List<Sedinta> gasesteSedintePeOrganizatie(Long organizatieId) {
-        // Apelăm metoda corespunzătoare din SedintaRepository,
-        // pe care am adăugat-o în pasul anterior.
-        return sedintaRepository.findByOrganizatieId(organizatieId);
-    }
-    public List<SedintaDTO> getSedinteInfoPentruOrganizatie(Long organizatieId) {
-        List<Sedinta> sedinte = sedintaRepository.findByOrganizatieId(organizatieId);
-        long totalVoluntari = voluntarRepository.countByOrganizatieId(organizatieId);
-
-        return sedinte.stream().map(sedinta -> {
-            long numarPrezentiSiOnline = prezentaSedintaRepository.adunăPrezentSedințaAndStatusIn(
-                    sedinta.getId(), List.of(StatusPrezenta.PREZENT, StatusPrezenta.ONLINE));
-            return new SedintaDTO(sedinta, numarPrezentiSiOnline, totalVoluntari);
-        }).collect(Collectors.toList());
-    }
 
     @Transactional
     public void actualizeazaPrezenta(Long sedintaId, Map<Long, StatusPrezenta> prezenteNoi) {
@@ -172,5 +158,18 @@ public class SedintaService {
                 })
                 .sorted(Comparator.comparing(dto -> dto.getSedinta().getDataSedinta(), Comparator.reverseOrder()))
                 .collect(Collectors.toList());
+    }
+    public List<SedintaDTO> getSedinteAdunareGeneralaPentruOrganizatie(Long organizatieId) {
+        // Apelăm noua metodă din repository care filtrează după tip
+        List<Sedinta> sedinte = sedintaRepository.findByOrganizatieIdAndTip(organizatieId, TipSedinta.ADUNARE_GENERALĂ);
+
+        // Logica de calculare a prezenților rămâne aceeași
+        long totalVoluntari = voluntarRepository.countByOrganizatieId(organizatieId);
+
+        return sedinte.stream().map(sedinta -> {
+            long numarPrezentiSiOnline = prezentaSedintaRepository.adunăPrezentSedințaAndStatusIn(
+                    sedinta.getId(), List.of(StatusPrezenta.PREZENT, StatusPrezenta.ONLINE));
+            return new SedintaDTO(sedinta, numarPrezentiSiOnline, totalVoluntari);
+        }).collect(Collectors.toList());
     }
 }

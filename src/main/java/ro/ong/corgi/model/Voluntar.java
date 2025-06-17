@@ -56,10 +56,10 @@ public class Voluntar implements Serializable {
     private Departament departament;
 
     @OneToMany(mappedBy = "voluntar")
-    private List<Task> taskuri;
+    private List<Task> taskuri = new java.util.ArrayList<>();
 
     @OneToMany(mappedBy = "voluntar", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GrupareVoluntariProiecte> participari;
+    private List<GrupareVoluntariProiecte> participari = new java.util.ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY, optional = false) // MODIFICAT
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)

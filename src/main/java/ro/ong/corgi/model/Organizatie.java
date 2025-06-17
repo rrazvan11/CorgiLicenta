@@ -39,12 +39,12 @@ public class Organizatie implements Serializable {
     private String mail;
 
     @OneToMany(mappedBy = "organizatie", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Proiect> proiecte;
+    private List<Proiect> proiecte = new java.util.ArrayList<>();
 
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 
     @OneToMany(mappedBy = "organizatie")
-    private List<Voluntar> voluntari;
+    private List<Voluntar> voluntari = new java.util.ArrayList<>();
 }

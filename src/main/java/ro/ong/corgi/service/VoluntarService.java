@@ -99,20 +99,30 @@ public class VoluntarService {
         return voluntarRepository.findSingleByField("user.id", user.getId());
     }
 
+// Înlocuiește metoda existentă din VoluntarService.java cu aceasta
+
     @Transactional
     public void actualizeazaVoluntar(Voluntar voluntarModificat) {
         if (voluntarModificat == null || voluntarModificat.getId() == null) {
             throw new RuntimeException("ID-ul voluntarului este necesar pentru actualizare.");
         }
 
+        // Preluăm voluntarul "viu" din baza de date, pe care vom aplica modificările
         Voluntar voluntarExistent = voluntarRepository.findById(voluntarModificat.getId());
         if (voluntarExistent == null) {
             throw new RuntimeException("Voluntar inexistent pentru actualizare cu ID: " + voluntarModificat.getId());
         }
 
-        // Aplicăm modificările de pe obiectul din formular pe obiectul "viu" din baza de date
+        // Copiem datele personale ale voluntarului din formular pe obiectul din baza de date
+        voluntarExistent.setTelefon(voluntarModificat.getTelefon());
+        voluntarExistent.setFacultate(voluntarModificat.getFacultate());
+        voluntarExistent.setSpecializare(voluntarModificat.getSpecializare());
+        voluntarExistent.setAnStudiu(voluntarModificat.getAnStudiu());
+
+        // Copiem statusul (dacă este editabil din altă parte, ex. de către secretar)
         voluntarExistent.setStatus(voluntarModificat.getStatus());
 
+        // Copiem departamentul (dacă este editabil din altă parte)
         if (voluntarModificat.getDepartament() != null) {
             Departament deptNou = departamentRepository.findById(voluntarModificat.getDepartament().getId());
             voluntarExistent.setDepartament(deptNou);
@@ -120,13 +130,30 @@ public class VoluntarService {
             voluntarExistent.setDepartament(null);
         }
 
+        // Preluăm utilizatorul asociat pentru a-i modifica datele (email, rol)
         User userAsociat = voluntarExistent.getUser();
         User userModificat = voluntarModificat.getUser();
-        if (userAsociat != null && userModificat != null && !userAsociat.getRol().equals(userModificat.getRol())) {
-            userAsociat.setRol(userModificat.getRol());
+
+        if (userAsociat != null && userModificat != null) {
+            // Verificăm dacă emailul a fost schimbat
+            if (!userAsociat.getEmail().equals(userModificat.getEmail())) {
+                // Verificăm dacă noul email nu este deja folosit de alt cont
+                User userCuEmailNou = userRepository.findByEmail(userModificat.getEmail());
+                if (userCuEmailNou != null && !userCuEmailNou.getId().equals(userAsociat.getId())) {
+                    throw new RuntimeException("Adresa de email '" + userModificat.getEmail() + "' este deja folosită de alt cont.");
+                }
+                // Dacă totul e în regulă, actualizăm emailul
+                userAsociat.setEmail(userModificat.getEmail());
+            }
+
+            // Actualizăm și rolul, dacă a fost modificat (util pentru panoul de secretar)
+            if (!userAsociat.getRol().equals(userModificat.getRol())) {
+                userAsociat.setRol(userModificat.getRol());
+            }
         }
 
-        // Nu mai este nevoie de apeluri .update() aici, @Transactional se va ocupa de tot.
+        // Fiind într-o metodă @Transactional, containerul va salva automat în baza de date
+        // toate modificările făcute pe obiectele "voluntarExistent" și "userAsociat" la finalul metodei.
     }
 
     // În VoluntarService.java

@@ -48,11 +48,11 @@ public class Proiect {
 
 
     @OneToMany(mappedBy = "proiect")
-    private List<Task> taskuri;
+    private List<Task> taskuri = new java.util.ArrayList<>();
 
 
     @OneToMany(mappedBy = "proiect", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GrupareVoluntariProiecte> participari;
+    private List<GrupareVoluntariProiecte> participari = new java.util.ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coordonator_id")

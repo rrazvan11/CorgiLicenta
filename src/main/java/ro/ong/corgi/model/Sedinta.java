@@ -45,5 +45,5 @@ public class Sedinta implements Serializable {
     private Departament departament;
 
     @OneToMany(mappedBy = "sedinta", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PrezentaSedinta> prezente;
+    private List<PrezentaSedinta> prezente = new java.util.ArrayList<>();
 }

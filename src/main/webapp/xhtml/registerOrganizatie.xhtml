@@ -26,31 +26,27 @@
                                 <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank"
                                              columnClasses="ui-g-12 ui-md-3 ui-lg-3, ui-g-12 ui-md-9 ui-lg-9">
 
-                                    <p:outputLabel for="numeOrganizatie" value="Nume Organizație:*"/>
+                                    <p:outputLabel for="numeOrganizatie" value="Nume Organizație:"/>
                                     <p:inputText id="numeOrganizatie" value="#{registerOrganizatieBean.organizatie.nume}" required="true"
-                                                 requiredMessage="Numele organizației este obligatoriu."/>
-                                    <p:message for="numeOrganizatie"/>
+                                                 requiredMessage="Numele organizației este obligatoriu." style="width: 100%;"/>
 
-                                    <p:outputLabel for="adresaOrganizatie" value="Adresă Sediu:*"/>
+                                    <p:outputLabel for="adresaOrganizatie" value="Adresă Sediu:"/>
                                     <p:inputTextarea id="adresaOrganizatie" value="#{registerOrganizatieBean.organizatie.adresa}" required="true"
-                                                     requiredMessage="Adresa este obligatorie." rows="3" autoResize="false"/>
-                                    <p:message for="adresaOrganizatie"/>
+                                                     requiredMessage="Adresa este obligatorie." rows="3" autoResize="false" style="width: 100%;"/>
 
-                                    <p:outputLabel for="cifOrganizatie" value="CIF/CUI:*"/>
+                                    <p:outputLabel for="cifOrganizatie" value="CIF/CUI:"/>
                                     <p:inputText id="cifOrganizatie" value="#{registerOrganizatieBean.cifOrganizatie}" required="true"
                                                  requiredMessage="CIF-ul este obligatoriu."
-                                                 placeholder="Doar cifre">
+                                                 placeholder="Doar cifre" style="width: 100%;">
                                         <p:keyFilter mask="num"/>
                                     </p:inputText>
-                                    <p:message for="cifOrganizatie"/>
 
-                                    <p:outputLabel for="emailOrganizatie" value="Email Contact Organizație:*"/>
+                                    <p:outputLabel for="emailOrganizatie" value="Email Contact Organizație:"/>
                                     <p:inputText id="emailOrganizatie" value="#{registerOrganizatieBean.organizatie.mail}" required="true"
                                                  requiredMessage="Emailul organizației este obligatoriu."
-                                                 validatorMessage="Format email invalid.">
+                                                 validatorMessage="Format email invalid." style="width: 100%;">
                                         <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"/>
                                     </p:inputText>
-                                    <p:message for="emailOrganizatie"/>
                                 </p:panelGrid>
                             </p:fieldset>
 
@@ -58,30 +54,25 @@
                                 <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank"
                                              columnClasses="ui-g-12 ui-md-3 ui-lg-3, ui-g-12 ui-md-9 ui-lg-9">
 
-                                    <p:outputLabel for="usernameAdmin" value="Nume Utilizator (admin):*"/>
+                                    <p:outputLabel for="usernameAdmin" value="Nume Utilizator (admin):"/>
                                     <p:inputText id="usernameAdmin" value="#{registerOrganizatieBean.usernameAdmin}" required="true"
-                                                 requiredMessage="Numele de utilizator pentru admin este obligatoriu."/>
-                                    <p:message for="usernameAdmin"/>
+                                                 requiredMessage="Numele de utilizator pentru admin este obligatoriu." style="width: 100%;"/>
 
-                                    <p:outputLabel for="emailAdmin" value="Adresă Email (admin):*"/>
+                                    <p:outputLabel for="emailAdmin" value="Adresă Email (admin):"/>
                                     <p:inputText id="emailAdmin" value="#{registerOrganizatieBean.emailAdmin}" required="true"
                                                  requiredMessage="Adresa de email pentru admin este obligatorie."
-                                                 validatorMessage="Format email invalid.">
+                                                 validatorMessage="Format email invalid." style="width: 100%;">
                                         <f:validateRegex pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"/>
                                     </p:inputText>
-                                    <p:message for="emailAdmin"/>
 
-                                    <p:outputLabel for="parolaAdmin" value="Parolă (admin):*"/>
+                                    <p:outputLabel for="parolaAdmin" value="Parolă (admin):"/>
                                     <p:password id="parolaAdmin" value="#{registerOrganizatieBean.parolaAdmin}" required="true"
-                                                requiredMessage="Parola pentru admin este obligatorie." feedback="true"
-                                                promptLabel="Introduceți o parolă" weakLabel="Slabă" goodLabel="Medie" strongLabel="Puternică"
-                                                match="confirmParolaAdmin"/>
-                                    <p:message for="parolaAdmin"/>
+                                                requiredMessage="Parola pentru admin este obligatorie."
+                                                match="confirmParolaAdmin" style="width: 100%;"/>
 
-                                    <p:outputLabel for="confirmParolaAdmin" value="Confirmă Parola (admin):*"/>
+                                    <p:outputLabel for="confirmParolaAdmin" value="Confirmă Parola (admin):"/>
                                     <p:password id="confirmParolaAdmin" value="#{registerOrganizatieBean.confirmParolaAdmin}" required="true"
-                                                requiredMessage="Confirmarea parolei pentru admin este obligatorie." feedback="false"/>
-                                    <p:message for="confirmParolaAdmin"/>
+                                                requiredMessage="Confirmarea parolei pentru admin este obligatorie." feedback="false" style="width: 100%;"/>
                                 </p:panelGrid>
                             </p:fieldset>
 

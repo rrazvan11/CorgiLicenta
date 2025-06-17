@@ -38,7 +38,7 @@ public class Departament {
     private Voluntar coordonator;
 
     @OneToMany(mappedBy = "departament")
-    private List<Voluntar> voluntari;
+    private List<Voluntar> voluntari = new java.util.ArrayList<>();
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "organizatie_id", nullable = false)

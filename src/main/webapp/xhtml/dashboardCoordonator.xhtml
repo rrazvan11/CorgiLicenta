@@ -151,12 +151,14 @@
                     <p:panel header="Management Prezență Departament">
                         <p:commandButton value="Creează Ședință Nouă" icon="pi pi-plus"
                                          actionListener="#{dashboardCoordonatorBean.pregatesteSedintaNoua}"
-                                         oncomplete="PF('dialogPrezentaDepartament').show()"
-                                         update=":dialogPrezentaDepartamentComponent"
                                          process="@this"
+                                         oncomplete="updateAndShowDialog();"
                                          styleClass="ui-button-success"/>
 
                     </p:panel>
+                    <p:remoteCommand name="updateAndShowDialog"
+                                     update="@widgetVar(dialogPrezentaDepartament)"
+                                     oncomplete="PF('dialogPrezentaDepartament').show()" />
 
                     <p:dataTable id="tabelSedinteDepartament" var="info"
                                  value="#{dashboardCoordonatorBean.sedinteDepartament}"

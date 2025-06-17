@@ -163,23 +163,40 @@ public class DashboardVoluntarBean implements Serializable {
         return TaskStatus.values();
     }
 
+// În fișierul DashboardVoluntarBean.java
+
     public void genereazaCertificat() {
-        if (currentVoluntar == null) {
+        if (currentVoluntar == null || currentVoluntar.getId() == null) {
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Eroare", "Datele voluntarului nu sunt disponibile."));
             return;
         }
+
         try {
-            Organizatie orgEmitenta = (currentVoluntar.getDepartament() != null) ? currentVoluntar.getDepartament().getOrganizatie() : null;
-            byte[] pdfData = documentGenerationService.genereazaCertificatPdf(currentVoluntar, orgEmitenta);
-            String emailDestinatar = currentVoluntar.getUser().getEmail();
+            // --- AICI ESTE MODIFICAREA CHEIE ---
+            // În loc să folosim obiectul vechi, detașat, cerem serviciului o copie "proaspătă"
+            // a voluntarului, care va fi conectată la sesiunea curentă a bazei de date.
+            Voluntar voluntarProaspat = voluntarService.cautaDupaId(this.currentVoluntar.getId());
+
+            // Acum putem accesa în siguranță obiectele asociate, deoarece suntem într-o tranzacție activă.
+            Organizatie orgEmitenta = (voluntarProaspat.getDepartament() != null) ? voluntarProaspat.getDepartament().getOrganizatie() : null;
+
+            // Generăm PDF-ul folosind obiectul proaspăt, complet încărcat.
+            byte[] pdfData = documentGenerationService.genereazaCertificatPdf(voluntarProaspat, orgEmitenta);
+
+            String emailDestinatar = voluntarProaspat.getUser().getEmail();
             String subiect = "Certificatul tău de Voluntariat - Asociația Corgi";
-            String numeFisier = "Certificat_Voluntariat_" + currentVoluntar.getNume() + "_" + currentVoluntar.getPrenume() + ".pdf";
+            String numeFisier = "Certificat_Voluntariat_" + voluntarProaspat.getNume() + "_" + voluntarProaspat.getPrenume() + ".pdf";
+
             emailService.sendEmailWithAttachment(emailDestinatar, subiect, pdfData, numeFisier);
+
             facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Succes!", "Certificatul a fost generat și trimis pe email."));
+
         } catch (Exception e) {
+            // Logăm eroarea completă pentru a o vedea în consolă
             System.err.println("A apărut o eroare în fluxul de generare/trimitere certificat: " + e.getMessage());
             e.printStackTrace();
-            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Eroare la generare/trimitere", "A apărut o eroare neașteptată."));
+
+            facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Eroare la generare/trimitere", "A apărut o eroare neașteptată. Contactați administratorul."));
         }
     }
     // ==========================================================
