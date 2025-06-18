@@ -8,13 +8,13 @@
 <ui:composition template="/WEB-INF/Templates/layout.xhtml">
 
     <ui:define name="titlu">
-        Înregistrare Organizație Nouă - Platforma ONG Corgi
+        Înregistrare organizație nouă
     </ui:define>
 
     <ui:define name="content">
         <div class="ui-g ui-fluid">
             <div class="ui-g-12 ui-md-10 ui-lg-8 ui-xl-6" style="margin: 20px auto 0 auto;">
-                <p:panel header="Formular Înregistrare Organizație">
+                <p:panel header="Formular înregistrare organizație">
                     <h:form id="registerOrgForm">
                         <p:messages id="formMessages" globalOnly="false" showDetail="true" closable="true">
                             <p:autoUpdate/>
@@ -22,15 +22,15 @@
 
                         <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
 
-                            <p:fieldset legend="Detalii Organizație" style="margin-bottom: 20px;">
+                            <p:fieldset legend="Detalii organizație" style="margin-bottom: 20px;">
                                 <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank"
                                              columnClasses="ui-g-12 ui-md-3 ui-lg-3, ui-g-12 ui-md-9 ui-lg-9">
 
-                                    <p:outputLabel for="numeOrganizatie" value="Nume Organizație:"/>
+                                    <p:outputLabel for="numeOrganizatie" value="Nume organizație:"/>
                                     <p:inputText id="numeOrganizatie" value="#{registerOrganizatieBean.organizatie.nume}" required="true"
                                                  requiredMessage="Numele organizației este obligatoriu." style="width: 100%;"/>
 
-                                    <p:outputLabel for="adresaOrganizatie" value="Adresă Sediu:"/>
+                                    <p:outputLabel for="adresaOrganizatie" value="Adresă sediu:"/>
                                     <p:inputTextarea id="adresaOrganizatie" value="#{registerOrganizatieBean.organizatie.adresa}" required="true"
                                                      requiredMessage="Adresa este obligatorie." rows="3" autoResize="false" style="width: 100%;"/>
 
@@ -41,7 +41,7 @@
                                         <p:keyFilter mask="num"/>
                                     </p:inputText>
 
-                                    <p:outputLabel for="emailOrganizatie" value="Email Contact Organizație:"/>
+                                    <p:outputLabel for="emailOrganizatie" value="Email contact organizație:"/>
                                     <p:inputText id="emailOrganizatie" value="#{registerOrganizatieBean.organizatie.mail}" required="true"
                                                  requiredMessage="Emailul organizației este obligatoriu."
                                                  validatorMessage="Format email invalid." style="width: 100%;">
@@ -50,15 +50,15 @@
                                 </p:panelGrid>
                             </p:fieldset>
 
-                            <p:fieldset legend="Detalii Cont Administrator Organizație" style="margin-bottom: 20px;">
+                            <p:fieldset legend="Detalii cont administrator organizație" style="margin-bottom: 20px;">
                                 <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank"
                                              columnClasses="ui-g-12 ui-md-3 ui-lg-3, ui-g-12 ui-md-9 ui-lg-9">
 
-                                    <p:outputLabel for="usernameAdmin" value="Nume Utilizator (admin):"/>
+                                    <p:outputLabel for="usernameAdmin" value="Nume utilizator (admin):"/>
                                     <p:inputText id="usernameAdmin" value="#{registerOrganizatieBean.usernameAdmin}" required="true"
                                                  requiredMessage="Numele de utilizator pentru admin este obligatoriu." style="width: 100%;"/>
 
-                                    <p:outputLabel for="emailAdmin" value="Adresă Email (admin):"/>
+                                    <p:outputLabel for="emailAdmin" value="Adresă email (admin):"/>
                                     <p:inputText id="emailAdmin" value="#{registerOrganizatieBean.emailAdmin}" required="true"
                                                  requiredMessage="Adresa de email pentru admin este obligatorie."
                                                  validatorMessage="Format email invalid." style="width: 100%;">
@@ -77,7 +77,7 @@
                             </p:fieldset>
 
                             <div style="text-align: center; margin-top: 10px;">
-                                <p:commandButton value="Înregistrează Organizația"
+                                <p:commandButton value="Înregistrează organizația"
                                                  action="#{registerOrganizatieBean.doRegisterOrganizatie}"
                                                  update="@form growlMessages"
                                                  icon="pi pi-save"

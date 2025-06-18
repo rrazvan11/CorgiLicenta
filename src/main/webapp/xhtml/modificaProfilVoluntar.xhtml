@@ -7,14 +7,14 @@
       xmlns:o="http://omnifaces.org/ui">
 
 <ui:composition template="/WEB-INF/Templates/layout.xhtml">
-    <ui:define name="title">Modifică Profil</ui:define>
-    <ui:define name="header_title">Modificare Date Profil Voluntar</ui:define>
+    <ui:define name="title">Modifică profil</ui:define>
+    <ui:define name="header_title">Modificare date profil voluntar</ui:define>
 
     <ui:define name="content">
         <div class="form-page-container">
             <p:outputPanel rendered="#{not empty modificaProfilVoluntarBean.currentVoluntar}">
                 <h:form id="modificaProfilForm">
-                    <p:panel header="Datele Dumneavoastră Personale" styleClass="form-panel">
+                    <p:panel header="Datele dumneavoastră personale" styleClass="form-panel">
                         <p:messages id="messages" showDetail="true" closable="true">
                             <p:autoUpdate />
                         </p:messages>
@@ -22,7 +22,7 @@
                         <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-input-grid"
                                      columnClasses="ui-grid-col-3 label-column, ui-grid-col-9 input-column">
 
-                            <p:outputLabel value="Nume Complet:" />
+                            <p:outputLabel value="Nume complet:" />
                             <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.numeComplet}" />
 
                             <p:outputLabel for="email" value="Email Cont:" />
@@ -66,7 +66,7 @@
                                              rendered="#{modificaProfilVoluntarBean.editMode}" style="width: 100%;"/>
                             </h:panelGroup>
 
-                            <p:outputLabel for="anStudiu" value="An Studiu:" />
+                            <p:outputLabel for="anStudiu" value="An studiu:" />
                             <h:panelGroup>
                                 <h:outputText value="#{modificaProfilVoluntarBean.currentVoluntar.anStudiu.numeSpecializare}"
                                               rendered="#{not modificaProfilVoluntarBean.editMode}" />
@@ -80,13 +80,13 @@
                         </p:panelGrid>
 
                         <div class="form-buttons" style="margin-top: 20px;">
-                            <p:commandButton value="Modifică Date" icon="pi pi-pencil"
+                            <p:commandButton value="Modifică date" icon="pi pi-pencil"
                                              actionListener="#{modificaProfilVoluntarBean.activeazaEditare}"
                                              update="@form"
                                              rendered="#{not modificaProfilVoluntarBean.editMode}" />
 
                             <h:panelGroup rendered="#{modificaProfilVoluntarBean.editMode}">
-                                <p:commandButton value="Salvează Modificările" icon="pi pi-save"
+                                <p:commandButton value="Salvează modificările" icon="pi pi-save"
                                                  action="#{modificaProfilVoluntarBean.salveazaModificari}"
                                                  update="@form"
                                                  styleClass="ui-button-success"/>
@@ -97,7 +97,7 @@
                                                  styleClass="ui-button-secondary" style="margin-left: 5px;"/>
                             </h:panelGroup>
 
-                            <p:button value="Înapoi la Dashboard"
+                            <p:button value="Înapoi la dashboard"
                                       outcome="/xhtml/dashboardVoluntar.xhtml?faces-redirect=true"
                                       icon="pi pi-arrow-left"
                                       styleClass="ui-button-outlined"
@@ -108,7 +108,7 @@
             </p:outputPanel>
 
             <p:outputPanel rendered="#{empty modificaProfilVoluntarBean.currentVoluntar}">
-                <p:panel header="Eroare Încărcare Profil" styleClass="form-panel">
+                <p:panel header="Eroare încărcare profil" styleClass="form-panel">
                     <p>Nu s-au putut încărca detaliile profilului dumneavoastră. Vă rugăm să încercați să vă
                         <p:link outcome="/xhtml/login.xhtml" value="reautentificați"/> sau contactați administratorul.
                     </p>

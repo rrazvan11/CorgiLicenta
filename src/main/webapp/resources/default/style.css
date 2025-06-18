@@ -114,6 +114,25 @@ body {
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+/* Stiluri pentru branding (logo + titlu) în top-bar */
+.app-branding {
+    display: flex;
+    align-items: center;
+}
+
+.top-bar-logo {
+    /* Dimensiune mică pentru a se potrivi cu textul */
+    height: 60px;
+    margin-right: 10px; /* Spațiu între logo și text */
+    margin-bottom: 4px;
+}
+
+.app-title {
+    /* Stilurile care erau înainte direct pe textul "CORGI" */
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
 
 .table-responsive-wrapper {
     overflow-x: auto;

@@ -15,15 +15,15 @@
 
                     <p:panelGrid columns="2" styleClass="form-input-grid ui-fluid" columnClasses="label-column,input-column">
 
-                        <p:outputLabel for="numeVoluntar" value="Nume Voluntar:"/>
+                        <p:outputLabel for="numeVoluntar" value="Nume voluntar:"/>
                         <p:inputText id="numeVoluntar" value="#{registerVoluntarBean.voluntar.nume}" required="true"
                                      requiredMessage="Numele voluntarului este obligatoriu."/>
 
-                        <p:outputLabel for="prenumeVoluntar" value="Prenume Voluntar:"/>
+                        <p:outputLabel for="prenumeVoluntar" value="Prenume voluntar:"/>
                         <p:inputText id="prenumeVoluntar" value="#{registerVoluntarBean.voluntar.prenume}" required="true"
                                      requiredMessage="Prenumele voluntarului este obligatoriu."/>
 
-                        <p:outputLabel for="emailUser" value="Email (pentru cont):"/>
+                        <p:outputLabel for="emailUser" value="Email:"/>
                         <p:inputText id="emailUser" value="#{registerVoluntarBean.emailUser}" required="true"
                                      requiredMessage="Adresa de email este obligatorie."
                                      validatorMessage="Format email invalid. Exemplu: nume@domeniu.com">
@@ -42,7 +42,7 @@
                         </p:password>
 
 
-                        <p:outputLabel for="confirmParola" value="Confirmă Parola:"/>
+                        <p:outputLabel for="confirmParola" value="Confirmă parola:"/>
                         <p:password id="confirmParola" value="#{registerVoluntarBean.confirmParola}" required="true"
                                     requiredMessage="Confirmarea parolei este obligatorie."/>
 
@@ -71,7 +71,7 @@
                         <p:outputLabel for="specializare" value="Specializare:"/>
                         <p:inputText id="specializare" value="#{registerVoluntarBean.voluntar.specializare}"/>
 
-                        <p:outputLabel for="cifOrganizatie" value="CIF Organizație afiliere:"/>
+                        <p:outputLabel for="cifOrganizatie" value="CIF organizație afiliere:"/>
                         <p:inputText id="cifOrganizatie" value="#{registerVoluntarBean.cifOrganizatie}" required="true"
                                      requiredMessage="CIF-ul organizației de afiliere este obligatoriu."/>
 

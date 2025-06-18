@@ -50,7 +50,4 @@ public class Task {
     @Column(name = "puncte_task")
     private Double puncteTask;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "skill_id")
-    private Skill skillDobandit;
 }

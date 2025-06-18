@@ -14,16 +14,20 @@
         <ui:insert name="titlu">Corgi România</ui:insert>
     </title>
     <h:outputStylesheet name="style.css" library="default"/>
-    <link rel="icon" type="image/x-icon" href="#{request.contextPath}/favicon.ico"/>
+
+    <link rel="icon" type="image/png" href="#{resource['default:logo_corgi.png']}" />
 </h:head>
 
 <h:body>
-    <div id="page-container"> <!-- Un container general -->
+    <div id="page-container">
 
-        <!-- Bara de Utilizator și Titlu Aplicație -->
         <div id="top-bar"
              style="background-color: #007bff; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
-            <h:outputText value="CORGI" style="font-size: 1.5em; font-weight: bold;"/>
+
+            <div class="app-branding">
+                <h:graphicImage name="logo_corgi.png" library="default" styleClass="top-bar-logo" />
+                <h:outputText value="CORGI" styleClass="app-title"/>
+            </div>
 
             <h:form id="userStatusForm">
                 <h:panelGroup rendered="#{not empty sessionScope.loggedInUser}">
@@ -51,13 +55,11 @@
             </ui:insert>
         </div>
 
-        <!-- Conținutul principal al paginii -->
         <div id="content" style="padding: 20px;">
             <ui:insert name="content">
             </ui:insert>
         </div>
 
-        <!-- Footer -->
         <div id="footer" style="margin-top: 20px; border-top: 1px solid #ddd; padding: 15px 0; text-align:center;">
             <ui:insert name="footer">
                 <h:outputText

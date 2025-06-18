@@ -27,11 +27,11 @@
         </p:panel>
 
         <p:tabView style="margin-top: 20px;">
-            <p:tab title="Recrutare Proiecte">
+            <p:tab title="Recrutare proiecte">
                 <h:form id="formProiecte">
                     <p:toolbar>
                         <p:toolbarGroup>
-                            <p:commandButton value="Creează Proiect Nou" icon="pi pi-plus"
+                            <p:commandButton value="Creează proiect nou" icon="pi pi-plus"
                                              actionListener="#{dashboardCoordonatorBean.pregatesteProiectNou}"
                                              oncomplete="PF('dlgCreareProiect').show()"
                                              update=":formCreareProiect"
@@ -44,7 +44,7 @@
                                  rows="10" paginator="true" paginatorPosition="bottom" style="margin-top: 20px;"
                                  emptyMessage="Nu există proiecte create pentru această organizație.">
 
-                        <p:column headerText="Nume Proiect" sortBy="#{proiect.numeProiect}" filterBy="#{proiect.numeProiect}" filterMatchMode="contains">
+                        <p:column headerText="Nume proiect" sortBy="#{proiect.numeProiect}" filterBy="#{proiect.numeProiect}" filterMatchMode="contains">
                             <h:outputText value="#{proiect.numeProiect}" />
                         </p:column>
 
@@ -54,12 +54,12 @@
                             </h:outputText>
                         </p:column>
 
-                        <p:column headerText="Status Înscrieri" style="width: 150px;">
+                        <p:column headerText="Status înscrieri" style="width: 150px;">
                             <p:tag value="#{not empty proiect.status ? proiect.status.displayValue : 'N/A'}"
                                    severity="#{not empty proiect.status and proiect.status.name() == 'INSCRIERI_DESCHISE' ? 'success' : (not empty proiect.status and proiect.status.name() == 'INSCRIERI_INCHISE' ? 'danger' : 'warning')}" />
                         </p:column>
 
-                        <p:column headerText="Locuri Ocupate" style="width: 120px; text-align: center;">
+                        <p:column headerText="Locuri ocupate" style="width: 120px; text-align: center;">
                             <h:outputText value="#{proiect.participari.stream().filter(p -> p.statusAplicatie.name() == 'ACCEPTAT').count()} / #{proiect.necesarVoluntari}" />
                         </p:column>
 
@@ -78,22 +78,22 @@
                                 <p:dataTable id="aplicatiiTable" var="grupare" value="#{proiect.participari}"
                                              emptyMessage="Niciun voluntar nu a aplicat încă la acest proiect.">
 
-                                    <p:column headerText="Nume Voluntar">
+                                    <p:column headerText="Nume voluntar">
                                         <h:outputText value="#{grupare.voluntar.numeComplet}"/>
                                     </p:column>
 
-                                    <p:column headerText="Data Aplicării">
+                                    <p:column headerText="Data aplicării">
                                         <h:outputText value="#{grupare.dataAplicatie}">
                                             <f:convertDateTime pattern="dd.MM.yyyy HH:mm" type="localDateTime"/>
                                         </h:outputText>
                                     </p:column>
 
-                                    <p:column headerText="Status Curent">
+                                    <p:column headerText="Status curent">
                                         <p:tag value="#{grupare.statusAplicatie.name()}"
                                                severity="#{grupare.statusAplicatie.name() == 'ACCEPTAT' ? 'success' : (grupare.statusAplicatie.name() == 'RESPINS' ? 'danger' : 'warning')}"/>
                                     </p:column>
 
-                                    <p:column headerText="Acțiuni pe Aplicație" style="width: 170px;">
+                                    <p:column headerText="Acțiuni pe aplicație" style="width: 170px;">
                                         <p:selectOneMenu value="#{grupare.statusAplicatie}"
                                                          disabled="#{grupare.statusAplicatie.name() == 'ACCEPTAT' or grupare.statusAplicatie.name() == 'RESPINS'}">
 
@@ -112,11 +112,11 @@
                 </h:form>
             </p:tab>
 
-            <p:tab title="Proiecte în Derulare">
+            <p:tab title="Proiecte în derulare">
                 <h:form id="formProiecteInDerulare">
                     <p:dataTable var="proiect" value="#{dashboardCoordonatorBean.proiecteInDerulare}"
                                  emptyMessage="Niciun proiect în derulare momentan.">
-                        <p:column headerText="Nume Proiect">
+                        <p:column headerText="Nume proiect">
                             <h:outputText value="#{proiect.numeProiect}"/>
                         </p:column>
                         <p:column headerText="Perioadă">
@@ -127,7 +127,7 @@
                         <p:column headerText="Echipă">
                             <h:outputText value="#{proiect.participari.stream().filter(p -> p.statusAplicatie.name() == 'ACCEPTAT').count()} membri" />
                         </p:column>
-                        <p:column headerText="Status Proiect" style="width: 180px;">
+                        <p:column headerText="Status proiect" style="width: 180px;">
                             <p:selectOneMenu value="#{proiect.status}">
                                 <f:selectItems value="#{dashboardCoordonatorBean.proiectStatusValues}" var="s"
                                                itemLabel="#{s.displayValue}" itemValue="#{s}"/>
@@ -137,7 +137,7 @@
                             </p:selectOneMenu>
                         </p:column>
                         <p:column headerText="Acțiuni" style="width: 150px; text-align:center;">
-                            <p:commandButton value="Gestionează Taskuri" icon="pi pi-pencil"
+                            <p:commandButton value="Gestionează taskuri" icon="pi pi-pencil"
                                              actionListener="#{dashboardCoordonatorBean.pregatesteEditareProiectSiTaskuri(proiect)}"
                                              oncomplete="PF('dlgManagementTaskuri').show()"
                                              update=":formManagementTaskuri" />
@@ -148,8 +148,8 @@
 
             <p:tab title="Prezență departament">
                 <h:form id="sedinteDeptForm">
-                    <p:panel header="Management Prezență Departament">
-                        <p:commandButton value="Creează Ședință Nouă" icon="pi pi-plus"
+                    <p:panel header="Management prezență departament">
+                        <p:commandButton value="Creează ședință nouă" icon="pi pi-plus"
                                          actionListener="#{dashboardCoordonatorBean.pregatesteSedintaNoua}"
                                          process="@this"
                                          oncomplete="updateAndShowDialog();"
@@ -166,7 +166,7 @@
                                  emptyMessage="Nu există ședințe înregistrate pentru acest departament."
                                  rows="10" paginator="true" paginatorPosition="bottom">
 
-                        <p:column headerText="Data Ședinței" style="width: 20%;">
+                        <p:column headerText="Data ședinței" style="width: 20%;">
                             <h:outputText value="#{info.sedinta.dataSedinta}">
                                 <f:convertDateTime pattern="dd.MM.yyyy 'la' HH:mm" type="localDateTime"/>
                             </h:outputText>
@@ -223,10 +223,10 @@
                     <p:dataTable var="voluntar" value="#{dashboardCoordonatorBean.voluntariDepartament}"
                                  scrollable="true" scrollHeight="280"
                                  emptyMessage="Nu există voluntari în acest departament.">
-                        <p:column headerText="Nume Voluntar">
+                        <p:column headerText="Nume voluntar">
                             <h:outputText value="#{voluntar.numeComplet}"/>
                         </p:column>
-                        <p:column headerText="Status Prezență" style="width: 250px;">
+                        <p:column headerText="Status prezență" style="width: 250px;">
                             <p:selectOneRadio id="statusPrezentaDept"
                                               value="#{dashboardCoordonatorBean.prezenteDepartamentMap[voluntar.id]}">
                                 <f:selectItems value="#{dashboardCoordonatorBean.statusPrezentaValues}" var="sp"
@@ -249,7 +249,7 @@
             </h:form>
         </p:dialog>
 
-        <p:dialog header="Confirmare Ștergere Ședință" widgetVar="confirmStergeSedintaDialog" modal="true"
+        <p:dialog header="Confirmare ștergere ședință" widgetVar="confirmStergeSedintaDialog" modal="true"
                   resizable="false" width="400">
             <h:form id="confirmDeleteSedintaForm">
                 <div style="text-align: center; padding: 10px;">
@@ -258,7 +258,7 @@
                     <p>Ești sigur că vrei să ștergi această ședință?</p>
                 </div>
                 <div style="text-align: center; margin-top: 20px;">
-                    <p:commandButton value="Da, Șterge"
+                    <p:commandButton value="Da, șterge"
                                      actionListener="#{dashboardCoordonatorBean.executaStergereSedinta}"
                                      oncomplete="PF('confirmStergeSedintaDialog').hide()"
                                      update=":sedinteDeptForm:tabelSedinteDepartament :messages"
@@ -271,27 +271,27 @@
         </p:dialog>
 
         <h:form id="formCreareProiect">
-            <p:dialog header="Creează Proiect Nou" widgetVar="dlgCreareProiect" modal="true" width="600" resizable="false">
+            <p:dialog header="Creează proiect nou" widgetVar="dlgCreareProiect" modal="true" width="600" resizable="false">
                 <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="width: 100%;">
 
-                    <p:outputLabel for="nume" value="Nume Proiect:"/>
+                    <p:outputLabel for="nume" value="Nume proiect:"/>
                     <p:inputText id="nume" value="#{dashboardCoordonatorBean.proiectNou.numeProiect}" required="true"/>
 
                     <p:outputLabel for="descriere" value="Descriere:"/>
                     <p:inputTextarea id="descriere" value="#{dashboardCoordonatorBean.proiectNou.descriere}" rows="4" required="true"/>
 
-                    <p:outputLabel for="necesar" value="Nr. Voluntari Necesar:"/>
+                    <p:outputLabel for="necesar" value="Nr. voluntari necesar:"/>
                     <p:spinner id="necesar" value="#{dashboardCoordonatorBean.proiectNou.necesarVoluntari}" min="1"/>
 
-                    <p:outputLabel for="dataInceput" value="Data de Început:"/>
+                    <p:outputLabel for="dataInceput" value="Data de început:"/>
                     <p:datePicker id="dataInceput" value="#{dashboardCoordonatorBean.proiectNou.dataInceput}" showIcon="true" required="true" pattern="dd.MM.yyyy"/>
 
-                    <p:outputLabel for="dataSfarsit" value="Data de Sfârșit:"/>
+                    <p:outputLabel for="dataSfarsit" value="Data de șfârșit:"/>
                     <p:datePicker id="dataSfarsit" value="#{dashboardCoordonatorBean.proiectNou.dataSfarsit}" showIcon="true" required="true" pattern="dd.MM.yyyy"/>
                 </p:panelGrid>
 
                 <f:facet name="footer">
-                    <p:commandButton value="Salvează Proiect"
+                    <p:commandButton value="Salvează proiect"
                                      actionListener="#{dashboardCoordonatorBean.creeazaProiect}"
                                      update=":formProiecte:proiecteTable :messages"
                                      oncomplete="if(!args.validationFailed) PF('dlgCreareProiect').hide()"/>
@@ -301,26 +301,26 @@
         </h:form>
 
         <h:form id="formEditareProiect">
-            <p:dialog header="Editează Proiect" widgetVar="dlgEditareProiect" modal="true" width="600" resizable="false">
+            <p:dialog header="Editează proiect" widgetVar="dlgEditareProiect" modal="true" width="600" resizable="false">
                 <p:outputPanel rendered="#{not empty dashboardCoordonatorBean.proiectSelectat}">
                     <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="width: 100%;">
 
-                        <p:outputLabel for="editNume" value="Nume Proiect:"/>
+                        <p:outputLabel for="editNume" value="Nume proiect:"/>
                         <p:inputText id="editNume" value="#{dashboardCoordonatorBean.proiectSelectat.numeProiect}" required="true"/>
 
                         <p:outputLabel for="editDescriere" value="Descriere:"/>
                         <p:inputTextarea id="editDescriere" value="#{dashboardCoordonatorBean.proiectSelectat.descriere}" rows="4" required="true"/>
 
-                        <p:outputLabel for="editNecesar" value="Nr. Voluntari Necesar:"/>
+                        <p:outputLabel for="editNecesar" value="Nr. voluntari necesar:"/>
                         <p:spinner id="editNecesar" value="#{dashboardCoordonatorBean.proiectSelectat.necesarVoluntari}" min="1"/>
 
-                        <p:outputLabel for="editDataInceput" value="Data de Început:"/>
+                        <p:outputLabel for="editDataInceput" value="Data început:"/>
                         <p:datePicker id="editDataInceput" value="#{dashboardCoordonatorBean.proiectSelectat.dataInceput}" showIcon="true" required="true" pattern="dd.MM.yyyy"/>
 
-                        <p:outputLabel for="editDataSfarsit" value="Data de Sfârșit:"/>
+                        <p:outputLabel for="editDataSfarsit" value="Data sfârșit:"/>
                         <p:datePicker id="editDataSfarsit" value="#{dashboardCoordonatorBean.proiectSelectat.dataSfarsit}" showIcon="true" required="true" pattern="dd.MM.yyyy"/>
 
-                        <p:outputLabel for="editStatus" value="Status Înscrieri:"/>
+                        <p:outputLabel for="editStatus" value="Status înscrieri:"/>
                         <p:selectOneMenu id="editStatus" value="#{dashboardCoordonatorBean.proiectSelectat.status}">
                             <f:selectItems value="#{dashboardCoordonatorBean.proiectStatusValues}" var="s" itemLabel="#{s.displayValue}" itemValue="#{s}"/>
                             <o:genericEnumConverter />
@@ -328,7 +328,7 @@
                     </p:panelGrid>
                 </p:outputPanel>
                 <f:facet name="footer">
-                    <p:commandButton value="Salvează Modificări"
+                    <p:commandButton value="Salvează modificări"
                                      actionListener="#{dashboardCoordonatorBean.actualizeazaProiect}"
                                      update=":formProiecte:proiecteTable :messages"
                                      oncomplete="if(!args.validationFailed) PF('dlgEditareProiect').hide()"/>
@@ -337,7 +337,7 @@
             </p:dialog>
         </h:form>
 
-        <p:dialog header="Management Proiect și Task-uri" widgetVar="dlgManagementTaskuri" modal="true" width="80%" maximizable="true">
+        <p:dialog header="Management proiect și task-uri" widgetVar="dlgManagementTaskuri" modal="true" width="80%" maximizable="true">
             <h:form id="formManagementTaskuri">
                 <p:outputPanel rendered="#{not empty dashboardCoordonatorBean.proiectSelectat}">
                     <p:panelGrid columns="4" layout="grid">
@@ -349,7 +349,7 @@
 
                     <p:toolbar style="margin-top:10px;">
                         <p:toolbarGroup>
-                            <p:commandButton value="Adaugă Task Nou" icon="pi pi-plus" styleClass="ui-button-success"
+                            <p:commandButton value="Adaugă task nou" icon="pi pi-plus" styleClass="ui-button-success"
                                              actionListener="#{dashboardCoordonatorBean.pregatesteTaskNou}"
                                              oncomplete="PF('dlgEditareTask').show()"
                                              update=":formEditareTask"/>
@@ -359,7 +359,7 @@
                     <p:dataTable id="taskuriProiectTable" var="task" value="#{dashboardCoordonatorBean.proiectSelectat.taskuri}"
                                  emptyMessage="Niciun task definit pentru acest proiect." style="margin-top:10px;">
                         <p:column headerText="Titlu" field="titlu"/>
-                        <p:column headerText="Asignat lui" field="voluntar.numeComplet"/>
+                        <p:column headerText="Delegat lui" field="voluntar.numeComplet"/>
                         <p:column headerText="Deadline" field="deadline"/>
                         <p:column headerText="Puncte" field="puncteTask"/>
                         <p:column headerText="Acțiuni" style="width: 7rem; text-align:center;">
@@ -370,11 +370,11 @@
                                              styleClass="ui-button-primary"
                                              style="margin-right: 5px;"/>
 
-                            <p:commandButton icon="pi pi-trash" title="Șterge Task"
+                            <p:commandButton icon="pi pi-trash" title="Șterge task"
                                              actionListener="#{dashboardCoordonatorBean.stergeTask(task)}"
                                              update="taskuriProiectTable" styleClass="ui-button-danger">
 
-                                <p:confirm header="Confirmare Ștergere"
+                                <p:confirm header="Confirmare ștergere"
                                            message="Ești sigur că vrei să ștergi task-ul '#{task.titlu}'?"
                                            icon="pi pi-exclamation-triangle"/>
                             </p:commandButton>
@@ -384,7 +384,7 @@
                 </p:outputPanel>
             </h:form>
         </p:dialog>
-        <p:dialog header="Adaugă / Editează Task" widgetVar="dlgEditareTask" modal="true" width="600" resizable="false">
+        <p:dialog header="Adaugă / Editează task" widgetVar="dlgEditareTask" modal="true" width="600" resizable="false">
             <h:form id="formEditareTask">
                 <p:outputPanel id="continutDialogTask" rendered="#{not empty dashboardCoordonatorBean.taskNou}" style="padding-bottom: 1em;">
 
@@ -404,7 +404,7 @@
                                        thousandSeparator="."/>
                         <p:inputNumber id="taskPuncte" value="#{dashboardCoordonatorBean.taskNou.puncteTask}"/>
 
-                        <p:outputLabel for="taskAsignare" value="Asignează lui:"/>
+                        <p:outputLabel for="taskAsignare" value="Delegat lui:"/>
                         <p:selectOneMenu id="taskAsignare" value="#{dashboardCoordonatorBean.taskNou.voluntar}" required="true"
                                          converter="omnifaces.SelectItemsConverter">
                             <f:selectItem itemLabel="Selectează un voluntar..." noSelectionOption="true"/>
@@ -414,7 +414,7 @@
                     </p:panelGrid>
 
                     <div style="text-align: right; margin-top: 20px; border-top: 1px solid #dee2e6; padding-top: 15px;">
-                        <p:commandButton value="Salvează Task"
+                        <p:commandButton value="Salvează task"
                                          actionListener="#{dashboardCoordonatorBean.salveazaTask}"
                                          update=":formManagementTaskuri:taskuriProiectTable :messages"
                                          oncomplete="if(!args.validationFailed) PF('dlgEditareTask').hide()"/>

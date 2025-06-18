@@ -61,13 +61,11 @@ public class DocumentGenerationService {
             activitatiHtml.append("<h3>Proiect: ").append(escapeHtml(proiect.getNumeProiect())).append(":</h3>");
 
             activitatiHtml.append("<ul>");
+
             for (Task task : taskuri) {
-                String skillName = (task.getSkillDobandit() != null) ? task.getSkillDobandit().getDenumireSkill() : "Nespecificat";
                 activitatiHtml.append("<li>")
                         .append(escapeHtml(task.getTitlu()))
-                        .append(" - skill dobândit/demonstrat: <strong>")
-                        .append(escapeHtml(skillName))
-                        .append("</strong></li>");
+                        .append("</li>");
             }
             activitatiHtml.append("</ul>");
         }

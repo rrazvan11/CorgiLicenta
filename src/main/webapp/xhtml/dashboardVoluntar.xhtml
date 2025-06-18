@@ -10,7 +10,7 @@
 <ui:composition template="/WEB-INF/Templates/layout.xhtml">
 
     <ui:define name="title">
-        Dashboard Voluntar
+        Dashboard voluntar
     </ui:define>
 
     <ui:define name="content">
@@ -24,7 +24,7 @@
 
                 <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group"
                              columnClasses="ui-grid-col-3, ui-grid-col-9">
-                    <h:outputText value="Nume Complet:" styleClass="font-weight-bold"/>
+                    <h:outputText value="Nume complet:" styleClass="font-weight-bold"/>
                     <h:outputText
                             value="#{dashboardVoluntarBean.currentVoluntar.nume} #{dashboardVoluntarBean.currentVoluntar.prenume}"/>
 
@@ -40,19 +40,19 @@
                     <h:outputText value="Specializare:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.specializare}"/>
 
-                    <h:outputText value="An Studiu:" styleClass="font-weight-bold"/>
+                    <h:outputText value="An studiu:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.anStudiu.numeSpecializare}"/>
 
                     <h:outputText value="Departament:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.departament != null ? dashboardVoluntarBean.currentVoluntar.departament.nume : 'departament nedesmnat'}"/>
 
-                    <h:outputText value="Puncte Acumulate:" styleClass="font-weight-bold"/>
+                    <h:outputText value="Puncte acumulate:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.puncte}" id="puncteVoluntar"/>
 
-                    <h:outputText value="Status Membru:" styleClass="font-weight-bold"/>
+                    <h:outputText value="Status membru:" styleClass="font-weight-bold"/>
                     <h:outputText value="#{dashboardVoluntarBean.currentVoluntar.status}"/>
                 </p:panelGrid>
-                <p:button value="Modifică Date Contact"
+                <p:button value="Modifică date contact"
                           icon="pi pi-user-edit"
                           outcome="/xhtml/modificaProfilVoluntar.xhtml"
                           styleClass="ui-button-info mt-2"/>
@@ -82,7 +82,7 @@
 
                                     <p>#{proiect.descriere}</p>
                                     <hr/>
-                                    <p:commandButton value="Aplică Acum" icon="pi pi-check"
+                                    <p:commandButton value="Aplică acum" icon="pi pi-check"
                                                      actionListener="#{dashboardVoluntarBean.aplicaLaProiect(proiect.id)}"
                                                      update="dashboardVoluntarForm"
                                                      disabled="#{dashboardVoluntarBean.aAplicatLaProiect(proiect)}"
@@ -95,12 +95,12 @@
 
                     </p:dataView>
                 </p:tab>
-                <p:tab title="Proiectele Mele">
+                <p:tab title="Proiectele mele">
                     <p:dataTable id="proiecteTable" var="proiect"
                                  value="#{dashboardVoluntarBean.proiecteleVoluntarului}"
                                  rows="5" paginator="true" paginatorPosition="bottom"
                                  emptyMessage="Nu ești înscris în niciun proiect momentan.">
-                        <p:column headerText="Nume Proiect">
+                        <p:column headerText="Nume proiect">
                             <h:outputText value="#{proiect.numeProiect}"/>
                         </p:column>
                         <p:column headerText="Descriere">
@@ -112,13 +112,13 @@
                     </p:dataTable>
                 </p:tab>
 
-                <p:tab title="Task-urile Mele">
+                <p:tab title="Task-urile mele">
                     <p:dataTable id="taskuriTable" var="task" value="#{dashboardVoluntarBean.taskurileVoluntarului}"
                                  styleClass="volunteer-tasks-table"  lazy="false"
                                  rows="10" paginator="true" paginatorPosition="bottom"
                                  emptyMessage="Nu ai niciun task momentan.">
 
-                        <p:column headerText="Titlu Task" styleClass="col-title" sortBy="#{task.titlu}">
+                        <p:column headerText="Titlu task" styleClass="col-title" sortBy="#{task.titlu}">
                             <h:outputText value="#{task.titlu}" />
                         </p:column>
 
@@ -136,7 +136,7 @@
                             </h:outputText>
                         </p:column>
 
-                        <p:column headerText="Puncte Task" styleClass="col-points" sortBy="#{task.puncteTask}">
+                        <p:column headerText="Puncte task" styleClass="col-points" sortBy="#{task.puncteTask}">
                             <h:outputText value="#{task.puncteTask}" />
                         </p:column>
 
@@ -159,12 +159,12 @@
 
                 <h:panelGroup layout="block" styleClass="ui-g ui-fluid">
                     <h:panelGroup layout="block" styleClass="ui-g-12 ui-md-4" style="padding: .5em;">
-                        <p:commandButton value="Generează Certificat" icon="pi pi-file-pdf"
+                        <p:commandButton value="Generează certificat" icon="pi pi-file-pdf"
                                          action="#{dashboardVoluntarBean.genereazaCertificat}" ajax="false"
                                          styleClass="ui-button-raised ui-button-info" style="width:100%"/>
                     </h:panelGroup>
                     <h:panelGroup layout="block" styleClass="ui-g-12 ui-md-4" style="padding: .5em;">
-                        <p:commandButton value="Trimite Raport de Activitate"
+                        <p:commandButton value="Trimite raport de activitate"
                                          actionListener="#{dashboardVoluntarBean.genereazaSiTrimiteRaport}"
                                          update="@form"
                                          icon="pi pi-file-pdf"
