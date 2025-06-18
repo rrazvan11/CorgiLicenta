@@ -11,7 +11,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-        <ui:insert name="titlu">Aplicație ONG Corgi</ui:insert>
+        <ui:insert name="titlu">Corgi România</ui:insert>
     </title>
     <h:outputStylesheet name="style.css" library="default"/>
     <link rel="icon" type="image/x-icon" href="#{request.contextPath}/favicon.ico"/>
@@ -23,7 +23,7 @@
         <!-- Bara de Utilizator și Titlu Aplicație -->
         <div id="top-bar"
              style="background-color: #007bff; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
-            <h:outputText value="Aplicația ONG Corgi" style="font-size: 1.5em; font-weight: bold;"/>
+            <h:outputText value="CORGI" style="font-size: 1.5em; font-weight: bold;"/>
 
             <h:form id="userStatusForm">
                 <h:panelGroup rendered="#{not empty sessionScope.loggedInUser}">
@@ -32,7 +32,7 @@
                                      action="#{loginBean.doLogout}"
                                      value="Logout"
                                      icon="pi pi-sign-out"
-                                     styleClass="ui-button-danger ui-button-sm"
+                                     styleClass="ui-button-danger ui-button-help"
                                      ajax="false"/>
                 </h:panelGroup>
 
