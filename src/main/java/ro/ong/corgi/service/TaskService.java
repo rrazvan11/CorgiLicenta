@@ -10,7 +10,6 @@ import ro.ong.corgi.model.User;
 import ro.ong.corgi.model.Voluntar;
 import ro.ong.corgi.model.Proiect;
 import ro.ong.corgi.repository.TaskRepository;
-// VoluntarService și ProiectService sunt deja injectabile
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,8 +18,8 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
-    private final VoluntarService voluntarService; // Pentru a valida existența voluntarului
-    private final ProiectService proiectService;   // Pentru a valida existența proiectului
+    private final VoluntarService voluntarService;
+    private final ProiectService proiectService;
 
     @Inject
     public TaskService(TaskRepository taskRepository, VoluntarService voluntarService, ProiectService proiectService) {
@@ -28,22 +27,17 @@ public class TaskService {
         this.voluntarService = voluntarService;
         this.proiectService = proiectService;
     }
+
     protected TaskService(){
         this(null,null,null);
     }
 
-    /**
-     * Adaugă un task nou.
-     * Verifică existența voluntarului și a proiectului asociat.
-     * Setează statusul inițial pe WAITING.
-     * Deadline-ul trebuie să fie azi sau în viitor.
-     */
     @Transactional
     public void adaugaTask(Task task) {
         if (task.getTitlu() == null || task.getTitlu().isBlank()) {
             throw new RuntimeException("Titlul task-ului este obligatoriu.");
         }
-        if (task.getDescriere() == null || task.getDescriere().isBlank()) { // Adăugat validare descriere
+        if (task.getDescriere() == null || task.getDescriere().isBlank()) {
             throw new RuntimeException("Descrierea task-ului este obligatorie.");
         }
         if (task.getDeadline() == null || task.getDeadline().isBefore(LocalDate.now())) {
@@ -56,13 +50,12 @@ public class TaskService {
             throw new RuntimeException("Task-ul trebuie asociat unui proiect valid.");
         }
 
-        // Validează și preia entitățile gestionate pentru Voluntar și Proiect
-        Voluntar v = voluntarService.cautaDupaId(task.getVoluntar().getId()); // cautaDupaId aruncă excepție dacă nu există
-        Proiect p = proiectService.cautaDupaId(task.getProiect().getId());   // cautaDupaId aruncă excepție dacă nu există
+        Voluntar v = voluntarService.cautaDupaId(task.getVoluntar().getId());
+        Proiect p = proiectService.cautaDupaId(task.getProiect().getId());
 
-        task.setVoluntar(v); // Setează entitatea Voluntar gestionată
-        task.setProiect(p);  // Setează entitatea Proiect gestionată
-        task.setStatus(TaskStatus.WAITING); // Setează statusul inițial
+        task.setVoluntar(v);
+        task.setProiect(p);
+        task.setStatus(TaskStatus.WAITING);
 
         taskRepository.save(task);
     }
@@ -75,15 +68,8 @@ public class TaskService {
         return t;
     }
 
-    public List<Task> toateTaskurile() {
-        return taskRepository.findAll();
-    }
+    // METODA toateTaskurile A FOST ȘTEARSĂ
 
-    /**
-     * Actualizează un task existent.
-     * Unele câmpuri (ex: proiectul, voluntarul inițial) s-ar putea să nu fie modificabile
-     * sau modificarea lor să necesite logica specifică.
-     */
     @Transactional
     public void actualizeazaTask(Task task) {
         if (task.getId() == null) {
@@ -94,7 +80,6 @@ public class TaskService {
             throw new RuntimeException("Task inexistent: " + task.getId());
         }
 
-        // Validări similare cu cele de la adăugare, dacă e cazul
         if (task.getTitlu() == null || task.getTitlu().isBlank()) {
             throw new RuntimeException("Titlul task-ului este obligatoriu.");
         }
@@ -102,22 +87,16 @@ public class TaskService {
             throw new RuntimeException("Descrierea task-ului este obligatorie.");
         }
         if (task.getDeadline() == null || task.getDeadline().isBefore(LocalDate.now())) {
-            // Permitem actualizarea deadline-ului doar dacă e în viitor, chiar dacă cel vechi a trecut
-            // Dar dacă task-ul e deja DONE, poate nu mai permitem schimbarea deadline-ului?
-            // Asta e logica de business de decis.
         }
-        if (task.getStatus() == null) { // Statusul ar trebui să fie mereu prezent
+        if (task.getStatus() == null) {
             throw new RuntimeException("Statusul task-ului este obligatoriu.");
         }
 
-
-        // Actualizează câmpurile permise
         existent.setTitlu(task.getTitlu());
         existent.setDescriere(task.getDescriere());
         existent.setDeadline(task.getDeadline());
         existent.setStatus(task.getStatus());
 
-        // Dacă se permite schimbarea voluntarului sau proiectului pentru un task existent:
         if (task.getVoluntar() != null && task.getVoluntar().getId() != null &&
                 !existent.getVoluntar().getId().equals(task.getVoluntar().getId())) {
             Voluntar vNou = voluntarService.cautaDupaId(task.getVoluntar().getId());
@@ -131,6 +110,7 @@ public class TaskService {
 
         taskRepository.update(existent);
     }
+
     @Transactional
     public void stergeTask(Long id) {
         Task t = taskRepository.findById(id);
@@ -141,33 +121,24 @@ public class TaskService {
     }
 
     public List<Task> findByVoluntar(Long voluntarId) {
-        // Verifică dacă voluntarul există
-        voluntarService.cautaDupaId(voluntarId); // Aruncă excepție dacă nu există
+        voluntarService.cautaDupaId(voluntarId);
         return taskRepository.findByVoluntarId(voluntarId);
     }
 
     public List<Task> findByProiect(Long proiectId) {
-        // Verifică dacă proiectul există
-        proiectService.cautaDupaId(proiectId); // Aruncă excepție dacă nu există
+        proiectService.cautaDupaId(proiectId);
         return taskRepository.findByProiectId(proiectId);
     }
-
-    // În fișierul TaskService.java
-    // Înlocuiește metoda existentă cu aceasta:
 
     @Transactional
     public void completeTask(Long taskId, User loggedInUser) {
         Task task = cautaDupaId(taskId);
         Voluntar voluntarAsignat = task.getVoluntar();
 
-        // Verifică dacă utilizatorul logat este cel asignat task-ului
-        // Sau dacă are un rol care îi permite să modifice (de ex. Coordonator al proiectului)
         boolean canComplete = false;
         if (loggedInUser.getRol() == Rol.VOLUNTAR && voluntarAsignat.getUser().getId().equals(loggedInUser.getId())) {
             canComplete = true;
         } else if (loggedInUser.getRol() == Rol.COORDONATOR) {
-            // Aici ar trebui verificat dacă coordonatorul este responsabil pentru proiectul task-ului.
-            // Momentan permitem oricărui coordonator, dar logica de permisiuni poate fi rafinată.
             canComplete = true;
         }
 
@@ -179,19 +150,11 @@ public class TaskService {
             throw new RuntimeException("Task-ul este deja finalizat.");
         }
 
-        // --- AICI SUNT MODIFICĂRILE ---
-
-        // 1. Modificăm direct obiectele aduse din baza de date
         task.setStatus(TaskStatus.DONE);
 
         if (task.getPuncteTask() != null && task.getPuncteTask() > 0) {
-            // Adăugăm punctele la voluntar
             double puncteActuale = voluntarAsignat.getPuncte() != null ? voluntarAsignat.getPuncte() : 0.0;
             voluntarAsignat.setPuncte(puncteActuale + task.getPuncteTask());
         }
-
-        // 2. NU mai apelăm explicit .update() sau .actualizeazaVoluntar().
-        // Adnotarea @Transactional de pe metodă se va ocupa de salvarea automată a modificărilor
-        // făcute atât pe 'task', cât și pe 'voluntarAsignat' la finalul execuției.
     }
 }

@@ -34,7 +34,6 @@ public class DashboardVoluntarBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Servicii injectate
     @Inject private VoluntarService voluntarService;
     @Inject private ProiectService proiectService;
     @Inject private TaskService taskService;
@@ -97,7 +96,6 @@ public class DashboardVoluntarBean implements Serializable {
         }
 
         try {
-            // 1. Colectarea și gruparea datelor
             List<Proiect> proiectele = proiectService.gasesteProiecteDupaVoluntarId(currentVoluntar.getId());
             Map<Proiect, List<Task>> activitatiGrupate = new LinkedHashMap<>();
 

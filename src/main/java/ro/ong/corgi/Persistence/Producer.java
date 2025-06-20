@@ -1,4 +1,4 @@
-package ro.ong.corgi.persistence; // Sau ro.ong.corgi.config
+package ro.ong.corgi.Persistence; // Sau ro.ong.corgi.config
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;

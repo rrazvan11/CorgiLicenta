@@ -22,10 +22,6 @@ public abstract class AbstractRepository<T, ID> {
         this.entityClass = entityClass;
     }
 
-    /**
-     * Salvează o entitate nouă în baza de date.
-     * Tranzacția este gestionată de server (prin @Transactional în serviciu).
-     */
     public void save(T entity) {
         if (entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat.");
@@ -33,10 +29,6 @@ public abstract class AbstractRepository<T, ID> {
         entityManager.persist(entity);
     }
 
-    /**
-     * Actualizează o entitate existentă în baza de date.
-     * Tranzacția este gestionată de server (prin @Transactional în serviciu).
-     */
     public void update(T entity) {
         if (entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat.");
@@ -44,10 +36,6 @@ public abstract class AbstractRepository<T, ID> {
         entityManager.merge(entity);
     }
 
-    /**
-     * Șterge o entitate din baza de date.
-     * Tranzacția este gestionată de server (prin @Transactional în serviciu).
-     */
     public void delete(T entity) {
         if (entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat.");
@@ -55,8 +43,6 @@ public abstract class AbstractRepository<T, ID> {
         // Asigură-te că entitatea este gestionată ("managed") înainte de a o șterge
         entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
     }
-
-    // --- Metodele de citire nu necesită tranzacții de scriere ---
 
     public T findById(ID id) {
         if (entityManager == null) {

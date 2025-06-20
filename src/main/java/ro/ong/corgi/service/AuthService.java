@@ -54,11 +54,6 @@ public class AuthService {
         return newUser;
     }
 
-    /**
-     * Caută un utilizator pe baza adresei de email.
-     * @param email Adresa de email a utilizatorului căutat.
-     * @return Obiectul User dacă este găsit, altfel null.
-     */
     public User cautaDupaEmail(String email) {
         if (email == null || email.isBlank()) {
             // O bună practică este să loghezi astfel de cazuri sau să gestionezi intrarea invalidă.
@@ -67,21 +62,5 @@ public class AuthService {
         }
         // Metoda findByEmail din UserRepository ar trebui să returneze null dacă nu găsește userul.
         return userRepository.findByEmail(email);
-    }
-
-
-    public boolean hasRole(User user, Rol rol) {
-        return user != null && user.getRol() == rol;
-    }
-
-    public boolean canAccessResource(User user, String resource) {
-        if (user == null || !user.isActiv()) {
-            return false;
-        }
-        return switch (user.getRol()) {
-            case SECRETAR -> true; // Secretarul are acces la tot (simplificare)
-            case COORDONATOR -> resource.startsWith("proiecte") || resource.startsWith("voluntari_departament") || resource.startsWith("taskuri");
-            case VOLUNTAR -> resource.startsWith("profil") || resource.startsWith("taskuri_personale");
-        };
     }
 }

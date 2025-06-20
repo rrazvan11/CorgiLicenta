@@ -15,14 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"proiecte", "voluntari", "user"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "cif")
 public class Organizatie implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @NotNull(message = "CIF-ul este obligatoriu")
+    @Column(nullable = false, unique = true)
+    private Long cif;
 
     @NotBlank(message = "Numele organizației este obligatoriu")
     @Column(unique = true, nullable = false)
@@ -30,10 +31,6 @@ public class Organizatie implements Serializable {
 
     @NotBlank(message = "Adresa este obligatorie")
     private String adresa;
-
-    @NotNull(message = "CIF-ul este obligatoriu")
-    @Column(unique = true)
-    private Long cif;
 
     @Email(message = "Emailul trebuie să fie valid")
     private String mail;

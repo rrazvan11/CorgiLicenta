@@ -82,27 +82,17 @@ public class DashboardCoordonatorBean implements Serializable {
         }
     }
     private void loadDashboardData() {
-        // Logica existentă pentru ședințe
         if (this.departamentCoordonat != null) {
             this.voluntariDepartament = voluntarService.gasesteVoluntariDinDepartament(this.departamentCoordonat.getId());
             this.sedinteDepartament = sedintaService.getSedinteInfoPentruDepartament(this.departamentCoordonat.getId());
         }
 
         if (this.organizatieCurenta != null) {
-            List<Proiect> toateProiectele = proiectService.gasesteDupaOrganizatie(this.organizatieCurenta.getId());
+            List<Proiect> toateProiectele = proiectService.gasesteDupaOrganizatie(this.organizatieCurenta.getCif());
 
-            // ==========================================================
-            // === ADAUGĂ ACEST BLOC PENTRU DEBUG ===
-            // ==========================================================
-            System.out.println("--- DEBUG START ---");
-            System.out.println("Metoda gasesteDupaOrganizatie a returnat: " + toateProiectele.size() + " proiecte.");
             for (Proiect p : toateProiectele) {
                 System.out.println("--> Proiect găsit: '" + p.getNumeProiect() + "' cu Status: " + p.getStatus());
             }
-            System.out.println("--- DEBUG END ---");
-            // ==========================================================
-
-            // Logica existentă de filtrare
             this.proiecteInscrieri = toateProiectele.stream()
                     .filter(p -> p.getStatus() == StatusProiect.INSCRIERI_DESCHISE || p.getStatus() == StatusProiect.INSCRIERI_INCHISE)
                     .collect(Collectors.toList());

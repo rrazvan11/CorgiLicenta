@@ -13,11 +13,10 @@ public class SedintaRepository extends AbstractRepository<Sedinta, Long> {
         super(Sedinta.class);
     }
 
-
-    public List<Sedinta> findByOrganizatieIdAndTip(Long organizatieId, TipSedinta tip) {
+    public List<Sedinta> findByOrganizatieIdAndTip(Long organizatieCif, TipSedinta tip) {
         TypedQuery<Sedinta> query = this.entityManager.createQuery(
-                "SELECT s FROM Sedinta s WHERE s.organizatie.id = :orgId AND s.tipSedinta = :tip ORDER BY s.dataSedinta DESC", Sedinta.class);
-        query.setParameter("orgId", organizatieId);
+                "SELECT s FROM Sedinta s WHERE s.organizatie.id = :orgCif AND s.tipSedinta = :tip ORDER BY s.dataSedinta DESC", Sedinta.class);
+        query.setParameter("orgCif", organizatieCif);
         query.setParameter("tip", tip);
         return query.getResultList();
     }

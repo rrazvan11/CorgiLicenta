@@ -33,13 +33,4 @@ public class TaskRepository extends AbstractRepository<Task, Long> {
         return query.getResultList();
     }
 
-    public List<Task> findByDeadlineBefore(LocalDate date) {
-        if (this.entityManager == null) {
-            throw new IllegalStateException("EntityManager nu este injectat în TaskRepository");
-        }
-        TypedQuery<Task> query = this.entityManager.createQuery(
-                "SELECT t FROM Task t WHERE t.deadline < :date", Task.class);
-        query.setParameter("date", date);
-        return query.getResultList();
-    }
 }

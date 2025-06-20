@@ -11,21 +11,26 @@ public class VoluntarRepository extends AbstractRepository<Voluntar, Long> {
     public VoluntarRepository() {
         super(Voluntar.class);
     }
-    public List<Voluntar> findByOrganizatieId(Long organizatieId) {
+
+    // MODIFICAT: Numele parametrului și utilizarea lui au fost actualizate pentru claritate.
+    public List<Voluntar> findByOrganizatieId(Long organizatieCif) {
         if (this.entityManager == null) {
             throw new IllegalStateException("EntityManager nu este injectat în VoluntarRepository");
         }
         TypedQuery<Voluntar> query = this.entityManager.createQuery(
-                "SELECT v FROM Voluntar v WHERE v.organizatie.id = :organizatieId", Voluntar.class);
-        query.setParameter("organizatieId", organizatieId);
+                "SELECT v FROM Voluntar v WHERE v.organizatie.id = :organizatieCif", Voluntar.class);
+        query.setParameter("organizatieCif", organizatieCif);
         return query.getResultList();
     }
-    public long countByOrganizatieId(Long organizatieId) {
+
+    // MODIFICAT: Numele parametrului și utilizarea lui au fost actualizate pentru claritate.
+    public long countByOrganizatieId(Long organizatieCif) {
         TypedQuery<Long> query = this.entityManager.createQuery(
-                "SELECT COUNT(v) FROM Voluntar v WHERE v.organizatie.id = :organizatieId", Long.class);
-        query.setParameter("organizatieId", organizatieId);
+                "SELECT COUNT(v) FROM Voluntar v WHERE v.organizatie.id = :organizatieCif", Long.class);
+        query.setParameter("organizatieCif", organizatieCif);
         return query.getSingleResult();
     }
+
     public List<Voluntar> findVoluntariAcceptatiInProiect(Long proiectId) {
         String jpql = "SELECT gvp.voluntar FROM GrupareVoluntariProiecte gvp " +
                 "WHERE gvp.proiect.id = :proiectId " +

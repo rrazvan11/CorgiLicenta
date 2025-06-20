@@ -43,7 +43,7 @@ public class VoluntarService {
             throw new RuntimeException("Numele și prenumele voluntarului sunt obligatorii.");
         }
 
-        Organizatie organizatieAfiliere = organizatieRepository.findByCif(cifOrganizatie);
+        Organizatie organizatieAfiliere = organizatieRepository.findById(cifOrganizatie);
         if (organizatieAfiliere == null) {
             throw new RuntimeException("Organizație cu CIF-ul " + cifOrganizatie + " nu a fost găsită.");
         }
@@ -60,7 +60,7 @@ public class VoluntarService {
         // === LOGICA NOUĂ: Asignăm departamentul implicit "Nerepartizat" ===
         // ====================================================================
         // Căutăm departamentul "Nerepartizat" specific acestei organizații
-        Departament deptNerepartizat = departamentRepository.findByNumeAndOrganizatieId("Nerepartizat", organizatieAfiliere.getId());
+        Departament deptNerepartizat = departamentRepository.findByNumeAndOrganizatieId("Nerepartizat", organizatieAfiliere.getCif());
         if (deptNerepartizat == null) {
             // Măsură de siguranță, în caz că ceva nu a mers bine la crearea organizației
             throw new IllegalStateException("Departamentul implicit 'Nerepartizat' nu a fost găsit. Asigură-te că este creat odată cu organizația.");
@@ -82,14 +82,6 @@ public class VoluntarService {
             throw new RuntimeException("Voluntar inexistent cu ID: " + id);
         }
         return v;
-    }
-
-    public Voluntar cautaDupaEmail(String email) {
-        User user = authService.cautaDupaEmail(email);
-        if (user != null && user.getId() != null) {
-            return voluntarRepository.findSingleByField("user.id", user.getId());
-        }
-        return null;
     }
 
     public Voluntar cautaDupaUser(User user) {
@@ -178,9 +170,6 @@ public class VoluntarService {
         System.out.println("Voluntarul a fost șters.");
     }
 
-    public List<Voluntar> totiVoluntarii() {
-        return voluntarRepository.findAll();
-    }
 
     public List<Voluntar> gasesteVoluntariDinOrganizatie(Long organizatieId) {
         return voluntarRepository.findByOrganizatieId(organizatieId);

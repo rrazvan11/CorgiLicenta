@@ -5,10 +5,9 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import ro.ong.corgi.model.User;
 
-@ApplicationScoped // 1. UserRepository devine un CDI bean
+@ApplicationScoped
 public class UserRepository extends AbstractRepository<User, Long> {
 
-    // 2. Constructorul acum apelează doar super() cu clasa entității
     public UserRepository() {
         super(User.class);
     }
